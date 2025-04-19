@@ -5,10 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import icesi.edu.co.fitscan.features.task.ui.screens.LoginScreen
 import icesi.edu.co.fitscan.features.task.ui.screens.TaskScreen
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 
@@ -27,8 +29,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun App() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "home") {
-        composable("home") { TaskScreen() }
+    NavHost(navController = navController, startDestination = "login") {
+        composable("login") { LoginScreen(Color(0xFF4CAF50)) }
     }
 }
 
