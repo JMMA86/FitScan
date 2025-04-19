@@ -231,7 +231,7 @@ fun LoginScreen(greenLess: Color) {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun LoginScreenPreview() {
     FitScanTheme {
         LoginScreen(Color(0xFF4CAF50))
     }

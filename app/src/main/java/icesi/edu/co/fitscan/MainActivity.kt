@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import icesi.edu.co.fitscan.features.task.ui.screens.LoginScreen
+import icesi.edu.co.fitscan.features.task.ui.screens.RegisterScreen
 import icesi.edu.co.fitscan.features.task.ui.screens.TaskScreen
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 
@@ -34,10 +35,26 @@ fun App() {
     }
 }
 
+// @Preview(showBackground = true)
+// @Composable
+// fun GreetingPreview() {
+//    FitScanTheme {
+//         App()
+//     }
+// }
+
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun LoginScreenPreview() {
     FitScanTheme {
-        App()
+        LoginScreen(Color(0xFF4CAF50))
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RegisterScreenPreview() {
+    FitScanTheme {
+        RegisterScreen(Color(0xFF4CAF50))
     }
 }
