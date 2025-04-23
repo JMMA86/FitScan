@@ -1,0 +1,48 @@
+version: "3"
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: directus
+      POSTGRES_USER: directus
+      POSTGRES_PASSWORD: directus
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U directus -d directus"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+
+  directus:
+    image: directus/directus:11.5.0
+    ports:
+      - "8055:8055"
+    volumes:
+      - directus_database:/directus/database
+      - directus_uploads:/directus/uploads
+      - directus_extensions:/directus/extensions
+    environment:
+      SECRET: "guarrosguarrosguarros"
+      ADMIN_EMAIL: "admin@fitscan.com"
+      ADMIN_PASSWORD: "123"
+      DB_CLIENT: "pg"
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      DB_DATABASE: "directus"
+      DB_USER: "directus"
+      DB_PASSWORD: "directus"
+      WEBSOCKETS_ENABLED: "true"
+      ACCESS_TOKEN_TTL: "3600"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
+  directus_database:
+  directus_uploads:
+  directus_extensions:
