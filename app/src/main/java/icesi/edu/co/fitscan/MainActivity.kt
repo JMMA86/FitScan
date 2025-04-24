@@ -4,15 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import icesi.edu.co.fitscan.features.task.ui.screens.LoginScreen
-import icesi.edu.co.fitscan.features.task.ui.screens.PersonalDataScreen
-import icesi.edu.co.fitscan.features.task.ui.screens.RegisterScreen
+import icesi.edu.co.fitscan.features.common.ui.components.FitScanHeader
+import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
+import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
+import icesi.edu.co.fitscan.navigation.NavigationHost
+import icesi.edu.co.fitscan.features.common.ui.components.FitScanNavBar
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,8 +34,17 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun App() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "login") {
-        composable("login") { LoginScreen(Color(0xFF4CAF50)) }
+    Scaffold (
+        topBar = { FitScanHeader(
+            title="FitScanAI",
+            onBackClick = { /* TODO */ },
+            navController=navController
+        ) },
+        bottomBar = { FitScanNavBar(navController) }
+    ) { padding ->
+        Column(modifier = Modifier.padding(padding)) {
+            NavigationHost(navController)
+        }
     }
 }
 
@@ -43,13 +56,13 @@ fun App() {
 //     }
 // }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    FitScanTheme {
-        LoginScreen(Color(0xFF4CAF50))
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun LoginScreenPreview() {
+//    FitScanTheme {
+//        LoginScreen(Color(0xFF4CAF50))
+//    }
+//}
 
 @Preview(showBackground = true)
 @Composable

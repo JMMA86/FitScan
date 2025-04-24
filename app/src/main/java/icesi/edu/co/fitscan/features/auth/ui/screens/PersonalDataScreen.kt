@@ -1,4 +1,4 @@
-package icesi.edu.co.fitscan.features.task.ui.screens
+package icesi.edu.co.fitscan.features.auth.ui.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview

@@ -1,8 +1,6 @@
-package icesi.edu.co.fitscan.features.task.ui.screens
+package icesi.edu.co.fitscan.features.auth.ui.screens
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,10 +19,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import icesi.edu.co.fitscan.R
+import icesi.edu.co.fitscan.navigation.Screen
 
 @Composable
-fun LoginScreen(greenLess: Color) {
+fun LoginScreen(
+    greenLess: Color,
+    navController: NavController
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -216,7 +219,9 @@ fun LoginScreen(greenLess: Color) {
                     fontSize = 14.sp
                 )
 
-                TextButton(onClick = { /* TODO */ }) {
+                TextButton(onClick = {
+                    navController.navigate(Screen.Registration.route)
+                }) {
                     Text(
                         text = "Regístrate",
                         color = greenLess,
@@ -229,10 +234,10 @@ fun LoginScreen(greenLess: Color) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    FitScanTheme {
-        LoginScreen(Color(0xFF4CAF50))
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun LoginScreenPreview() {
+//    FitScanTheme {
+//        LoginScreen(Color(0xFF4CAF50))
+//    }
+//}
