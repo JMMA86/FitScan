@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
-    private const val BASE_URL = "http://192.168.2.19:8055" // Si van a probar el login deben ver su ip y ponerlo aqui
+    private const val BASE_URL = "http://192.168.18.19:8055" // Si van a probar el login deben ver su ip y ponerlo aqui
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
