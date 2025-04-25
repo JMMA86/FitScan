@@ -220,8 +220,8 @@ DELETE FROM directus_users WHERE email = 'juan@example.com' or email = 'maria@ex
 
 INSERT INTO directus_users (id, email, password, first_name, last_name)
 VALUES 
-(uuid_generate_v4(), 'juan@example.com', '$argon2i$v=19$m=16,t=2,p=1$YjRFdkhhdzhtZzhvelFxdw$77MF4bmT0VZy/M/iUaAf0g', 'Juan', 'Pérez'),
-(uuid_generate_v4(), 'maria@example.com', '$argon2i$v=19$m=16,t=2,p=1$YjRFdkhhdzhtZzhvelFxdw$77MF4bmT0VZy/M/iUaAf0g', 'María', 'López');
+(uuid_generate_v4(), 'juan@example.com', '$argon2id$v=19$m=65536,t=3,p=4$O09OkqGHl74ucu293lNxuw$OgTadbPObj9sc2EZFm0hK4ppzSCb7ro8WtAK3cOQLbg', 'Juan', 'Pérez'),
+(uuid_generate_v4(), 'maria@example.com', '$argon2id$v=19$m=65536,t=3,p=4$O09OkqGHl74ucu293lNxuw$OgTadbPObj9sc2EZFm0hK4ppzSCb7ro8WtAK3cOQLbg', 'María', 'López');
 
 -- training_level
 INSERT INTO training_level (id, level_name, description) VALUES
