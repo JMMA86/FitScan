@@ -1,7 +1,7 @@
 package icesi.edu.co.fitscan.features.auth.domain.repository
 
 import android.util.Log
-import icesi.edu.co.fitscan.features.auth.data.remote.AuthService
+import icesi.edu.co.fitscan.features.auth.data.remote.AuthRepository
 import icesi.edu.co.fitscan.features.auth.data.remote.request.LoginRequest
 import icesi.edu.co.fitscan.features.auth.data.remote.request.RegisterRequest
 import icesi.edu.co.fitscan.features.auth.data.remote.response.LoginResponseData
@@ -11,13 +11,13 @@ import retrofit2.HttpException
 import java.io.IOException
 
 
-class AuthRepositoryImpl(private val authService: AuthService) : AuthRepository {
+class AuthServiceImpl(private val authRepository: AuthRepository) : AuthService {
 
     override suspend fun login(email: String, password: String): Result<LoginResponseData> {
         return withContext(Dispatchers.IO) {
             try {
                 val request = LoginRequest(email = email, password = password)
-                val response = authService.login(request)
+                val response = authRepository.login(request)
 
                 if (response.isSuccessful && response.body()?.data != null) {
                     Result.success(response.body()!!.data!!)
@@ -49,7 +49,7 @@ class AuthRepositoryImpl(private val authService: AuthService) : AuthRepository 
                     firsName = firsName,
                     lastName = lastName
                 )
-                val response = authService.register(request)
+                val response = authRepository.register(request)
 
                 if (response.isSuccessful) {
                     Result.success(Unit)

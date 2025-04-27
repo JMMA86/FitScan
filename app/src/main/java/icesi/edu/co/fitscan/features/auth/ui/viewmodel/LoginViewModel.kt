@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.lifecycle.AndroidViewModel // Cambiado de ViewModel
 import androidx.lifecycle.viewModelScope
 import icesi.edu.co.fitscan.features.auth.data.remote.RetrofitInstance
-import icesi.edu.co.fitscan.features.auth.domain.repository.AuthRepositoryImpl
+import icesi.edu.co.fitscan.features.auth.domain.repository.AuthServiceImpl
 import icesi.edu.co.fitscan.features.auth.domain.usecase.LoginUseCase
 import icesi.edu.co.fitscan.features.auth.ui.model.LoginUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,11 +15,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
-import android.util.Log //Este solamente lo uso pa un log
 
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
-    private val authRepository = AuthRepositoryImpl(RetrofitInstance.authService)
+    private val authRepository = AuthServiceImpl(RetrofitInstance.authRepository)
     private val loginUseCase = LoginUseCase(authRepository)
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
@@ -48,6 +47,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                                 else -> "Error del servidor (${exception.code()})."
                             }
                         }
+
                         is IOException -> "Error de red. Verifica tu conexión."
                         is IllegalArgumentException -> exception.message ?: "Datos inválidos."
                         else -> "Error inesperado: ${exception.localizedMessage}"

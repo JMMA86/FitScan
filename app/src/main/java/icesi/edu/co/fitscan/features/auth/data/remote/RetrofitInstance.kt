@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
     // Cambia esta URL por la de tu servidor (ip local o dominio)
-    private const val BASE_URL = "https://3480-186-144-44-127.ngrok-free.app"
+    private const val BASE_URL = "https://70ca-186-144-44-127.ngrok-free.app"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -29,7 +29,7 @@ object RetrofitInstance {
             .build()
     }
 
-    val authService: AuthService by lazy {
-        retrofit.create(AuthService::class.java)
+    val authRepository: AuthRepository by lazy {
+        retrofit.create(AuthRepository::class.java)
     }
 }

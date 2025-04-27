@@ -19,10 +19,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
+import icesi.edu.co.fitscan.features.auth.ui.viewmodel.RegisterViewModel
 
 @Composable
-fun RegisterScreen(greenLess: Color) {
+fun RegisterScreen(greenLess: Color, registerViewModel: RegisterViewModel = viewModel()) {
     var fullName by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -188,7 +190,9 @@ fun RegisterScreen(greenLess: Color) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Button(
-                    onClick = { /* TODO */ },
+                    onClick = {
+                        registerViewModel.register(email, fullName, age, phone)
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = greenLess),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
