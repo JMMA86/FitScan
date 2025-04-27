@@ -3,8 +3,10 @@ package icesi.edu.co.fitscan.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import icesi.edu.co.fitscan.features.auth.ui.screens.LoginScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
 import icesi.edu.co.fitscan.features.home.ui.screens.DashboardScreen
@@ -29,33 +31,47 @@ fun NavigationHost(navController: NavHostController) {
             WorkoutListScreen(/* Pasa parámetros si necesita */)
         }
 
-        composable(Screen.Login.route) {
+        composable(
+            route = "${Screen.Login.route}?message={message}",
+            arguments = listOf(
+                navArgument("message") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = true
+                }
+            )
+        ) { backStackEntry ->
+            val message = backStackEntry.arguments?.getString("message")
             LoginScreen(
                 greenLess = greenLess,
+                message = message,
                 onLoginSuccess = {
-                    // Navega a Home (Dashboard) y limpia el historial hasta Login
+                    // Navigate to Home (Dashboard) and clear the history up to Login
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
-                        launchSingleTop = true // Evita múltiples instancias de Home
+                        launchSingleTop = true
                     }
                 },
                 onNavigateToRegister = {
-                    navController.navigate(Screen.Registration.route) // Navega a Registro
+                    navController.navigate(Screen.Registration.route)
                 },
                 onNavigateToForgotPassword = {
-                    //Aqui me ponen las pantalals de recuperar contraseña
-                    // navController.navigate("forgot_password_route")
+                    // Navigation to password recovery screen
                 },
                 onGoogleLoginClick = {
-                    //
+                    // Google login handling
                 }
             )
         }
         composable(Screen.Registration.route) {
             RegisterScreen(
-                greenLess = greenLess
-                // Añade callbacks si RegisterScreen los necesita (ej. onRegisterSuccess)
-                // onRegisterSuccess = { navController.navigate(Screen.Login.route)
+                greenLess = greenLess,
+                onRegisterSuccess = {
+                    // Navigate to login with success message
+                    navController.navigate("${Screen.Login.route}?message=registration_success") {
+                        popUpTo(Screen.Registration.route) { inclusive = true }
+                    }
+                }
             )
         }
     }
