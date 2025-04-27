@@ -1,5 +1,6 @@
-package icesi.edu.co.fitscan.features.auth.domain.repository
+package icesi.edu.co.fitscan.features.auth.domain.service
 
+import icesi.edu.co.fitscan.features.auth.data.remote.request.Customer
 import icesi.edu.co.fitscan.features.auth.data.remote.response.LoginResponseData
 
 interface AuthService {
@@ -10,4 +11,6 @@ interface AuthService {
         firsName: String,
         lastName: String
     ): Result<Unit>
+
+    suspend fun registerCustomer(customer: Customer): Result<Unit>
 }

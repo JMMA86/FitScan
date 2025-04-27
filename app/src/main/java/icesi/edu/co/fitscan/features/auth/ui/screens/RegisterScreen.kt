@@ -1,12 +1,30 @@
 package icesi.edu.co.fitscan.features.auth.ui.screens
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,19 +35,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.auth.ui.viewmodel.RegisterViewModel
+import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 
 @Composable
 fun RegisterScreen(greenLess: Color, registerViewModel: RegisterViewModel = viewModel()) {
     var fullName by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var termsAccepted by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Background image
@@ -43,7 +65,8 @@ fun RegisterScreen(greenLess: Color, registerViewModel: RegisterViewModel = view
         Column(
             modifier = Modifier
                 .padding(24.dp)
-                .fillMaxHeight(),
+                .fillMaxHeight()
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -151,6 +174,21 @@ fun RegisterScreen(greenLess: Color, registerViewModel: RegisterViewModel = view
                     )
                 )
                 Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Contraseña") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = greenLess,
+                        unfocusedBorderColor = greenLess,
+                        focusedLabelColor = greenLess,
+                        unfocusedLabelColor = greenLess,
+                    )
+                )
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -191,7 +229,14 @@ fun RegisterScreen(greenLess: Color, registerViewModel: RegisterViewModel = view
             ) {
                 Button(
                     onClick = {
-                        registerViewModel.register(email, fullName, age, phone)
+                        registerViewModel.register(
+                            email,
+                            password,
+                            fullName,
+                            age,
+                            phone,
+                            termsAccepted
+                        )
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = greenLess),
                     shape = RoundedCornerShape(8.dp),

@@ -1,10 +1,12 @@
 package icesi.edu.co.fitscan.features.auth.data.remote
 
+import icesi.edu.co.fitscan.features.auth.data.remote.request.Customer
 import icesi.edu.co.fitscan.features.auth.data.remote.request.LoginRequest
-import icesi.edu.co.fitscan.features.auth.data.remote.request.RegisterRequest
+import icesi.edu.co.fitscan.features.auth.data.remote.request.User
 import icesi.edu.co.fitscan.features.auth.data.remote.response.LoginResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface AuthRepository {
@@ -12,8 +14,11 @@ interface AuthRepository {
     suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
 
     @POST("/users/register")
-    suspend fun register(@Body loginRequest: RegisterRequest): Response<Unit>
+    suspend fun register(@Body registerRequest: User): Response<Unit>
 
     @POST("/items/customer")
-    suspend fun registerCustomer(@Body loginRequest: RegisterRequest): Response<Unit>
+    suspend fun registerCustomer(
+        @Body customerRequest: Customer,
+        @Header("Authorization") token: String
+    ): Response<Unit>
 }
