@@ -36,8 +36,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
             result.fold(
                 onSuccess = { loginResponseData ->
-                    saveAuthToken(loginResponseData.access_token)
-                    _uiState.update { LoginUiState.Success(loginResponseData.access_token) }
+                    saveAuthToken(loginResponseData.accessToken)
+                    _uiState.update { LoginUiState.Success(loginResponseData.accessToken) }
                 },
                 onFailure = { exception ->
                     val errorMessage = when (exception) {

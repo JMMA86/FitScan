@@ -4,4 +4,10 @@ import icesi.edu.co.fitscan.features.auth.data.remote.response.LoginResponseData
 
 interface AuthRepository {
     suspend fun login(email: String, password: String): Result<LoginResponseData>
+    suspend fun register(
+        email: String,
+        password: String,
+        firsName: String,
+        lastName: String
+    ): Result<Unit>
 }
