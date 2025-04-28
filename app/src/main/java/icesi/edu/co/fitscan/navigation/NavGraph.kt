@@ -45,7 +45,6 @@ fun NavigationHost(navController: NavHostController) {
             val message = backStackEntry.arguments?.getString("message")
             LoginScreen(
                 greenLess = greenLess,
-                message = message,
                 onLoginSuccess = {
                     // Navigate to Home (Dashboard) and clear the history up to Login
                     navController.navigate(Screen.Home.route) {
