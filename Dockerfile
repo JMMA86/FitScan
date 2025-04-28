@@ -11,7 +11,7 @@ ENV SECRET=guarrosguarrosguarros \
     DB_DATABASE=fitscan \
     DB_USER=fitscan \
     DB_PASSWORD=SE29MWOXWd8BsnX4okLEzsQEHv746TiD \
-    DB_SSL=true \
+    DB_SSL={"rejectUnauthorized": false} \
     WEBSOCKETS_ENABLED=true \
     ACCESS_TOKEN_TTL=3600
 
