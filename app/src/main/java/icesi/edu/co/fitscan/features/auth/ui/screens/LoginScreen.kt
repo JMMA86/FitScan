@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType // Importa KeyboardType si falta
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel // Importar viewModel
 import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.auth.ui.model.LoginUiState
 import icesi.edu.co.fitscan.features.auth.ui.viewmodel.LoginViewModel
+import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import kotlinx.coroutines.launch // Para el Snackbar
 
 @Composable
@@ -279,7 +280,7 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    YourAppTheme { // Reemplaza YourAppTheme con el nombre de tu tema
+    FitScanTheme {
         LoginScreen(
             onLoginSuccess = {},
             onNavigateToRegister = {},
