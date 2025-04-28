@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import icesi.edu.co.fitscan.features.auth.ui.screens.LoginScreen
+import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
 import icesi.edu.co.fitscan.features.home.ui.screens.DashboardScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutListScreen
@@ -63,15 +64,29 @@ fun NavigationHost(navController: NavHostController) {
                 }
             )
         }
+
         composable(Screen.Registration.route) {
             RegisterScreen(
                 greenLess = greenLess,
                 onRegisterSuccess = {
-                    // Navigate to login with success message
-                    navController.navigate("${Screen.Login.route}?message=registration_success") {
+                    // Navigate to body measurements screen after registration
+                    navController.navigate(Screen.BodyMeasurements.route) {
                         popUpTo(Screen.Registration.route) { inclusive = true }
                     }
                 }
+            )
+        }
+
+        composable(Screen.BodyMeasurements.route) {
+            PersonalDataScreen(
+                greenLess = greenLess,
+                onMeasurementsComplete = {
+                    // Navigate to Home screen after measurements are saved
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
             )
         }
     }

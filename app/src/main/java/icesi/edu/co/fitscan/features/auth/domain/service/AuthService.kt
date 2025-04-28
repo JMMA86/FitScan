@@ -1,5 +1,6 @@
 package icesi.edu.co.fitscan.features.auth.domain.service
 
+import icesi.edu.co.fitscan.features.auth.data.remote.request.BodyMeasure
 import icesi.edu.co.fitscan.features.auth.data.remote.request.Customer
 import icesi.edu.co.fitscan.features.auth.data.remote.response.LoginResponseData
 
@@ -13,4 +14,5 @@ interface AuthService {
     ): Result<Unit>
 
     suspend fun registerCustomer(customer: Customer): Result<Unit>
+    suspend fun saveBodyMeasurements(bodyMeasure: BodyMeasure): Result<Unit>
 }

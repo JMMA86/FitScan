@@ -70,29 +70,29 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
         _uiState.update { RegisterUiState.Loading }
 
         viewModelScope.launch {
-            // Step 1: Register user
             val registerResult = registerUseCase(email, password, firstName, lastName)
 
             registerResult.fold(
                 onSuccess = {
-                    // Step 2: Login with created credentials
                     val loginResult = loginUseCase(email, password)
 
                     loginResult.fold(
                         onSuccess = { loginData ->
-                            // Extract the real UUID from the token, not using email
                             val userId = extractUserIdFromToken(loginData.access_token)
 
                             if (userId != null) {
-                                // Step 3: Create customer with the UUID
                                 val customerResult = customerRegistrationUseCase(
-                                    userId, // Using actual UUID, not email
+                                    userId,
                                     age.toInt(),
                                     phone
                                 )
 
                                 customerResult.fold(
                                     onSuccess = {
+                                        Log.d(
+                                            "RegisterViewModel",
+                                            "Registration completed successfully"
+                                        )
                                         _uiState.update { RegisterUiState.Success }
                                     },
                                     onFailure = { customerException ->
@@ -100,12 +100,12 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
                                             "RegisterViewModel",
                                             "Customer creation failed: ${customerException.message}"
                                         )
-                                        _uiState.update { RegisterUiState.Success }
+                                        _uiState.update { RegisterUiState.Error("Error al crear perfil: ${customerException.message}") }
                                     }
                                 )
                             } else {
                                 Log.e("RegisterViewModel", "Failed to extract user ID from token")
-                                _uiState.update { RegisterUiState.Success }
+                                _uiState.update { RegisterUiState.Error("Error al procesar los datos de usuario") }
                             }
                         },
                         onFailure = { loginException ->
@@ -113,7 +113,7 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
                                 "RegisterViewModel",
                                 "Auto-login failed: ${loginException.message}"
                             )
-                            _uiState.update { RegisterUiState.Success }
+                            _uiState.update { RegisterUiState.Error("Error al iniciar sesión: ${loginException.message}") }
                         }
                     )
                 },

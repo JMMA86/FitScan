@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import icesi.edu.co.fitscan.features.auth.data.remote.AuthRepository
+import icesi.edu.co.fitscan.features.auth.data.remote.request.BodyMeasure
 import icesi.edu.co.fitscan.features.auth.data.remote.request.Customer
 import icesi.edu.co.fitscan.features.auth.data.remote.request.LoginRequest
 import icesi.edu.co.fitscan.features.auth.data.remote.request.User
@@ -118,6 +119,43 @@ class AuthServiceImpl(
                 }
             } catch (e: Exception) {
                 Log.e("AuthServiceImpl", "Customer registration error: ${e.message}")
+                Result.failure(e)
+            }
+        }
+    }
+
+    override suspend fun saveBodyMeasurements(bodyMeasure: BodyMeasure): Result<Unit> {
+        return withContext(Dispatchers.IO) {
+            try {
+                if (application == null) {
+                    return@withContext Result.failure(Exception("Application context not available"))
+                }
+
+                val sharedPref =
+                    application.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+                val token = sharedPref.getString("AUTH_TOKEN", null)
+
+                if (token == null) {
+                    return@withContext Result.failure(Exception("User not authenticated"))
+                }
+
+                Log.d("AuthServiceImpl", "Saving body measurements: $bodyMeasure")
+
+                val response = authRepository.saveBodyMeasurements(
+                    bodyMeasure,
+                    "Bearer $token"
+                )
+
+                if (response.isSuccessful) {
+                    Log.d("AuthServiceImpl", "Body measurements saved successfully")
+                    Result.success(Unit)
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                    Log.e("AuthServiceImpl", "Save body measurements failed: $errorBody")
+                    Result.failure(HttpException(response))
+                }
+            } catch (e: Exception) {
+                Log.e("AuthServiceImpl", "Save body measurements error: ${e.message}")
                 Result.failure(e)
             }
         }
