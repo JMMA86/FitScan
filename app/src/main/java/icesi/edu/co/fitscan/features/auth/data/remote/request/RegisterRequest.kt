@@ -12,5 +12,5 @@ data class Customer(
     val id: String? = null,
     val user_id: String, // Foreign key to the user table
     val age: Int,
-    val phone_number: String
+    val phone: String
 )

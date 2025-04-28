@@ -1,11 +1,13 @@
 package icesi.edu.co.fitscan.features.auth.ui.viewmodel
 
 import android.app.Application
-import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import icesi.edu.co.fitscan.features.auth.data.remote.RetrofitInstance
 import icesi.edu.co.fitscan.features.auth.domain.service.AuthServiceImpl
+import icesi.edu.co.fitscan.features.auth.domain.usecase.CustomerRegistrationUseCase
+import icesi.edu.co.fitscan.features.auth.domain.usecase.LoginUseCase
 import icesi.edu.co.fitscan.features.auth.domain.usecase.RegisterUseCase
 import icesi.edu.co.fitscan.features.auth.ui.model.RegisterUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +21,8 @@ import java.io.IOException
 class RegisterViewModel(application: Application) : AndroidViewModel(application) {
     private val authService = AuthServiceImpl(RetrofitInstance.authRepository, application)
     private val registerUseCase = RegisterUseCase(authService)
+    private val loginUseCase = LoginUseCase(authService)
+    private val customerRegistrationUseCase = CustomerRegistrationUseCase(authService)
 
     private val _uiState = MutableStateFlow<RegisterUiState>(RegisterUiState.Idle)
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
@@ -63,17 +67,55 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
             return
         }
 
-        // Save user profile data to shared preferences for later use
-        saveUserProfileData(email, age, phone)
-
         _uiState.update { RegisterUiState.Loading }
 
         viewModelScope.launch {
+            // Step 1: Register user
             val registerResult = registerUseCase(email, password, firstName, lastName)
 
             registerResult.fold(
                 onSuccess = {
-                    _uiState.update { RegisterUiState.Success }
+                    // Step 2: Login with created credentials
+                    val loginResult = loginUseCase(email, password)
+
+                    loginResult.fold(
+                        onSuccess = { loginData ->
+                            // Extract the real UUID from the token, not using email
+                            val userId = extractUserIdFromToken(loginData.access_token)
+
+                            if (userId != null) {
+                                // Step 3: Create customer with the UUID
+                                val customerResult = customerRegistrationUseCase(
+                                    userId, // Using actual UUID, not email
+                                    age.toInt(),
+                                    phone
+                                )
+
+                                customerResult.fold(
+                                    onSuccess = {
+                                        _uiState.update { RegisterUiState.Success }
+                                    },
+                                    onFailure = { customerException ->
+                                        Log.e(
+                                            "RegisterViewModel",
+                                            "Customer creation failed: ${customerException.message}"
+                                        )
+                                        _uiState.update { RegisterUiState.Success }
+                                    }
+                                )
+                            } else {
+                                Log.e("RegisterViewModel", "Failed to extract user ID from token")
+                                _uiState.update { RegisterUiState.Success }
+                            }
+                        },
+                        onFailure = { loginException ->
+                            Log.e(
+                                "RegisterViewModel",
+                                "Auto-login failed: ${loginException.message}"
+                            )
+                            _uiState.update { RegisterUiState.Success }
+                        }
+                    )
                 },
                 onFailure = { exception ->
                     handleError(exception)
@@ -82,15 +124,16 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    private fun saveUserProfileData(email: String, age: String, phone: String) {
-        val context = getApplication<Application>()
-        val sharedPref = context.getSharedPreferences("profile_data", Context.MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putString("PENDING_USER_ID", email)
-            putString("PENDING_USER_AGE", age)
-            putString("PENDING_USER_PHONE", phone)
-            putBoolean("NEEDS_CUSTOMER_CREATION", true)
-            apply()
+    private fun extractUserIdFromToken(token: String): String? {
+        return try {
+            val parts = token.split(".")
+            if (parts.size < 2) return null
+            val payload = String(android.util.Base64.decode(parts[1], android.util.Base64.DEFAULT))
+            val json = org.json.JSONObject(payload)
+            json.getString("id") // Make sure this matches the claim name in your JWT
+        } catch (e: Exception) {
+            Log.e("RegisterViewModel", "Error decoding token: ${e.message}")
+            null
         }
     }
 

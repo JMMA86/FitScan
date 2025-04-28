@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,12 +45,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.auth.ui.model.LoginUiState
 import icesi.edu.co.fitscan.features.auth.ui.viewmodel.LoginViewModel
+import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -168,40 +169,40 @@ fun LoginScreen(
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Button(
-                        onClick = onGoogleLoginClick,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        enabled = uiState != LoginUiState.Loading
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_google),
-                                contentDescription = "Google icon",
-                                tint = Color.Unspecified,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Continuar con Google", color = Color.Black)
-                        }
-                    }
+//                    Button(
+//                        onClick = onGoogleLoginClick,
+//                        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+//                        shape = RoundedCornerShape(8.dp),
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .height(50.dp),
+//                        enabled = uiState != LoginUiState.Loading
+//                    ) {
+//                        Row(verticalAlignment = Alignment.CenterVertically) {
+//                            Icon(
+//                                painter = painterResource(id = R.drawable.ic_google),
+//                                contentDescription = "Google icon",
+//                                tint = Color.Unspecified,
+//                                modifier = Modifier.size(24.dp)
+//                            )
+//                            Spacer(modifier = Modifier.width(8.dp))
+//                            Text(text = "Continuar con Google", color = Color.Black)
+//                        }
+//                    }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Divider [cite: 14]
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        HorizontalDivider(modifier = Modifier.weight(1f), color = greenLess)
-                        Text(text = "  o  ", color = greenLess, fontSize = 14.sp)
-                        HorizontalDivider(modifier = Modifier.weight(1f), color = greenLess)
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
+//                    Spacer(modifier = Modifier.height(16.dp))
+//
+//                    // Divider [cite: 14]
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        modifier = Modifier.fillMaxWidth()
+//                    ) {
+//                        HorizontalDivider(modifier = Modifier.weight(1f), color = greenLess)
+//                        Text(text = "  o  ", color = greenLess, fontSize = 14.sp)
+//                        HorizontalDivider(modifier = Modifier.weight(1f), color = greenLess)
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Email input [cite: 18]
                     OutlinedTextField(
@@ -324,11 +325,11 @@ fun LoginScreen(
     }
 }
 
-/*
+
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    YourAppTheme { // Reemplaza YourAppTheme con el nombre de tu tema
+    FitScanTheme { // Reemplaza YourAppTheme con el nombre de tu tema
         LoginScreen(
             onLoginSuccess = {},
             onNavigateToRegister = {},
@@ -337,4 +338,3 @@ fun LoginScreenPreview() {
         )
     }
 }
-*/
