@@ -1,14 +1,32 @@
 package icesi.edu.co.fitscan.features.auth.ui.screens
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,12 +37,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
+import icesi.edu.co.fitscan.features.auth.ui.model.BodyMeasureUiState
+import icesi.edu.co.fitscan.features.auth.ui.viewmodel.BodyMeasurementViewModel
+import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 
 @Composable
-fun PersonalDataScreen(greenLess: Color) {
+fun PersonalDataScreen(
+    greenLess: Color,
+    bodyMeasurementViewModel: BodyMeasurementViewModel = viewModel(),
+    onMeasurementsComplete: () -> Unit = {}
+) {
     var height by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
 
@@ -45,6 +72,23 @@ fun PersonalDataScreen(greenLess: Color) {
 
     var expandedLevel by remember { mutableStateOf(false) }
     var expandedGoal by remember { mutableStateOf(false) }
+
+    val uiState by bodyMeasurementViewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is BodyMeasureUiState.Success -> {
+                onMeasurementsComplete()
+                bodyMeasurementViewModel.resetState()
+            }
+
+            is BodyMeasureUiState.Error -> {
+                // Show error message
+            }
+
+            else -> {}
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -73,7 +117,14 @@ fun PersonalDataScreen(greenLess: Color) {
             Column {
                 SectionTitle("Información Básica")
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    FitInput("Altura", "cm", height, { height = it }, Modifier.weight(1f), greenLess)
+                    FitInput(
+                        "Altura",
+                        "cm",
+                        height,
+                        { height = it },
+                        Modifier.weight(1f),
+                        greenLess
+                    )
                     FitInput("Peso", "kg", weight, { weight = it }, Modifier.weight(1f), greenLess)
                 }
 
@@ -84,22 +135,76 @@ fun PersonalDataScreen(greenLess: Color) {
                     Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        FitInput("Brazos", "cm", arms, { arms = it }, Modifier.fillMaxWidth(), greenLess)
-                        FitInput("Cintura", "cm", waist, { waist = it }, Modifier.fillMaxWidth(), greenLess)
-                        FitInput("Muslos", "cm", thighs, { thighs = it }, Modifier.fillMaxWidth(), greenLess)
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        FitInput(
+                            "Brazos",
+                            "cm",
+                            arms,
+                            { arms = it },
+                            Modifier.fillMaxWidth(),
+                            greenLess
+                        )
+                        FitInput(
+                            "Cintura",
+                            "cm",
+                            waist,
+                            { waist = it },
+                            Modifier.fillMaxWidth(),
+                            greenLess
+                        )
+                        FitInput(
+                            "Muslos",
+                            "cm",
+                            thighs,
+                            { thighs = it },
+                            Modifier.fillMaxWidth(),
+                            greenLess
+                        )
                     }
-                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        FitInput("Pecho", "cm", chest, { chest = it }, Modifier.fillMaxWidth(), greenLess)
-                        FitInput("Caderas", "cm", hips, { hips = it }, Modifier.fillMaxWidth(), greenLess)
-                        FitInput("Pantorrilla", "cm", calves, { calves = it }, Modifier.fillMaxWidth(), greenLess)
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        FitInput(
+                            "Pecho",
+                            "cm",
+                            chest,
+                            { chest = it },
+                            Modifier.fillMaxWidth(),
+                            greenLess
+                        )
+                        FitInput(
+                            "Caderas",
+                            "cm",
+                            hips,
+                            { hips = it },
+                            Modifier.fillMaxWidth(),
+                            greenLess
+                        )
+                        FitInput(
+                            "Pantorrilla",
+                            "cm",
+                            calves,
+                            { calves = it },
+                            Modifier.fillMaxWidth(),
+                            greenLess
+                        )
                     }
                 }
 
                 Spacer(Modifier.height(18.dp))
 
                 SectionTitle("Información de salud")
-                Text(text = "Alergias", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, modifier = Modifier.padding(bottom = 4.dp))
+                Text(
+                    text = "Alergias",
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
                 OutlinedTextField(
                     value = allergies,
                     onValueChange = { allergies = it },
@@ -132,9 +237,19 @@ fun PersonalDataScreen(greenLess: Color) {
 
             Spacer(Modifier.height(20.dp))
 
-            // Complete profile button
             Button(
-                onClick = { /* TODO */ },
+                onClick = {
+                    bodyMeasurementViewModel.saveMeasurements(
+                        height = height.toDoubleOrNull() ?: 0.0,
+                        weight = weight.toDoubleOrNull() ?: 0.0,
+                        arms = arms.toDoubleOrNull() ?: 0.0,
+                        chest = chest.toDoubleOrNull() ?: 0.0,
+                        waist = waist.toDoubleOrNull() ?: 0.0,
+                        hips = hips.toDoubleOrNull() ?: 0.0,
+                        thighs = thighs.toDoubleOrNull() ?: 0.0,
+                        calves = calves.toDoubleOrNull() ?: 0.0
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 40.dp)
@@ -142,7 +257,14 @@ fun PersonalDataScreen(greenLess: Color) {
                 colors = ButtonDefaults.buttonColors(containerColor = greenLess),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Completar perfil", color = Color.White)
+                if (uiState is BodyMeasureUiState.Loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = Color.White
+                    )
+                } else {
+                    Text("Completar perfil", color = Color.White)
+                }
             }
         }
     }
@@ -251,6 +373,6 @@ fun FitDropdown(
 @Composable
 fun PersonalDataScreenPreview() {
     FitScanTheme {
-        PersonalDataScreen(Color(0xFF4CAF50))
+        //PersonalDataScreen(Color(0xFF4CAF50), BodyMeasurementViewModel(), {})
     }
 }

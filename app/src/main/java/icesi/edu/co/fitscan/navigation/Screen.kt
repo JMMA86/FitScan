@@ -11,4 +11,5 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object Settings : Screen("statistics", "Estadísticas", Icons.Filled.Home)
     object Login : Screen("login", "Iniciar Sesión", Icons.Filled.Home)
     object Registration: Screen("registration", "Registrarse", Icons.Filled.Home)
+    object BodyMeasurements : Screen("body_measurements", "Medidas Corporales", Icons.Filled.Home)
 }

@@ -1,13 +1,40 @@
 package icesi.edu.co.fitscan.features.auth.ui.screens
 
-import androidx.compose.runtime.Composable
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,28 +42,81 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
-import icesi.edu.co.fitscan.navigation.Screen
+import icesi.edu.co.fitscan.features.auth.ui.model.LoginUiState
+import icesi.edu.co.fitscan.features.auth.ui.viewmodel.LoginViewModel
+import icesi.edu.co.fitscan.ui.theme.FitScanTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
-    greenLess: Color,
-    navController: NavController
+    // Asumiendo que greenLess viene de tu Theme o lo defines aquí
+    greenLess: Color = MaterialTheme.colorScheme.primary, // Ejemplo, ajusta según tu Theme
+    loginViewModel: LoginViewModel = viewModel(), // Inyecta el ViewModel
+    message: String? = null, // Mensaje opcional para mostrar
+    onLoginSuccess: () -> Unit, // Callback para navegar en éxito (a Dashboard)
+    onNavigateToRegister: () -> Unit, // Callback para ir a registro
+    onNavigateToForgotPassword: () -> Unit, // Callback para ir a olvidar contraseña (opcional)
+    onGoogleLoginClick: () -> Unit // Callback para el botón de Google
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
+    // Observar el estado de la UI desde el ViewModel
+    val uiState by loginViewModel.uiState.collectAsState()
+
+    val snackbarHostState = remember { SnackbarHostState() } // Para mostrar mensajes
+    val scope = rememberCoroutineScope() // Para lanzar coroutines en el Composable
+
+    // Efecto para manejar cambios de estado (éxito/error) y mostrar mensajes
+    LaunchedEffect(uiState) {
+        when (val state = uiState) {
+            is LoginUiState.Success -> {
+                // Muestra mensaje y navega
+                scope.launch {
+                    snackbarHostState.showSnackbar("¡Bienvenido!") // Mensaje corto de éxito
+                }
+                onLoginSuccess()
+                loginViewModel.resetState()
+            }
+
+            is LoginUiState.Error -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar(state.message)
+                }
+                loginViewModel.resetState()
+            }
+
+            else -> {}
+        }
+    }
+
+    if (message == "registration_success") {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .background(greenLess.copy(alpha = 0.2f), shape = RoundedCornerShape(8.dp))
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Registro exitoso. Inicia sesión con tus credenciales para completar tu perfil.",
+                color = greenLess
+            )
+        }
+    }
+
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
-        // Background image
         Image(
             painter = painterResource(id = R.drawable.img_login),
             contentDescription = "Background",
@@ -44,200 +124,217 @@ fun LoginScreen(
             modifier = Modifier.fillMaxSize()
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            // Logo content
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_fitscan),
-                    contentDescription = "Logo",
-                    modifier = Modifier.size(64.dp)
-                )
+        Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            containerColor = Color.Transparent,
+            modifier = Modifier.fillMaxSize()
+        ) { paddingValues ->
 
-                Text(
-                    text = "FitScan",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-
-                Text(
-                    text = "Inicia tu transformación física hoy",
-                    fontSize = 14.sp,
-                    color = Color.White,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
-                )
-            }
-
-            // Login content
             Column(
                 modifier = Modifier
-                    .padding(bottom = 40.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Google login button
-                Button(
-                    onClick = { /* TODO */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_google),
-                            contentDescription = "Google icon",
-                            tint = Color.Unspecified,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Continuar con Google", color = Color.Black)
-                    }
-                }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Divider
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                Column(
+                    modifier = Modifier.weight(1f), // Ocupa espacio flexible
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        color = greenLess
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_fitscan), // [cite: 5]
+                        contentDescription = "Logo",
+                        modifier = Modifier.size(64.dp)
                     )
                     Text(
-                        text = "  o  ",
-                        color = greenLess,
-                        fontSize = 14.sp
+                        text = "FitScan",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
                     )
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        color = greenLess
+                    Text(
+                        text = "Inicia tu transformación física hoy",
+                        fontSize = 14.sp,
+                        color = Color.White,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Email input
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Correo electrónico") },
-                    singleLine = true,
+                Column(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        errorContainerColor = Color.Transparent,
-                        focusedBorderColor = greenLess,
-                        unfocusedBorderColor = greenLess,
-                        focusedLabelColor = greenLess,
-                        unfocusedLabelColor = greenLess,
-                    ),
-                    trailingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_mail),
-                            contentDescription = "Mail icon",
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp)
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+//                    Button(
+//                        onClick = onGoogleLoginClick,
+//                        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+//                        shape = RoundedCornerShape(8.dp),
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .height(50.dp),
+//                        enabled = uiState != LoginUiState.Loading
+//                    ) {
+//                        Row(verticalAlignment = Alignment.CenterVertically) {
+//                            Icon(
+//                                painter = painterResource(id = R.drawable.ic_google),
+//                                contentDescription = "Google icon",
+//                                tint = Color.Unspecified,
+//                                modifier = Modifier.size(24.dp)
+//                            )
+//                            Spacer(modifier = Modifier.width(8.dp))
+//                            Text(text = "Continuar con Google", color = Color.Black)
+//                        }
+//                    }
+
+//                    Spacer(modifier = Modifier.height(16.dp))
+//
+//                    // Divider [cite: 14]
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        modifier = Modifier.fillMaxWidth()
+//                    ) {
+//                        HorizontalDivider(modifier = Modifier.weight(1f), color = greenLess)
+//                        Text(text = "  o  ", color = greenLess, fontSize = 14.sp)
+//                        HorizontalDivider(modifier = Modifier.weight(1f), color = greenLess)
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Email input [cite: 18]
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("Correo electrónico", color = Color.White) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = greenLess,
+                            unfocusedBorderColor = greenLess,
+                            focusedLabelColor = greenLess,
+                            unfocusedLabelColor = greenLess,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            cursorColor = greenLess,
+                            focusedLeadingIconColor = Color.White,
+                            unfocusedLeadingIconColor = Color.White
+                        ),
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_mail),
+                                contentDescription = "Mail icon",
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        enabled = uiState != LoginUiState.Loading
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = { Text("Contraseña", color = Color.White) },
+                        singleLine = true,
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(), // [cite: 26]
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = greenLess,
+                            unfocusedBorderColor = greenLess,
+                            focusedLabelColor = greenLess,
+                            unfocusedLabelColor = greenLess,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            cursorColor = greenLess,
+                            focusedTrailingIconColor = Color.White,
+                            unfocusedTrailingIconColor = Color.White
+                        ),
+                        trailingIcon = { // [cite: 29]
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    painter = painterResource(id = if (passwordVisible) R.drawable.ic_eyeopen else R.drawable.ic_eyeclosed),
+                                    contentDescription = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña",
+
+                                    )
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        enabled = uiState != LoginUiState.Loading
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Button(
+                        onClick = {
+                            loginViewModel.login(email, password)
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = greenLess),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        enabled = uiState != LoginUiState.Loading
+                    ) {
+                        if (uiState == LoginUiState.Loading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = Color.White
+                            )
+                        } else {
+                            Text(text = "Iniciar sesión", color = Color.White)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    TextButton(onClick = onNavigateToForgotPassword) {
+                        Text(
+                            text = "¿Olvidaste tu contraseña?",
+                            color = greenLess,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
                         )
                     }
-                )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                // Password input
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Contraseña") },
-                    singleLine = true,
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        errorContainerColor = Color.Transparent,
-                        focusedBorderColor = greenLess,
-                        unfocusedBorderColor = greenLess,
-                        focusedLabelColor = greenLess,
-                        unfocusedLabelColor = greenLess,
-                    ),
-                    trailingIcon = {
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(
-                                painter = painterResource(id = if (passwordVisible) R.drawable.ic_eyeopen else R.drawable.ic_eyeclosed),
-                                contentDescription = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña",
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "¿No tienes una cuenta?",
+                            color = Color.White,
+                            fontSize = 14.sp
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        TextButton(onClick = onNavigateToRegister) {
+                            Text(
+                                text = "Regístrate",
+                                color = greenLess,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
                             )
                         }
                     }
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Sign In button
-                Button(
-                    onClick = { /* TODO */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = greenLess),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                ) {
-                    Text(text = "Iniciar sesión", color = Color.White)
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                TextButton(onClick = { /* TODO */ }) {
-                    Text(
-                        text = "¿Olvidaste tu contraseña?",
-                        color = greenLess,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "¿No tienes una cuenta?",
-                    color = Color.White,
-                    fontSize = 14.sp
-                )
-
-                TextButton(onClick = {
-                    navController.navigate(Screen.Registration.route)
-                }) {
-                    Text(
-                        text = "Regístrate",
-                        color = greenLess,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
                 }
             }
         }
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun LoginScreenPreview() {
-//    FitScanTheme {
-//        LoginScreen(Color(0xFF4CAF50))
-//    }
-//}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    FitScanTheme { // Reemplaza YourAppTheme con el nombre de tu tema
+        LoginScreen(
+            onLoginSuccess = {},
+            onNavigateToRegister = {},
+            onNavigateToForgotPassword = {},
+            onGoogleLoginClick = {}
+        )
+    }
+}
