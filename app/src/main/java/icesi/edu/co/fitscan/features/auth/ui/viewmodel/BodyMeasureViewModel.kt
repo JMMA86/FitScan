@@ -40,8 +40,8 @@ class BodyMeasurementViewModel(application: Application) : AndroidViewModel(appl
         viewModelScope.launch {
             try {
                 val bodyMeasure = BodyMeasure(
-                    height = height,
-                    weight = weight,
+                    height_cm = height,
+                    weight_kg = weight,
                     arms_cm = arms,
                     chest_cm = chest,
                     waist_cm = waist,

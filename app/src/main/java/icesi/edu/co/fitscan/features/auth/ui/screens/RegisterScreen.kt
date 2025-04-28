@@ -21,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -281,9 +282,18 @@ fun RegisterScreen(
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp)
+                        .height(50.dp),
+                    enabled = uiState != RegisterUiState.Loading
                 ) {
-                    Text(text = "Completar Registro", color = Color.White)
+                    if (uiState == RegisterUiState.Loading) {
+                        // Show loading indicator
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = Color.White
+                        )
+                    } else {
+                        Text(text = "Registrarme", color = Color.White)
+                    }
                 }
             }
         }

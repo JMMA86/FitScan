@@ -19,7 +19,7 @@ data class Customer(
 data class BodyMeasure(
     val id: String? = null,
     val height_cm: Double,
-    val weight_cm: Double,
+    val weight_kg: Double,
     val arms_cm: Double,
     val chest_cm: Double,
     val waist_cm: Double,
