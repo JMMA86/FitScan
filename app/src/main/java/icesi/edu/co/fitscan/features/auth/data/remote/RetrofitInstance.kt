@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
     // Cambia esta URL por la de tu servidor (ip local o dominio)
-    private const val BASE_URL = "https://24de-186-144-44-127.ngrok-free.app"
+    private const val BASE_URL = "https://fitscan.onrender.com/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
