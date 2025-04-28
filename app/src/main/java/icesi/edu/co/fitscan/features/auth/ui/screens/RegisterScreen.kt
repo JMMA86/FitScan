@@ -145,6 +145,8 @@ fun RegisterScreen(
                         unfocusedBorderColor = greenLess,
                         focusedLabelColor = greenLess,
                         unfocusedLabelColor = greenLess,
+                        focusedTextColor = greenLess, // Color del texto cuando está enfocado
+                        unfocusedTextColor = greenLess
                     )
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -166,6 +168,8 @@ fun RegisterScreen(
                         unfocusedBorderColor = greenLess,
                         focusedLabelColor = greenLess,
                         unfocusedLabelColor = greenLess,
+                        focusedTextColor = greenLess, // Color del texto cuando está enfocado
+                        unfocusedTextColor = greenLess
                     )
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -181,6 +185,8 @@ fun RegisterScreen(
                         unfocusedBorderColor = greenLess,
                         focusedLabelColor = greenLess,
                         unfocusedLabelColor = greenLess,
+                        focusedTextColor = greenLess, // Color del texto cuando está enfocado
+                        unfocusedTextColor = greenLess
                     )
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -200,6 +206,8 @@ fun RegisterScreen(
                         unfocusedBorderColor = greenLess,
                         focusedLabelColor = greenLess,
                         unfocusedLabelColor = greenLess,
+                        focusedTextColor = greenLess, // Color del texto cuando está enfocado
+                        unfocusedTextColor = greenLess
                     )
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -215,6 +223,8 @@ fun RegisterScreen(
                         unfocusedBorderColor = greenLess,
                         focusedLabelColor = greenLess,
                         unfocusedLabelColor = greenLess,
+                        focusedTextColor = greenLess, // Color del texto cuando está enfocado
+                        unfocusedTextColor = greenLess
                     )
                 )
                 Spacer(modifier = Modifier.height(12.dp))
