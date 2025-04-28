@@ -100,7 +100,7 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
                                             "RegisterViewModel",
                                             "Customer creation failed: ${customerException.message}"
                                         )
-                                        _uiState.update { RegisterUiState.Error("Error al crear perfil: ${customerException.message}") }
+                                        _uiState.update { RegisterUiState.Error("El usuario ya está registrado") }
                                     }
                                 )
                             } else {
