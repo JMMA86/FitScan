@@ -2,12 +2,16 @@ package icesi.edu.co.fitscan.features.auth.data.remote
 
 import icesi.edu.co.fitscan.features.auth.data.remote.request.BodyMeasure
 import icesi.edu.co.fitscan.features.auth.data.remote.request.Customer
+import icesi.edu.co.fitscan.features.auth.data.remote.request.CustomerRelationated
 import icesi.edu.co.fitscan.features.auth.data.remote.request.LoginRequest
 import icesi.edu.co.fitscan.features.auth.data.remote.request.User
+import icesi.edu.co.fitscan.features.auth.data.remote.response.BodyMeasureResponseData
+import icesi.edu.co.fitscan.features.auth.data.remote.response.CustomerResponseData
 import icesi.edu.co.fitscan.features.auth.data.remote.response.LoginResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 
 interface AuthRepository {
@@ -21,11 +25,18 @@ interface AuthRepository {
     suspend fun registerCustomer(
         @Body customerRequest: Customer,
         @Header("Authorization") token: String
-    ): Response<Unit>
+    ): Response<CustomerResponseData>
 
     @POST("/items/body_measure")
     suspend fun saveBodyMeasurements(
         @Body bodyMeasure: BodyMeasure,
         @Header("Authorization") token: String
+    ): Response<BodyMeasureResponseData>
+
+    @PATCH("/items/customer/{customerId}")
+    suspend fun updateCustomer(
+        @Body customer: CustomerRelationated,
+        @Header("Authorization") token: String,
+        @retrofit2.http.Path("customerId") customerId: String
     ): Response<Unit>
 }

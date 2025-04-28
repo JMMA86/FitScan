@@ -16,6 +16,10 @@ data class Customer(
     val phone: String
 )
 
+data class CustomerRelationated(
+    val body_measure_id: String
+)
+
 data class BodyMeasure(
     val id: String? = null,
     val height_cm: Double,

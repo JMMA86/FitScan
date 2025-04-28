@@ -1,7 +1,12 @@
 package icesi.edu.co.fitscan.features.auth.data.remote.response
 
-data class RegisterResponse(
-    val id: String? = null,
-    val message: String? = null
+import icesi.edu.co.fitscan.features.auth.data.remote.request.BodyMeasure
+import icesi.edu.co.fitscan.features.auth.data.remote.request.Customer
+
+data class CustomerResponseData(
+    val data: Customer
 )
 
+data class BodyMeasureResponseData(
+    val data: BodyMeasure
+)
