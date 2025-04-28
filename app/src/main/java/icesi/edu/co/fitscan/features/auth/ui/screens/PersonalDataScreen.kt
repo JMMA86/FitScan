@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
-import icesi.edu.co.fitscan.features.auth.ui.viewmodel.BodyMeasureUiState
+import icesi.edu.co.fitscan.features.auth.ui.model.BodyMeasureUiState
 import icesi.edu.co.fitscan.features.auth.ui.viewmodel.BodyMeasurementViewModel
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 
