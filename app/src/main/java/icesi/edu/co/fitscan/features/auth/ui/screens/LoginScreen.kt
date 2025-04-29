@@ -120,40 +120,40 @@ fun LoginScreen(
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Button(
-                        onClick = onGoogleLoginClick,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        enabled = uiState != LoginUiState.Loading
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_google),
-                                contentDescription = "Google icon",
-                                tint = Color.Unspecified,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Continuar con Google", color = Color.Black)
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Divider [cite: 14]
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        HorizontalDivider(modifier = Modifier.weight(1f), color = greenLess)
-                        Text(text = "  o  ", color = greenLess, fontSize = 14.sp)
-                        HorizontalDivider(modifier = Modifier.weight(1f), color = greenLess)
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
+//                    Button(
+//                        onClick = onGoogleLoginClick,
+//                        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+//                        shape = RoundedCornerShape(8.dp),
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .height(50.dp),
+//                        enabled = uiState != LoginUiState.Loading
+//                    ) {
+//                        Row(verticalAlignment = Alignment.CenterVertically) {
+//                            Icon(
+//                                painter = painterResource(id = R.drawable.ic_google),
+//                                contentDescription = "Google icon",
+//                                tint = Color.Unspecified,
+//                                modifier = Modifier.size(24.dp)
+//                            )
+//                            Spacer(modifier = Modifier.width(8.dp))
+//                            Text(text = "Continuar con Google", color = Color.Black)
+//                        }
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(16.dp))
+//
+//                    // Divider [cite: 14]
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        modifier = Modifier.fillMaxWidth()
+//                    ) {
+//                        HorizontalDivider(modifier = Modifier.weight(1f), color = greenLess)
+//                        Text(text = "  o  ", color = greenLess, fontSize = 14.sp)
+//                        HorizontalDivider(modifier = Modifier.weight(1f), color = greenLess)
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Email input [cite: 18]
                     OutlinedTextField(
