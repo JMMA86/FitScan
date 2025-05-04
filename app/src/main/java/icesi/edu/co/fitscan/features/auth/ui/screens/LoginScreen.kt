@@ -174,7 +174,7 @@ fun LoginScreen(
                             focusedLeadingIconColor = Color.White,
                             unfocusedLeadingIconColor = Color.White
                         ),
-                        leadingIcon = {
+                        trailingIcon = {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_mail),
                                 contentDescription = "Mail icon",
