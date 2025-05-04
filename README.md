@@ -25,7 +25,7 @@ FitScan está pensado para ser el primer paso seguro y accesible para cualquier 
 ## Demo de autenticación
 
 Puedes ver una demostración del flujo de autenticación de usuarios en el siguiente enlace:  
-👉 **[Video de autenticación](LINK_DEL_VIDEO)** *(pendiente por actualizar)*
+👉 **[Video de autenticación](https://youtube.com/shorts/ox61H1Qyyjo?feature=share)**
 
 ## Roles y Permisos
 
