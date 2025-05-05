@@ -10,7 +10,7 @@ import icesi.edu.co.fitscan.features.auth.data.remote.request.CustomerRelationat
 import icesi.edu.co.fitscan.features.auth.data.remote.request.LoginRequest
 import icesi.edu.co.fitscan.features.auth.data.remote.request.User
 import icesi.edu.co.fitscan.features.auth.data.remote.response.LoginResponseData
-import icesi.edu.co.fitscan.features.auth.domain.TempDataHolder
+import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -112,7 +112,7 @@ class AuthServiceImpl(
                     "Bearer $token"
                 )
 
-                TempDataHolder.customer_id = response.body()?.data?.id
+                AppState.customerId = response.body()?.data?.id
 
                 if (response.isSuccessful) {
                     Result.success(Unit)
@@ -156,7 +156,7 @@ class AuthServiceImpl(
                     )
                     authRepository.updateCustomer(
                         customer, "Bearer $token",
-                        TempDataHolder.customer_id.toString()
+                        AppState.customerId.toString()
                     )
 
                     Log.d("AuthServiceImpl", "Body measurements saved successfully")
