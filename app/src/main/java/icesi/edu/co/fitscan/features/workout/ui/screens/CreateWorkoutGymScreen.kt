@@ -133,7 +133,7 @@ fun CreateWorkoutGymScreen() {
                     onAdd = { /* Acción para añadir sets/reps */ },
                     showAddButton = false
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -146,7 +146,9 @@ fun CreateWorkoutGymScreen() {
                     contentColor = Color.White
                 ),
                 shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_fitness),
@@ -155,9 +157,6 @@ fun CreateWorkoutGymScreen() {
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Crear entrenamiento", fontSize = 16.sp)
             }
-
-            // Espacio para la barra de navegación
-            Spacer(modifier = Modifier.height(80.dp))
         }
     }
 }

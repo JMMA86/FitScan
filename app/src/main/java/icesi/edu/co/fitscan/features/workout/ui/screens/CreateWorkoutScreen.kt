@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -67,11 +69,14 @@ fun WorkoutTypeSelector(
 fun CreateWorkoutScreen() {
     var selectedTab by remember { mutableStateOf("Gym") }
 
+    val scrollState = rememberScrollState()
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(greyStrong)
+                .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
             // Barra superior con retroceso y título
