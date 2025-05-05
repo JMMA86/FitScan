@@ -14,14 +14,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
-
-val greyStrong = Color(0xFF101414)
-val greyMed = Color(0xFF302C2C)
-val greenLess = Color(0xFF4CAF50)
+import icesi.edu.co.fitscan.ui.theme.greenLess
+import icesi.edu.co.fitscan.ui.theme.greyMed
+import icesi.edu.co.fitscan.ui.theme.greyStrong
 
 @Composable
 fun CreateWorkoutGymScreen() {
-    var selectedTab by remember { mutableStateOf("Gym") }
     val exercises = remember { mutableStateListOf("Deadlifts", "Pull-ups", "Press de hombros") }
     val sets = 4
     val repsMap = remember { mutableStateMapOf(

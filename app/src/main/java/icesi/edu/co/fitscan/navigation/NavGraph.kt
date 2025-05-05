@@ -11,13 +11,12 @@ import icesi.edu.co.fitscan.features.auth.ui.screens.LoginScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
 import icesi.edu.co.fitscan.features.home.ui.screens.DashboardScreen
+import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutListScreen
+import icesi.edu.co.fitscan.ui.theme.greenLess
 
 @Composable
 fun NavigationHost(navController: NavHostController) {
-
-    // Define el color aquí o tómalo del Theme si es posible
-    val greenLess = Color(0xFF4CAF50) // [cite: 1]
 
     NavHost(
         navController = navController,
@@ -43,6 +42,7 @@ fun NavigationHost(navController: NavHostController) {
             )
         ) { backStackEntry ->
             val message = backStackEntry.arguments?.getString("message")
+            /*
             LoginScreen(
                 greenLess = greenLess,
                 onLoginSuccess = {
@@ -57,11 +57,10 @@ fun NavigationHost(navController: NavHostController) {
                 },
                 onNavigateToForgotPassword = {
                     // Navigation to password recovery screen
-                },
-                onGoogleLoginClick = {
-                    // Google login handling
                 }
             )
+            */
+            CreateWorkoutScreen()
         }
 
         composable(Screen.Registration.route) {

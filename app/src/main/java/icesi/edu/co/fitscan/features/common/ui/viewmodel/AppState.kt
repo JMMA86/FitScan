@@ -3,7 +3,7 @@ package icesi.edu.co.fitscan.features.common.ui.viewmodel
 import kotlinx.coroutines.flow.MutableStateFlow
 
 object AppState {
-    val showHeader = MutableStateFlow(false)
+    val showHeader = MutableStateFlow(true)
     var customerId: String? = null
 
     fun setHeaderVisible(newValue: Boolean) {

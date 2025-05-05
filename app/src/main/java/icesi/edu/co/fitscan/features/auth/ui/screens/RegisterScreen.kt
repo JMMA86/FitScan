@@ -53,10 +53,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
-import icesi.edu.co.fitscan.features.auth.ui.model.LoginUiState
 import icesi.edu.co.fitscan.features.auth.ui.model.RegisterUiState
 import icesi.edu.co.fitscan.features.auth.ui.viewmodel.RegisterViewModel
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
+import icesi.edu.co.fitscan.ui.theme.greenLess
 import kotlinx.coroutines.launch
 
 @Composable
@@ -73,7 +73,7 @@ fun RegisterScreen(
     var termsAccepted by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     val uiState by registerViewModel.uiState.collectAsState()
-    var passwordVisible = false
+    var passwordVisible by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -109,8 +109,10 @@ fun RegisterScreen(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             containerColor = Color.Transparent
         ) { paddingValues ->
+            // Use paddingValues here to properly handle the padding
             Column(
                 modifier = Modifier
+                    .padding(paddingValues)  // Apply the padding values from Scaffold
                     .padding(24.dp)
                     .fillMaxHeight()
                     .verticalScroll(scrollState),
@@ -254,12 +256,11 @@ fun RegisterScreen(
                                 Icon(
                                     painter = painterResource(id = if (passwordVisible) R.drawable.ic_eyeopen else R.drawable.ic_eyeclosed),
                                     contentDescription = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña",
-
-                                    )
+                                )
                             }
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        enabled = uiState != LoginUiState.Loading
+                        enabled = uiState != RegisterUiState.Loading
                     )
                     Spacer(modifier = Modifier.height(12.dp))
 
@@ -337,6 +338,6 @@ fun RegisterScreen(
 @Composable
 fun RegisterScreenPreview() {
     FitScanTheme {
-        RegisterScreen(Color(0xFF4CAF50))
+        RegisterScreen(greenLess)
     }
 }

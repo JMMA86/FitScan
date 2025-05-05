@@ -32,10 +32,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import icesi.edu.co.fitscan.R
-import icesi.edu.co.fitscan.features.common.ui.components.FitScanNavBar
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
+import icesi.edu.co.fitscan.ui.theme.greenLess
+import icesi.edu.co.fitscan.ui.theme.greyMed
+import icesi.edu.co.fitscan.ui.theme.greyStrong
 
 @Composable
 fun WorkoutTypeSelector(
@@ -112,17 +113,6 @@ fun CreateWorkoutScreen() {
                     CreateWorkoutRunningScreen()
                 }
             }
-        }
-
-        // Barra de navegación fija en la parte inferior
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .background(greyStrong)
-        ) {
-            val navController = rememberNavController()
-            FitScanNavBar(navController = navController)
         }
     }
 }
@@ -204,7 +194,7 @@ fun ToggleOption(
     onSelect: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val bgColor = if (selected) greyMed else greyMed
+    val bgColor = greyMed
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier

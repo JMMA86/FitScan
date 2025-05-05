@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
@@ -22,6 +21,7 @@ import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanHeader
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanNavBar
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
+import icesi.edu.co.fitscan.ui.theme.greenLess
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +65,7 @@ fun App() {
 //@Composable
 //fun LoginScreenPreview() {
 //    FitScanTheme {
-//        LoginScreen(Color(0xFF4CAF50))
+//        LoginScreen(greenLess)
 //    }
 //}
 
@@ -73,7 +73,7 @@ fun App() {
 @Composable
 fun RegisterScreenPreview() {
     FitScanTheme {
-        RegisterScreen(Color(0xFF4CAF50))
+        RegisterScreen(greenLess)
     }
 }
 
@@ -81,6 +81,6 @@ fun RegisterScreenPreview() {
 @Composable
 fun PersonalDataScreenPreview() {
     FitScanTheme {
-        PersonalDataScreen(Color(0xFF4CAF50))
+        PersonalDataScreen(greenLess)
     }
 }

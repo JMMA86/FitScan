@@ -18,12 +18,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel // Importar viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.auth.ui.model.LoginUiState
 import icesi.edu.co.fitscan.features.auth.ui.viewmodel.LoginViewModel
-import icesi.edu.co.fitscan.ui.theme.FitScanTheme
-import kotlinx.coroutines.launch // Para el Snackbar
+import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
@@ -33,8 +33,10 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit, // Callback para navegar en éxito (a Dashboard)
     onNavigateToRegister: () -> Unit, // Callback para ir a registro
     onNavigateToForgotPassword: () -> Unit, // Callback para ir a olvidar contraseña (opcional)
-    onGoogleLoginClick: () -> Unit // Callback para el botón de Google
 ) {
+    // Ocultar NavBar y TopBar
+    AppState.setHeaderVisible(false)
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
