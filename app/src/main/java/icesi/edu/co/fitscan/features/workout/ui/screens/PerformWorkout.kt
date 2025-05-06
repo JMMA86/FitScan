@@ -122,7 +122,12 @@ fun PerformWorkoutScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun PerformWorkoutListComponent() {
-    Row (modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).background(Color.Gray).padding(8.dp)) {
+    Row (
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color.Gray)
+            .padding(8.dp)) {
         Column (
             modifier = Modifier,
             verticalArrangement = Arrangement.Center
