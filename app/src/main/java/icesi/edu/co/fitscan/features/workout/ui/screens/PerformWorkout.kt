@@ -2,163 +2,233 @@ package icesi.edu.co.fitscan.features.workout.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import icesi.edu.co.fitscan.R
+import icesi.edu.co.fitscan.ui.theme.Dimensions
+import icesi.edu.co.fitscan.ui.theme.backgroundGrey
+import icesi.edu.co.fitscan.ui.theme.greenLess
+import icesi.edu.co.fitscan.ui.theme.greyMed
+import icesi.edu.co.fitscan.ui.theme.greyTrueLight
 
 @Composable
 fun PerformWorkoutScreen(modifier: Modifier = Modifier) {
+    val scrollableState = rememberScrollableState { delta -> delta}
+
     // todo add the scrollable modifier to the column
-    Column(modifier) {
+    Column(
+        modifier
+            .background(backgroundGrey)
+            .scrollable(state = scrollableState, orientation = Orientation.Vertical)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.White,
-                            Color.Black
-                        )
-                    )
-                )
+                .padding(Dimensions.MediumPadding)
         ) {
-            Text(text = "Hello")
-            Text(text = "Subtittle")
+            Text(
+                text = "Fuerza de todo el cuerpo",
+                fontSize = Dimensions.XLargeTextSize,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
+            Text(
+                text = "Subtítulos",
+                fontSize = Dimensions.SmallTextSize,
+                color = Color.Gray
+            )
+            Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.Green)
-                    .padding(4.dp)
+                    .clip(RoundedCornerShape(Dimensions.MediumCornerRadius))
+                    .background(greyMed)
+                    .padding(Dimensions.SmallPadding)
             ) {
-                Text(text = "3/8 exercises completed")
+                Text(
+                    text = "3/8 ejercicios completados",
+                    fontSize = Dimensions.MediumTextSize,
+                    color = Color.White
+                )
             }
         }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.White,
-                            Color.Black,
-                        )
-                    )
-                )
-                .padding(8.dp)
+                .padding(Dimensions.MediumPadding)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(Dimensions.MediumCornerRadius))
                     .background(
-                        Color.Gray
+                        greyTrueLight
                     )
-                    .padding(8.dp)
+                    .padding(Dimensions.SmallPadding)
             ) {
                 Row(
                     modifier = Modifier
                         .wrapContentSize()
                         .fillMaxWidth()
                 ) {
-                    Text(text = "Exercise 1")
+                    Text(
+                        text = "Pull up",
+                        fontSize = Dimensions.LargeTextSize,
+                        color = Color.White,
+                    )
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "10:32")
+                    Text(
+                        text = "10:32",
+                        fontSize = Dimensions.LargeTextSize,
+                        color = greenLess,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
-                Text(text = "3 sets of 10 reps")
-                Text(text = "Rest 60 seconds")
-            }
-        }
-
-        Text(text = "Siguiente")
-        Text(text = "Nombre del ejercicio")
-        Row {
-            Text(text = "4 sets")
-            Text(text = " | ")
-            Text(text = "10 reps")
-        }
-        Text(text = "button")
-        Row {
-            Text(text = "button")
-            Text(text = "button")
-            Text(text = "button")
-        }
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(10) { index ->
+                Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
                 Text(
-                    text = "Elemento $index",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .background(Color.White),
-                    color = Color.Black
+                    text = "Serie 2 de 4",
+                    color = greenLess
+                )
+                Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
+                Text(
+                    text = "Quedan 55 segundos",
+                    color = Color.White
                 )
             }
         }
-        Text(text = "Terminar entrenamiento")
+
+        Column(
+            modifier = Modifier.padding(Dimensions.MediumPadding)
+        ) {
+            Text(
+                text = "Siguiente",
+                color = Color.White
+            )
+            Text(
+                text = "Nombre del ejercicio",
+                color = Color.White,
+                fontSize = Dimensions.LargeTextSize,
+                fontWeight = FontWeight.Bold
+            )
+            Row {
+                Text(
+                    text = "4 sets | 12 reps",
+                    color = Color.White,
+                )
+            }
+
+            Button(
+                onClick = {},
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Terminar set")
+            }
+
+            Spacer(modifier = Modifier.height(Dimensions.smallestPadding))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Button(onClick = {}) {
+                    Text(text = "button")
+                }
+                Spacer(modifier = Modifier.width(Dimensions.smallestPadding))
+                Button(onClick = {}) {
+                    Text(text = "button")
+                }
+                Spacer(modifier = Modifier.width(Dimensions.smallestPadding))
+                Button(onClick = {}) {
+                    Text(text = "button")
+                }
+            }
+            Spacer(modifier = Modifier.height(Dimensions.smallestPadding))
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(10) { index ->
+                    PerformWorkoutListComponent()
+                    Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
+                }
+            }
+        }
+        Button(onClick = {}) {
+            Text(text = "Terminar entrenamiento")
+        }
     }
 }
 
 @Composable
 fun PerformWorkoutListComponent() {
-    Row (
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color.Gray)
-            .padding(8.dp)) {
-        Column (
+            .clip(RoundedCornerShape(Dimensions.MediumCornerRadius))
+            .border(
+                width = 2.dp,
+                color = greyMed,
+                shape = RoundedCornerShape(Dimensions.MediumCornerRadius)
+            )
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
             modifier = Modifier,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "Ejercicio 1")
-            Row {
-                Text(text = "4 sets ~ 12 reps")
-            }
+            Text(
+                text = "Ejercicio 1",
+                color = Color.White,
+                fontSize = Dimensions.LargeTextSize,
+            )
+            Text(
+                text = "4 sets ~ 12 reps",
+                color = greenLess,
+                fontSize = Dimensions.SmallTextSize,
+            )
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
         Button(
             onClick = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .clip(RoundedCornerShape(8.dp))
+            shape = RectangleShape,
+            contentPadding = PaddingValues(0.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_run),
-                contentDescription = "Run",
+                painter = painterResource(id = R.drawable.chevron_right),
+                contentDescription = "Motrar ejercicio",
                 modifier = Modifier
-                    .padding(8.dp)
-                    .background(Color.White)
-                    .border(
-                        width = 2.dp,
-                        color = Color.Black,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .padding(8.dp)
+                    .size(Dimensions.LargeIconSize)
             )
         }
     }
@@ -167,7 +237,7 @@ fun PerformWorkoutListComponent() {
 @Preview
 @Composable
 fun PerformWorkoutScreenPreview() {
-    //PerformWorkoutScreen()
+    PerformWorkoutScreen()
 
-    PerformWorkoutListComponent()
+    //PerformWorkoutListComponent()
 }
