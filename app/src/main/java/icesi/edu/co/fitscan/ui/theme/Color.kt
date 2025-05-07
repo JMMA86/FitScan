@@ -17,3 +17,7 @@ val greyLight = Color(0xFF284048)
 val greenLess = Color(0xFF4CAF50)
 
 val backgroundGrey = Color(0xFF0E1512)
+
+val greyButton = Color(0xFF3F4946)
+
+val redDangerous = Color(0xFF9F423C)
