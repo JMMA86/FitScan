@@ -2,16 +2,13 @@ package icesi.edu.co.fitscan.features.workout.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.ScrollableState
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,7 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -29,7 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,146 +40,186 @@ import icesi.edu.co.fitscan.ui.theme.greyTrueLight
 
 @Composable
 fun PerformWorkoutScreen(modifier: Modifier = Modifier) {
-    val scrollableState = rememberScrollableState { delta -> delta}
-
-    // todo add the scrollable modifier to the column
-    Column(
+    LazyColumn(
         modifier
             .background(backgroundGrey)
-            .scrollable(state = scrollableState, orientation = Orientation.Vertical)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Dimensions.MediumPadding)
-        ) {
-            Text(
-                text = "Fuerza de todo el cuerpo",
-                fontSize = Dimensions.XLargeTextSize,
-                color = Color.White
-            )
-            Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
-            Text(
-                text = "Subtítulos",
-                fontSize = Dimensions.SmallTextSize,
-                color = Color.Gray
-            )
-            Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(Dimensions.MediumCornerRadius))
-                    .background(greyMed)
-                    .padding(Dimensions.SmallPadding)
-            ) {
-                Text(
-                    text = "3/8 ejercicios completados",
-                    fontSize = Dimensions.MediumTextSize,
-                    color = Color.White
-                )
-            }
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Dimensions.MediumPadding)
-        ) {
+        item {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(Dimensions.MediumCornerRadius))
-                    .background(
-                        greyTrueLight
-                    )
-                    .padding(Dimensions.SmallPadding)
+                    .padding(Dimensions.MediumPadding)
             ) {
-                Row(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Pull up",
-                        fontSize = Dimensions.LargeTextSize,
-                        color = Color.White,
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = "10:32",
-                        fontSize = Dimensions.LargeTextSize,
-                        color = greenLess,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
                 Text(
-                    text = "Serie 2 de 4",
-                    color = greenLess
-                )
-                Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
-                Text(
-                    text = "Quedan 55 segundos",
+                    text = "Fuerza de todo el cuerpo",
+                    fontSize = Dimensions.XLargeTextSize,
                     color = Color.White
                 )
-            }
-        }
-
-        Column(
-            modifier = Modifier.padding(Dimensions.MediumPadding)
-        ) {
-            Text(
-                text = "Siguiente",
-                color = Color.White
-            )
-            Text(
-                text = "Nombre del ejercicio",
-                color = Color.White,
-                fontSize = Dimensions.LargeTextSize,
-                fontWeight = FontWeight.Bold
-            )
-            Row {
+                Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
                 Text(
-                    text = "4 sets | 12 reps",
-                    color = Color.White,
+                    text = "Subtítulos",
+                    fontSize = Dimensions.SmallTextSize,
+                    color = Color.Gray
                 )
+                Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(Dimensions.MediumCornerRadius))
+                        .background(greyMed)
+                        .padding(Dimensions.SmallPadding)
+                ) {
+                    Text(
+                        text = "3/8 ejercicios completados",
+                        fontSize = Dimensions.MediumTextSize,
+                        color = Color.White
+                    )
+                }
             }
-
-            Button(
-                onClick = {},
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Terminar set")
-            }
-
-            Spacer(modifier = Modifier.height(Dimensions.smallestPadding))
-            Row(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
+                    .fillMaxWidth()
+                    .padding(Dimensions.MediumPadding)
             ) {
-                Button(onClick = {}) {
-                    Text(text = "button")
-                }
-                Spacer(modifier = Modifier.width(Dimensions.smallestPadding))
-                Button(onClick = {}) {
-                    Text(text = "button")
-                }
-                Spacer(modifier = Modifier.width(Dimensions.smallestPadding))
-                Button(onClick = {}) {
-                    Text(text = "button")
-                }
-            }
-            Spacer(modifier = Modifier.height(Dimensions.smallestPadding))
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(10) { index ->
-                    PerformWorkoutListComponent()
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(Dimensions.MediumCornerRadius))
+                        .background(
+                            greyTrueLight
+                        )
+                        .padding(Dimensions.SmallPadding)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Pull up",
+                            fontSize = Dimensions.LargeTextSize,
+                            color = Color.White,
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(
+                            text = "10:32",
+                            fontSize = Dimensions.LargeTextSize,
+                            color = greenLess,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                     Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
+                    Text(
+                        text = "Serie 2 de 4",
+                        color = greenLess
+                    )
+                    Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
+                    Text(
+                        text = "Quedan 55 segundos",
+                        color = Color.White
+                    )
                 }
             }
+
+            Column(
+                modifier = Modifier.padding(Dimensions.MediumPadding)
+            ) {
+                Text(
+                    text = "Siguiente",
+                    color = Color.White
+                )
+                Text(
+                    text = "Nombre del ejercicio",
+                    color = Color.White,
+                    fontSize = Dimensions.LargeTextSize,
+                    fontWeight = FontWeight.Bold
+                )
+                Row {
+                    Text(
+                        text = "4 sets | 12 reps",
+                        color = Color.White,
+                    )
+                }
+
+                Button(
+                    onClick = {},
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "Terminar set")
+                }
+
+                Spacer(modifier = Modifier.height(Dimensions.smallestPadding))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        onClick = {},
+                        modifier = Modifier
+                            .size(Dimensions.LargeIconSize)
+                            .clip(RoundedCornerShape(Dimensions.SmallCornerRadius)),
+                        contentPadding = PaddingValues(0.dp),
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_back),
+                            contentDescription = "Anterior",
+                            modifier = Modifier.size(Dimensions.MediumIconSize),
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(Dimensions.smallestPadding))
+                    Button(
+                        onClick = {},
+                        modifier = Modifier
+                            .size(Dimensions.LargeIconSize)
+                            .clip(RoundedCornerShape(Dimensions.SmallCornerRadius)),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.pause_outline_filled),
+                            contentDescription = "Detener workout",
+                            modifier = Modifier
+                                .size(Dimensions.MediumIconSize)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(Dimensions.smallestPadding))
+                    Button(
+                        onClick = {},
+                        modifier = Modifier
+                            .size(Dimensions.LargeIconSize)
+                            .clip(RoundedCornerShape(Dimensions.SmallCornerRadius)),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_back),
+                            contentDescription = "Siguiente",
+                            modifier = Modifier
+                                .size(Dimensions.MediumIconSize)
+                                .graphicsLayer(scaleX = -1f)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(Dimensions.smallestPadding))
+
+
+            }
+
         }
-        Button(onClick = {}) {
-            Text(text = "Terminar entrenamiento")
+        items(6) { index ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Dimensions.MediumPadding)
+            ) {
+                PerformWorkoutListComponent()
+            }
+            Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
+        }
+        item {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Button(onClick = {}) {
+                    Text(text = "Terminar entrenamiento")
+                }
+            }
         }
     }
 }
@@ -198,7 +235,7 @@ fun PerformWorkoutListComponent() {
                 color = greyMed,
                 shape = RoundedCornerShape(Dimensions.MediumCornerRadius)
             )
-            .padding(8.dp),
+            .padding(Dimensions.MediumPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -221,7 +258,7 @@ fun PerformWorkoutListComponent() {
 
         Button(
             onClick = {},
-            shape = RectangleShape,
+            shape = CircleShape,
             contentPadding = PaddingValues(0.dp)
         ) {
             Icon(
