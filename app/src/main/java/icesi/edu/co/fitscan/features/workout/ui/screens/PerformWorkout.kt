@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -142,9 +142,13 @@ fun PerformWorkoutScreen(modifier: Modifier = Modifier) {
 
                 Button(
                     onClick = {},
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = greenLess),
                 ) {
-                    Text(text = "Terminar set")
+                    Text(
+                        text = "Terminar set",
+                        fontSize = Dimensions.MediumTextSize
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(Dimensions.smallestPadding))
@@ -159,6 +163,7 @@ fun PerformWorkoutScreen(modifier: Modifier = Modifier) {
                             .size(Dimensions.LargeIconSize)
                             .clip(RoundedCornerShape(Dimensions.SmallCornerRadius)),
                         contentPadding = PaddingValues(0.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = greenLess),
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_back),
@@ -172,7 +177,8 @@ fun PerformWorkoutScreen(modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .size(Dimensions.LargeIconSize)
                             .clip(RoundedCornerShape(Dimensions.SmallCornerRadius)),
-                        contentPadding = PaddingValues(0.dp)
+                        contentPadding = PaddingValues(0.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = greenLess),
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.pause_outline_filled),
@@ -187,7 +193,8 @@ fun PerformWorkoutScreen(modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .size(Dimensions.LargeIconSize)
                             .clip(RoundedCornerShape(Dimensions.SmallCornerRadius)),
-                        contentPadding = PaddingValues(0.dp)
+                        contentPadding = PaddingValues(0.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = greenLess),
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_back),
@@ -208,16 +215,22 @@ fun PerformWorkoutScreen(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = Dimensions.MediumPadding)
+                    .padding(horizontal = Dimensions.MediumPadding),
             ) {
-                PerformWorkoutListComponent()
+                PerformWorkoutListComponent("Ejercicio $index", "3", "10")
             }
             Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
         }
         item {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                Button(onClick = {}) {
-                    Text(text = "Terminar entrenamiento")
+                Button(
+                    onClick = {},
+                    colors = ButtonDefaults.buttonColors(containerColor = greenLess),
+                ) {
+                    Text(
+                        text = "Terminar entrenamiento",
+                        fontSize = Dimensions.MediumTextSize,
+                    )
                 }
             }
         }
@@ -225,7 +238,7 @@ fun PerformWorkoutScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun PerformWorkoutListComponent() {
+fun PerformWorkoutListComponent(title: String = "NA", sets: String = "NA", reps: String = "NA") {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -243,12 +256,12 @@ fun PerformWorkoutListComponent() {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Ejercicio 1",
+                text = title,
                 color = Color.White,
                 fontSize = Dimensions.LargeTextSize,
             )
             Text(
-                text = "4 sets ~ 12 reps",
+                text = "$sets sets ~ $reps reps",
                 color = greenLess,
                 fontSize = Dimensions.SmallTextSize,
             )
@@ -259,7 +272,8 @@ fun PerformWorkoutListComponent() {
         Button(
             onClick = {},
             shape = CircleShape,
-            contentPadding = PaddingValues(0.dp)
+            contentPadding = PaddingValues(0.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = greenLess),
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.chevron_right),
