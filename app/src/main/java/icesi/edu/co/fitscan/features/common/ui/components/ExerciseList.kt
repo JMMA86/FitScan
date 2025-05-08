@@ -12,7 +12,9 @@ fun ExerciseList(
     exerciseData: Map<String, Pair<Int, Int>>,
     showAddButton: Boolean,
     onAdd: (String) -> Unit = {},
-    onRemove: (String) -> Unit = {}
+    onRemove: (String) -> Unit = {},
+    onSetsChange: (String, Int) -> Unit,
+    onRepsChange: (String, Int) -> Unit
 ) {
     exercises.forEach { name ->
         val (sets, reps) = exerciseData[name] ?: (4 to 10)
@@ -20,6 +22,8 @@ fun ExerciseList(
             name = name,
             sets = sets,
             reps = reps,
+            onSetsChange = { newSets -> onSetsChange(name, newSets) },
+            onRepsChange = { newReps -> onRepsChange(name, newReps) },
             onAdd = { onAdd(name) },
             onRemove = { onRemove(name) },
             showAddButton = showAddButton

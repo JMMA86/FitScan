@@ -95,6 +95,14 @@ fun CreateWorkoutGymScreen() {
                         addedExercises.add(name)
                         availableExercises.remove(name)
                     }
+                },
+                onSetsChange = { name, newSets ->
+                    val current = exerciseData[name]
+                    if (current != null) exerciseData[name] = newSets to current.second
+                },
+                onRepsChange = { name, newReps ->
+                    val current = exerciseData[name]
+                    if (current != null) exerciseData[name] = current.first to newReps
                 }
             )
 
@@ -135,6 +143,14 @@ fun CreateWorkoutGymScreen() {
                     } else if (!availableExercises.contains(name)) {
                         availableExercises.add(name)
                     }
+                },
+                onSetsChange = { name, newSets ->
+                    val current = exerciseData[name]
+                    if (current != null) exerciseData[name] = newSets to current.second
+                },
+                onRepsChange = { name, newReps ->
+                    val current = exerciseData[name]
+                    if (current != null) exerciseData[name] = current.first to newReps
                 }
             )
 
