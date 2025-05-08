@@ -42,7 +42,6 @@ fun NavigationHost(navController: NavHostController) {
             )
         ) { backStackEntry ->
             val message = backStackEntry.arguments?.getString("message")
-            /*
             LoginScreen(
                 greenLess = greenLess,
                 onLoginSuccess = {
@@ -59,8 +58,6 @@ fun NavigationHost(navController: NavHostController) {
                     // Navigation to password recovery screen
                 }
             )
-            */
-            CreateWorkoutScreen()
         }
 
         composable(Screen.Registration.route) {
