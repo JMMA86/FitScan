@@ -4,20 +4,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import icesi.edu.co.fitscan.R
+import icesi.edu.co.fitscan.features.common.ui.components.ExerciseList
+import icesi.edu.co.fitscan.features.common.ui.components.FitScanButton
+import icesi.edu.co.fitscan.features.common.ui.components.FitScanTextField
+import icesi.edu.co.fitscan.features.common.ui.components.SectionTitle
+import icesi.edu.co.fitscan.features.common.ui.components.SuggestionChip
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
-import icesi.edu.co.fitscan.ui.theme.greenLess
-import icesi.edu.co.fitscan.ui.theme.greyMed
 import icesi.edu.co.fitscan.ui.theme.greyStrong
 
 @Composable
@@ -27,6 +27,10 @@ fun CreateWorkoutGymScreen() {
     var searchQuery by remember { mutableStateOf("") }
 
     val availableExercises = remember { mutableStateListOf("Barbell Rows") }
+    val filteredAvailableExercises = availableExercises.filter {
+        it.contains(searchQuery, ignoreCase = true)
+    }
+
     val addedExercises = remember { mutableStateListOf("Deadlifts", "Pull-ups", "Press de hombros") }
 
     val allSuggestions = listOf("Press de banca", "Sentadillas", "Deadlift", "Push ups")
@@ -52,36 +56,23 @@ fun CreateWorkoutGymScreen() {
                 .background(greyStrong)
                 .padding(top = 16.dp)
         ) {
-            OutlinedTextField(
+            FitScanTextField(
                 value = workoutName,
                 onValueChange = { workoutName = it },
-                placeholder = { Text("Ingresa nombre del entrenamiento", color = Color.Gray) },
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = greyMed,
-                    focusedContainerColor = greyMed,
-                    cursorColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp)
+                placeholder = "Ingresa nombre del entrenamiento",
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                "Agregar ejercicios",
-                color = greenLess,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp
-            )
+            SectionTitle("Agregar ejercicios")
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
+            FitScanTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                label = { Text("Buscar ejercicios...", color = Color.Gray) },
+                placeholder = "Buscar ejercicios...",
                 leadingIcon = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_search),
@@ -89,43 +80,25 @@ fun CreateWorkoutGymScreen() {
                         tint = Color.Gray
                     )
                 },
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = greyMed,
-                    focusedContainerColor = greyMed,
-                    cursorColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp)
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            availableExercises.forEach { name ->
-                val (sets, reps) = exerciseData[name] ?: (4 to 10)
-                ExerciseCard(
-                    name = name,
-                    sets = sets,
-                    reps = reps,
-                    onRemove = { /* nada */ },
-                    onAdd = {
-                        if (!addedExercises.contains(name)) {
-                            addedExercises.add(name)
-                            availableExercises.remove(name)
-                        }
-                    },
-                    showAddButton = true
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            Text(
-                "Sugerencias de IA",
-                color = greenLess,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp
+            // Mostrar todos los ejercicios disponibles dinámicamente
+            ExerciseList(
+                exercises = filteredAvailableExercises,
+                exerciseData = exerciseData,
+                showAddButton = true,
+                onAdd = { name ->
+                    if (!addedExercises.contains(name)) {
+                        addedExercises.add(name)
+                        availableExercises.remove(name)
+                    }
+                }
             )
+
+            SectionTitle("Sugerencias de IA")
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -151,46 +124,23 @@ fun CreateWorkoutGymScreen() {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            addedExercises.forEach { name ->
-                val (sets, reps) = exerciseData[name] ?: (4 to 10)
-                ExerciseCard(
-                    name = name,
-                    sets = sets,
-                    reps = reps,
-                    onRemove = {
-                        addedExercises.remove(name)
-                        if (name in allSuggestions && !suggestedExercises.contains(name)) {
-                            suggestedExercises.add(name)
-                        } else if (!availableExercises.contains(name)) {
-                            availableExercises.add(name)
-                        }
-                    },
-                    onAdd = { },
-                    showAddButton = false
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+            ExerciseList(
+                exercises = addedExercises,
+                exerciseData = exerciseData,
+                showAddButton = false,
+                onRemove = { name ->
+                    addedExercises.remove(name)
+                    if (name in allSuggestions && !suggestedExercises.contains(name)) {
+                        suggestedExercises.add(name)
+                    } else if (!availableExercises.contains(name)) {
+                        availableExercises.add(name)
+                    }
+                }
+            )
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Button(
-                onClick = { /* Crear entrenamiento */ },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = greenLess,
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_fitness),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Crear entrenamiento", fontSize = 16.sp)
-            }
+            FitScanButton({}, R.drawable.ic_fitness)
         }
     }
 }
