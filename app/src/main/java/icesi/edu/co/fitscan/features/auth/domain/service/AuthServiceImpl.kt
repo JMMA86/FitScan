@@ -143,6 +143,8 @@ class AuthServiceImpl(
                     return@withContext Result.failure(Exception("User not authenticated"))
                 }
 
+                AppState.token = token
+
                 Log.d("AuthServiceImpl", "Saving body measurements: $bodyMeasure")
 
                 val response = authRepository.saveBodyMeasurements(
