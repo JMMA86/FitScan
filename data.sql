@@ -182,12 +182,242 @@ CREATE TABLE progress_photo (
     image_path TEXT
 );
 
-
-
 -- =============================
 -- INSERTAR DATOS DE PRUEBA
 -- =============================
 
+DO $$
+DECLARE
+    num_training_levels INTEGER := 5;
+    num_fitness_goals INTEGER := 25;
+    num_dietary_restrictions INTEGER := 25;
+    num_dietary_preferences INTEGER := 25;
+    num_body_measures INTEGER := 100;
+    num_customers INTEGER := 10;
+    num_meal_plans_per_customer INTEGER := 25;
+    num_meals_per_plan INTEGER := 10;
+    num_exercises INTEGER := 50;
+    num_workouts_per_customer INTEGER := 10;
+    num_workout_exercises_per_workout INTEGER := 10;
+    num_workout_sessions_per_workout INTEGER := 300;
+    num_completed_exercises_per_session INTEGER := 10;
+    num_progress_photos_per_customer INTEGER := 10;
+
+    customer_rec RECORD;
+    meal_plan_rec RECORD;
+    workout_rec RECORD;
+    session_rec RECORD;
+    user_rec RECORD;
+BEGIN
+    -- Insert training levels
+    FOR i IN 1..num_training_levels LOOP
+        INSERT INTO training_level (id, level_name, description)
+        VALUES (uuid_generate_v4(), 'Level ' || i, 'Description for Level ' || i);
+    END LOOP;
+    RAISE NOTICE 'Inserted % training levels', num_training_levels;
+
+    -- Insert fitness goals
+    FOR i IN 1..num_fitness_goals LOOP
+        INSERT INTO fitness_goal (id, goal_name, description)
+        VALUES (uuid_generate_v4(), 'Goal ' || i, 'Description for Goal ' || i);
+    END LOOP;
+    RAISE NOTICE 'Inserted % fitness goals', num_fitness_goals;
+
+    -- Insert dietary restrictions
+    FOR i IN 1..num_dietary_restrictions LOOP
+        INSERT INTO dietary_restriction (id, name)
+        VALUES (uuid_generate_v4(), 'Restriction ' || i);
+    END LOOP;
+    RAISE NOTICE 'Inserted % dietary restrictions', num_dietary_restrictions;
+
+    -- Insert dietary preferences
+    FOR i IN 1..num_dietary_preferences LOOP
+        INSERT INTO dietary_preference (id, name)
+        VALUES (uuid_generate_v4(), 'Preference ' || i);
+    END LOOP;
+    RAISE NOTICE 'Inserted % dietary preferences', num_dietary_preferences;
+
+    -- Insert body measures
+    FOR i IN 1..num_body_measures LOOP
+        INSERT INTO body_measure (id, height_cm, weight_kg, arms_cm, chest_cm, waist_cm, hips_cm, thighs_cm, calves_cm)
+        VALUES (
+            uuid_generate_v4(),
+            150 + (RANDOM() * 50)::INTEGER,
+            50 + (RANDOM() * 50)::INTEGER,
+            20 + (RANDOM() * 20)::INTEGER,
+            80 + (RANDOM() * 40)::INTEGER,
+            60 + (RANDOM() * 30)::INTEGER,
+            70 + (RANDOM() * 40)::INTEGER,
+            40 + (RANDOM() * 20)::INTEGER,
+            30 + (RANDOM() * 10)::INTEGER
+        );
+    END LOOP;
+    RAISE NOTICE 'Inserted % body measures', num_body_measures;
+
+    -- Insert users into directus_users
+    FOR i IN 1..num_customers LOOP
+        INSERT INTO directus_users (id, email, password, first_name, last_name)
+        VALUES (
+            uuid_generate_v4(),
+            'user' || i || '_' || (RANDOM() * 100000)::INTEGER || '@example.com', -- Ensure unique email
+            '$argon2id$v=19$m=65536,t=3,p=4$O09OkqGHl74ucu293lNxuw$OgTadbPObj9sc2EZFm0hK4ppzSCb7ro8WtAK3cOQLbg',
+            'FirstName' || i,
+            'LastName' || i
+        );
+    END LOOP;
+    RAISE NOTICE 'Inserted % users into directus_users', num_customers;
+
+    -- Insert customers
+    FOR user_rec IN (SELECT id FROM directus_users LIMIT num_customers) LOOP
+        INSERT INTO customer (id, age, phone, training_level_id, main_goal_id, body_measure_id, user_id)
+        VALUES (
+            uuid_generate_v4(),
+            18 + (RANDOM() * 50)::INTEGER,
+            '+123456' || (RANDOM() * 1000000)::INTEGER,
+            (SELECT id FROM training_level OFFSET (RANDOM() * (num_training_levels - 1))::INTEGER LIMIT 1),
+            (SELECT id FROM fitness_goal OFFSET (RANDOM() * (num_fitness_goals - 1))::INTEGER LIMIT 1),
+            (SELECT id FROM body_measure OFFSET (RANDOM() * (num_body_measures - 1))::INTEGER LIMIT 1),
+            user_rec.id
+        );
+    END LOOP;
+    RAISE NOTICE 'Inserted % customers', num_customers;
+
+    -- Insert meal plans
+    FOR customer_rec IN (SELECT id FROM customer) LOOP
+        FOR i IN 1..num_meal_plans_per_customer LOOP
+            INSERT INTO meal_plan (id, customer_id, name, description, goal, date_created)
+            VALUES (
+                uuid_generate_v4(),
+                customer_rec.id,
+                'Meal Plan ' || i,
+                'Description for Meal Plan ' || i,
+                'Goal ' || i,
+                CURRENT_DATE
+            );
+        END LOOP;
+    END LOOP;
+    RAISE NOTICE 'Inserted % meal plans per customer', num_meal_plans_per_customer;
+
+    -- Insert meals
+    FOR meal_plan_rec IN (SELECT id FROM meal_plan) LOOP
+        FOR i IN 1..num_meals_per_plan LOOP
+            INSERT INTO meal (id, meal_plan_id, meal_type, name, description, calories, protein_g, carbs_g, fat_g)
+            VALUES (
+                uuid_generate_v4(),
+                meal_plan_rec.id,
+                CASE WHEN i = 1 THEN 'Breakfast' WHEN i = 2 THEN 'Lunch' ELSE 'Dinner' END,
+                'Meal ' || i,
+                'Description for Meal ' || i,
+                200 + (RANDOM() * 300)::INTEGER,
+                10 + (RANDOM() * 40)::INTEGER,
+                20 + (RANDOM() * 50)::INTEGER,
+                5 + (RANDOM() * 20)::INTEGER
+            );
+        END LOOP;
+    END LOOP;
+    RAISE NOTICE 'Inserted % meals per plan', num_meals_per_plan;
+
+    -- Insert exercises
+    FOR i IN 1..num_exercises LOOP
+        INSERT INTO exercise (id, name, description, muscle_groups)
+        VALUES (
+            uuid_generate_v4(),
+            'Exercise ' || i,
+            'Description for Exercise ' || i,
+            'Muscle Group ' || i
+        );
+    END LOOP;
+    RAISE NOTICE 'Inserted % exercises', num_exercises;
+
+    -- Insert workouts
+    FOR customer_rec IN (SELECT id FROM customer) LOOP
+        FOR i IN 1..num_workouts_per_customer LOOP
+            INSERT INTO workout (id, customer_id, name, type, duration_minutes, difficulty, date_created)
+            VALUES (
+                uuid_generate_v4(),
+                customer_rec.id,
+                'Workout ' || i,
+                CASE WHEN i % 2 = 0 THEN 'Gym' ELSE 'Running' END,
+                30 + (RANDOM() * 60)::INTEGER,
+                CASE WHEN i % 3 = 0 THEN 'Hard' WHEN i % 3 = 1 THEN 'Medium' ELSE 'Easy' END,
+                CURRENT_DATE
+            );
+        END LOOP;
+    END LOOP;
+    RAISE NOTICE 'Inserted % workouts per customer', num_workouts_per_customer;
+
+    -- Insert workout exercises
+    FOR workout_rec IN (SELECT id FROM workout) LOOP
+        FOR i IN 1..num_workout_exercises_per_workout LOOP
+            INSERT INTO workout_exercise (id, workout_id, exercise_id, sets, reps, is_ai_suggested)
+            VALUES (
+                uuid_generate_v4(),
+                workout_rec.id,
+                (SELECT id FROM exercise OFFSET (RANDOM() * (num_exercises - 1))::INTEGER LIMIT 1),
+                3 + (RANDOM() * 3)::INTEGER,
+                8 + (RANDOM() * 12)::INTEGER,
+                (RANDOM() > 0.5)
+            );
+        END LOOP;
+    END LOOP;
+    RAISE NOTICE 'Inserted % workout exercises per workout', num_workout_exercises_per_workout;
+    -- Insert workout sessions
+    DECLARE
+        base_start_date DATE := CURRENT_DATE - INTERVAL '1 year';
+    BEGIN
+        FOR workout_rec IN (SELECT id, customer_id FROM workout) LOOP
+            FOR i IN 1..num_workout_sessions_per_workout LOOP
+                DECLARE
+                    session_start_date DATE := base_start_date + ((RANDOM() * 365)::INTEGER || ' days')::INTERVAL;
+                BEGIN
+                    INSERT INTO workout_session (id, customer_id, workout_id, start_time, end_time, calories_burned, distance_km, average_heart_rate)
+                    VALUES (
+                        uuid_generate_v4(),
+                        workout_rec.customer_id,
+                        workout_rec.id,
+                        session_start_date + TIME '08:00:00',
+                        session_start_date + TIME '08:00:00' + (30 + (RANDOM() * 150)) * INTERVAL '1 minute',
+                        200 + (RANDOM() * 300)::INTEGER,
+                        CASE WHEN (SELECT type FROM workout WHERE id = workout_rec.id) = 'Running' THEN (RANDOM() * 10)::NUMERIC(5, 2) ELSE NULL END,
+                        100 + (RANDOM() * 50)::INTEGER
+                    );
+                END;
+            END LOOP;
+        END LOOP;
+    END;
+    RAISE NOTICE 'Inserted % workout sessions per workout', num_workout_sessions_per_workout;
+
+    -- Insert completed exercises
+    FOR session_rec IN (SELECT id FROM workout_session) LOOP
+        FOR i IN 1..num_completed_exercises_per_session LOOP
+            INSERT INTO completed_exercise (id, workout_session_id, exercise_id, sets, reps, rpe)
+            VALUES (
+                uuid_generate_v4(),
+                session_rec.id,
+                (SELECT id FROM exercise OFFSET (RANDOM() * (num_exercises - 1))::INTEGER LIMIT 1),
+                3 + (RANDOM() * 3)::INTEGER,
+                8 + (RANDOM() * 12)::INTEGER,
+                5 + (RANDOM() * 5)::INTEGER
+            );
+        END LOOP;
+    END LOOP;
+    RAISE NOTICE 'Inserted % completed exercises per session', num_completed_exercises_per_session;
+
+    -- Insert progress photos
+    FOR customer_rec IN (SELECT id FROM customer) LOOP
+        FOR i IN 1..num_progress_photos_per_customer LOOP
+            INSERT INTO progress_photo (id, customer_id, photo_date, title, image_path)
+            VALUES (
+                uuid_generate_v4(),
+                customer_rec.id,
+                CURRENT_DATE - (i || ' weeks')::INTERVAL,
+                'Progress Photo ' || i,
+                '/images/customer_' || customer_rec.id || '_photo_' || i || '.jpg'
+            );
+        END LOOP;
+    END LOOP;
+    RAISE NOTICE 'Inserted % progress photos per customer', num_progress_photos_per_customer;
+END $$;
 
 -- =============================
 -- ELIMINAR DATOS DE TODAS LAS TABLAS
@@ -212,122 +442,9 @@ CREATE TABLE progress_photo (
 -- TRUNCATE TABLE fitness_goal CASCADE;
 -- TRUNCATE TABLE training_level CASCADE;
 
--- =============================
--- TABLAS INDEPENDIENTES
--- =============================
-
 DELETE FROM directus_users WHERE email = 'juan@example.com' or email = 'maria@example.com';
 
 INSERT INTO directus_users (id, email, password, first_name, last_name)
 VALUES 
 (uuid_generate_v4(), 'juan@example.com', '$argon2id$v=19$m=65536,t=3,p=4$O09OkqGHl74ucu293lNxuw$OgTadbPObj9sc2EZFm0hK4ppzSCb7ro8WtAK3cOQLbg', 'Juan', 'Pérez'),
 (uuid_generate_v4(), 'maria@example.com', '$argon2id$v=19$m=65536,t=3,p=4$O09OkqGHl74ucu293lNxuw$OgTadbPObj9sc2EZFm0hK4ppzSCb7ro8WtAK3cOQLbg', 'María', 'López');
-
--- training_level
-INSERT INTO training_level (id, level_name, description) VALUES
-(uuid_generate_v4(), 'Beginner', 'New to fitness and exercise'),
-(uuid_generate_v4(), 'Intermediate', 'Has some experience with fitness routines'),
-(uuid_generate_v4(), 'Advanced', 'Highly experienced in fitness and training');
-
--- fitness_goal
-INSERT INTO fitness_goal (id, goal_name, description) VALUES
-(uuid_generate_v4(), 'Weight Loss', 'Focus on reducing body fat'),
-(uuid_generate_v4(), 'Muscle Gain', 'Focus on increasing muscle mass'),
-(uuid_generate_v4(), 'Endurance', 'Improve cardiovascular endurance');
-
--- dietary_restriction
-INSERT INTO dietary_restriction (id, name) VALUES
-(uuid_generate_v4(), 'Gluten-Free'),
-(uuid_generate_v4(), 'Lactose-Free'),
-(uuid_generate_v4(), 'Vegan');
-
--- dietary_preference
-INSERT INTO dietary_preference (id, name) VALUES
-(uuid_generate_v4(), 'Low-Carb'),
-(uuid_generate_v4(), 'Keto'),
-(uuid_generate_v4(), 'Paleo');
-
--- body_measure
-INSERT INTO body_measure (id, height_cm, weight_kg, arms_cm, chest_cm, waist_cm, hips_cm, thighs_cm, calves_cm) VALUES
-(uuid_generate_v4(), 170, 68, 30, 95, 80, 90, 55, 35),
-(uuid_generate_v4(), 180, 85, 32, 100, 90, 95, 60, 38);
-
--- =============================
--- TABLAS DEPENDIENTES
--- =============================
-
--- customer
-INSERT INTO customer (id, age, phone, training_level_id, main_goal_id, body_measure_id, user_id) VALUES
-(uuid_generate_v4(), 28, '+123456789', 
- (SELECT id FROM training_level WHERE level_name = 'Beginner'), 
- (SELECT id FROM fitness_goal WHERE goal_name = 'Weight Loss'), 
- (SELECT id FROM body_measure LIMIT 1), 
- (SELECT id FROM directus_users WHERE email = 'juan@example.com')),
-(uuid_generate_v4(), 35, '+987654321', 
- (SELECT id FROM training_level WHERE level_name = 'Intermediate'), 
- (SELECT id FROM fitness_goal WHERE goal_name = 'Muscle Gain'), 
- (SELECT id FROM body_measure LIMIT 1 OFFSET 1), 
- (SELECT id FROM directus_users WHERE email = 'maria@example.com'));
-
--- customer_goal
-INSERT INTO customer_goal (id, user_id, goal_id) VALUES
-(uuid_generate_v4(), (SELECT id FROM customer WHERE user_id = (SELECT id FROM directus_users WHERE email = 'juan@example.com')), (SELECT id FROM fitness_goal WHERE goal_name = 'Weight Loss')),
-(uuid_generate_v4(), (SELECT id FROM customer WHERE user_id = (SELECT id FROM directus_users WHERE email = 'maria@example.com')), (SELECT id FROM fitness_goal WHERE goal_name = 'Muscle Gain'));
-
--- customer_restriction
-INSERT INTO customer_restriction (customer_id, restriction_id) VALUES
-((SELECT id FROM customer WHERE user_id = (SELECT id FROM directus_users WHERE email = 'juan@example.com')), (SELECT id FROM dietary_restriction WHERE name = 'Gluten-Free')),
-((SELECT id FROM customer WHERE user_id = (SELECT id FROM directus_users WHERE email = 'maria@example.com')), (SELECT id FROM dietary_restriction WHERE name = 'Vegan'));
-
--- customer_preference
-INSERT INTO customer_preference (customer_id, preference_id) VALUES
-((SELECT id FROM customer WHERE user_id = (SELECT id FROM directus_users WHERE email = 'juan@example.com')), (SELECT id FROM dietary_preference WHERE name = 'Low-Carb')),
-((SELECT id FROM customer WHERE user_id = (SELECT id FROM directus_users WHERE email = 'maria@example.com')), (SELECT id FROM dietary_preference WHERE name = 'Keto'));
-
--- meal_plan
-INSERT INTO meal_plan (id, customer_id, name, description, goal, date_created) VALUES
-(uuid_generate_v4(), (SELECT id FROM customer WHERE user_id = (SELECT id FROM directus_users WHERE email = 'juan@example.com')), 'Plan de pérdida de peso', 'Enfoque en reducir calorías', 'Weight Loss', CURRENT_DATE),
-(uuid_generate_v4(), (SELECT id FROM customer WHERE user_id = (SELECT id FROM directus_users WHERE email = 'maria@example.com')), 'Plan de ganancia muscular', 'Enfoque en proteínas', 'Muscle Gain', CURRENT_DATE);
-
--- meal
-INSERT INTO meal (id, meal_plan_id, meal_type, name, description, calories, protein_g, carbs_g, fat_g) VALUES
-(uuid_generate_v4(), (SELECT id FROM meal_plan WHERE name = 'Plan de pérdida de peso'), 'Breakfast', 'Oatmeal with fruits', 'Healthy breakfast option', 300, 10, 50, 5),
-(uuid_generate_v4(), (SELECT id FROM meal_plan WHERE name = 'Plan de ganancia muscular'), 'Lunch', 'Grilled chicken with quinoa', 'High-protein lunch', 500, 40, 30, 15);
-
--- exercise
-INSERT INTO exercise (id, name, description, muscle_groups) VALUES
-(uuid_generate_v4(), 'Push-ups', 'Bodyweight exercise for chest and triceps', 'Chest, Triceps'),
-(uuid_generate_v4(), 'Squats', 'Lower body strength exercise', 'Legs, Glutes');
-
--- workout
-INSERT INTO workout (id, customer_id, name, type, duration_minutes, difficulty, date_created) VALUES
-(uuid_generate_v4(), (SELECT id FROM customer WHERE user_id = (SELECT id FROM directus_users WHERE email = 'juan@example.com')), 'Full Body Workout', 'Gym', 60, 'Easy', CURRENT_DATE),
-(uuid_generate_v4(), (SELECT id FROM customer WHERE user_id = (SELECT id FROM directus_users WHERE email = 'maria@example.com')), 'Running Routine', 'Running', 45, 'Medium', CURRENT_DATE);
-
--- workout_exercise
-INSERT INTO workout_exercise (id, workout_id, exercise_id, sets, reps, is_ai_suggested) VALUES
-(uuid_generate_v4(), (SELECT id FROM workout WHERE name = 'Full Body Workout'), (SELECT id FROM exercise WHERE name = 'Push-ups'), 3, 15, FALSE),
-(uuid_generate_v4(), (SELECT id FROM workout WHERE name = 'Full Body Workout'), (SELECT id FROM exercise WHERE name = 'Squats'), 4, 12, TRUE);
-
--- running_workout_detail
-INSERT INTO running_workout_detail (id, workout_id, distance_km, estimated_time_minutes, elevation_gain_m, route_name, safety_notes) VALUES
-(uuid_generate_v4(), (SELECT id FROM workout WHERE name = 'Running Routine'), 5, 30, 100, 'Park Loop', 'Stay hydrated and wear proper shoes.');
-
--- workout_session
-INSERT INTO workout_session (id, customer_id, workout_id, start_time, end_time, calories_burned, distance_km, average_heart_rate) VALUES
-(uuid_generate_v4(), (SELECT id FROM customer WHERE user_id = (SELECT id FROM directus_users WHERE email = 'juan@example.com')), (SELECT id FROM workout WHERE name = 'Full Body Workout'), 
- '2023-10-01 08:00:00', '2023-10-01 09:00:00', 300, NULL, 120),
-(uuid_generate_v4(), (SELECT id FROM customer WHERE user_id = (SELECT id FROM directus_users WHERE email = 'maria@example.com')), (SELECT id FROM workout WHERE name = 'Running Routine'), 
- '2023-10-01 09:30:00', '2023-10-01 10:15:00', 400, 5, 130);
-
--- completed_exercise
-INSERT INTO completed_exercise (id, workout_session_id, exercise_id, sets, reps, rpe) VALUES
-(uuid_generate_v4(), (SELECT id FROM workout_session WHERE workout_id = (SELECT id FROM workout WHERE name = 'Full Body Workout')), 
- (SELECT id FROM exercise WHERE name = 'Push-ups'), 3, 15, 7),
-(uuid_generate_v4(), (SELECT id FROM workout_session WHERE workout_id = (SELECT id FROM workout WHERE name = 'Full Body Workout')), 
- (SELECT id FROM exercise WHERE name = 'Squats'), 4, 12, 8);
-
--- progress_photo
-INSERT INTO progress_photo (id, customer_id, photo_date, title, image_path) VALUES
-(uuid_generate_v4(), (SELECT id FROM customer WHERE user_id = (SELECT id FROM directus_users WHERE email = 'juan@example.com')), '2023-10-01', 'Week 1 Progress', '/images/juan_week1.jpg'),
-(uuid_generate_v4(), (SELECT id FROM customer WHERE user_id = (SELECT id FROM directus_users WHERE email = 'maria@example.com')), '2023-10-01', 'Week 1 Progress', '/images/maria_week1.jpg');
