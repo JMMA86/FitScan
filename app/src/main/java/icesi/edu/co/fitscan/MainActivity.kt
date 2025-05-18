@@ -21,6 +21,7 @@ import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanHeader
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanNavBar
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
+import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseStatisticsScreen
 import icesi.edu.co.fitscan.ui.theme.greenLess
 
 class MainActivity : ComponentActivity() {
@@ -29,7 +30,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FitScanTheme {
-                App()
+                ExerciseStatisticsScreen()
+//                App()
             }
         }
     }
