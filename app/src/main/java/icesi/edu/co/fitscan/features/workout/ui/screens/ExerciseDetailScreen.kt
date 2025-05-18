@@ -190,6 +190,6 @@ fun MuscleChip(text: String, isPrimary: Boolean = false, chipAccentColor: Color)
 @Composable
 fun ExerciseDetailScreenPreview() {
     FitScanTheme { // Asegúrate que FitScanTheme configure correctamente los colores base
-        ExerciseDetailScreen()
+        ExerciseDetailScreen(workoutExerciseId = "1747dd22-ba2f-4cfd-b4c8-da220c18c53c")
     }
 }

@@ -11,6 +11,12 @@ import retrofit2.http.Header
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+// Wrapper para respuestas de objeto único de Directus
+// (Si ya existe en otro archivo, puedes eliminar esta definición)
+data class DirectusObjectResponse<T>(
+    @SerializedName("data") val data: T
+)
+
 interface WorkoutService {
     // Consulta una rutina específica por ID, expandiendo los ejercicios relacionados
     @GET("items/workout")
@@ -39,7 +45,7 @@ interface WorkoutService {
         @Path("id") workoutExerciseId: String,
         @Header("Authorization") token: String,
         @Query("fields") fields: String = "*,exercise_id.*"
-    ): Response<WorkoutExerciseWithExercise>
+    ): Response<DirectusObjectResponse<WorkoutExerciseWithExercise>>
 }
 
 interface ExerciseService {

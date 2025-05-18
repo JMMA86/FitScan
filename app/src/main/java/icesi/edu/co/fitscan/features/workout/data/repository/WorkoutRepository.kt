@@ -7,7 +7,7 @@ import retrofit2.Response
 
 class WorkoutRepository {
     // Token JWT HARDCODEADO para pruebas (pon aquí el tuyo de Postman)
-    private val jwtToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZmNzAzNzZjLWMzODktNGIzNS05NGM2LTkzOTBkZWUxZGU4OCIsInJvbGUiOiIzYWFmYTc5My1kNmZmLTRiNDAtYjYyMC04YWNmYjM1NjgwNWUiLCJhcHBfYWNjZXNzIjp0cnVlLCJhZG1pbl9hY2Nlc3MiOnRydWUsImlhdCI6MTc0NzYwNzEwMSwiZXhwIjoxNzQ3NjEwNzAxLCJpc3MiOiJkaXJlY3R1cyJ9.Eg_2oD24r6mtfPrcoHH4eD1MyvF3JEcfk6Jjeijt3vg"
+    private val jwtToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZmNzAzNzZjLWMzODktNGIzNS05NGM2LTkzOTBkZWUxZGU4OCIsInJvbGUiOiIzYWFmYTc5My1kNmZmLTRiNDAtYjYyMC04YWNmYjM1NjgwNWUiLCJhcHBfYWNjZXNzIjp0cnVlLCJhZG1pbl9hY2Nlc3MiOnRydWUsImlhdCI6MTc0NzYxMTExMywiZXhwIjoxNzQ3NjE0NzEzLCJpc3MiOiJkaXJlY3R1cyJ9.3muW5_JOrMf954Q2Zekx5Fs3UWke72Vn0bUPT1brT60"
 
     // Si quieres seguir permitiendo buscar por ID, descomenta y usa este método:
     suspend fun getWorkoutById(workoutId: String): Response<Workout> {
