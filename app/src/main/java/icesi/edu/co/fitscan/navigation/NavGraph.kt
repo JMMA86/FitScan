@@ -61,16 +61,15 @@ fun NavigationHost(navController: NavHostController) {
         }
 
         composable(Screen.Registration.route) {
-            // RegisterScreen(
-            //     greenLess = greenLess,
-            //     onRegisterSuccess = {
-            //         // Navigate to body measurements screen after registration
-            //         navController.navigate(Screen.BodyMeasurements.route) {
-            //             popUpTo(Screen.Registration.route) { inclusive = true }
-            //         }
-            //     }
-            // )
-            CreateWorkoutScreen()
+            RegisterScreen(
+                greenLess = greenLess,
+                onRegisterSuccess = {
+                    // Navigate to body measurements screen after registration
+                    navController.navigate(Screen.BodyMeasurements.route) {
+                        popUpTo(Screen.Registration.route) { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable(Screen.BodyMeasurements.route) {
@@ -84,6 +83,10 @@ fun NavigationHost(navController: NavHostController) {
                     }
                 },
             )
+        }
+
+        composable(Screen.CreateWorkout.route) {
+            CreateWorkoutScreen()
         }
     }
 }

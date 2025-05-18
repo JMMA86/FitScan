@@ -16,7 +16,9 @@ class ExerciseRepositoryImpl(
         return try {
             val response = api.getAllExercises()
             if (response.isSuccessful) {
-                val exercises = response.body()?.map { dto: ExerciseDto -> mapper.toDomain(dto) } ?: emptyList()
+                val responseBody = response.body()
+                val exerciseDto = responseBody?.data ?: emptyList()
+                val exercises = exerciseDto.map { dto -> mapper.toDomain(dto) }
                 Result.success(exercises)
             } else {
                 Result.failure(Exception("Error getting exercises: ${response.code()}"))

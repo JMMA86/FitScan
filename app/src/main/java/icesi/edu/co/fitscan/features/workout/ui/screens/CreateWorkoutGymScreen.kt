@@ -11,22 +11,34 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.common.ui.components.ExerciseList
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanButton
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanTextField
 import icesi.edu.co.fitscan.features.common.ui.components.SectionTitle
 import icesi.edu.co.fitscan.features.common.ui.components.SuggestionChip
+import icesi.edu.co.fitscan.features.workout.ui.viewmodel.CreateWorkoutGymViewModel
+import icesi.edu.co.fitscan.features.workout.ui.viewmodel.CreateWorkoutGymViewModelFactory
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import icesi.edu.co.fitscan.ui.theme.greyStrong
 
 @Composable
 fun CreateWorkoutGymScreen() {
+    val viewModel: CreateWorkoutGymViewModel = viewModel(factory = CreateWorkoutGymViewModelFactory())
+    val exercises by viewModel.exercises.collectAsState()
     val scrollState = rememberScrollState()
     var workoutName by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
 
-    val availableExercises = remember { mutableStateListOf("Barbell Rows") }
+    // Convertir los ejercicios del dominio a nombres para la interfaz
+    val availableExercises = remember(exercises) { 
+        mutableStateListOf<String>().apply {
+            clear()
+            addAll(exercises.map { it.name })
+        }
+    }
+    
     val filteredAvailableExercises = availableExercises.filter {
         it.contains(searchQuery, ignoreCase = true)
     }
@@ -47,6 +59,15 @@ fun CreateWorkoutGymScreen() {
             "Deadlift" to Pair(4, 8),
             "Push ups" to Pair(3, 15)
         )
+    }
+
+    // Actualizar ejerciseData cuando se cargan nuevos ejercicios
+    LaunchedEffect(exercises) {
+        exercises.forEach { exercise ->
+            if (!exerciseData.containsKey(exercise.name)) {
+                exerciseData[exercise.name] = Pair(4, 10) // Valores por defecto
+            }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

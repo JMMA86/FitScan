@@ -44,7 +44,6 @@ class AuthServiceImpl(
                     }
                     Result.success(response.body()!!.data!!)
                 } else {
-                    val errorBody = response.errorBody()?.string() ?: "Error desconocido"
                     Result.failure(HttpException(response))
                 }
             } catch (e: Exception) {
@@ -101,10 +100,7 @@ class AuthServiceImpl(
                 val sharedPref =
                     application.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                 val token = sharedPref.getString("AUTH_TOKEN", null)
-
-                if (token == null) {
-                    return@withContext Result.failure(Exception("User not authenticated"))
-                }
+                    ?: return@withContext Result.failure(Exception("User not authenticated"))
 
                 // Make the request with the token in the header
                 val response = authRepository.registerCustomer(
@@ -138,12 +134,9 @@ class AuthServiceImpl(
                 val sharedPref =
                     application.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                 val token = sharedPref.getString("AUTH_TOKEN", null)
+                    ?: return@withContext Result.failure(Exception("User not authenticated"))
 
-                if (token == null) {
-                    return@withContext Result.failure(Exception("User not authenticated"))
-                }
-
-                AppState.token = token
+                AppState.setAuthToken(token)
 
                 Log.d("AuthServiceImpl", "Saving body measurements: $bodyMeasure")
 
