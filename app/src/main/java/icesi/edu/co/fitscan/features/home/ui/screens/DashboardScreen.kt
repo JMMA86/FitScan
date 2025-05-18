@@ -3,11 +3,13 @@ package icesi.edu.co.fitscan.features.home.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,6 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanNavBar
+import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import icesi.edu.co.fitscan.features.home.ui.viewmodel.DashboardViewModel
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import icesi.edu.co.fitscan.ui.theme.greyStrong
@@ -38,6 +41,12 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        AppState.customerId?.let { userId ->
+            viewModel.loadDashboardData(userId)
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -165,34 +174,38 @@ fun DashboardScreen(
                         CircularProgress(progress = uiState.weeklyProgress)
                     }
                     // ACTIVIDADES RECIENTES
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "Actividades recientes",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                    }
-                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        uiState.recentActivities.forEach { activity ->
-                            RecentActivityCard(
-                                icon = Icons.Default.Person,
-                                title = activity.title,
-                                time = activity.time,
-                                level = activity.level,
-                                exercises = activity.exercises
+                    if (uiState.recentActivities.isNotEmpty()) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Actividades recientes",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
                             )
-                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                        LazyColumn(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(uiState.recentActivities) { activity ->
+                                RecentActivityCard(
+                                    icon = Icons.Default.Person,
+                                    title = activity.title,
+                                    time = activity.time,
+                                    level = activity.level,
+                                    exercises = activity.exercises
+                                )
+                            }
                         }
                     }
-                    // ACTIVIDADES
-                    Text(
+
+                    /*Text(
                         text = "Actividades",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
@@ -215,7 +228,7 @@ fun DashboardScreen(
                             label = "Progreso visual",
                             modifier = Modifier.weight(1f)
                         )
-                    }
+                    }*/
                 }
             }
             // Barra de navegación inferior
