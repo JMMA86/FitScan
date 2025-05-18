@@ -25,7 +25,7 @@ fun NavigationHost(navController: NavHostController) {
     ) {
         // --- Rutas Principales (requieren login) ---
         composable(Screen.Home.route) {
-            DashboardScreen(/* Pasa parámetros si necesita */)
+            DashboardScreen(navController = navController)
         }
         composable(Screen.Workouts.route) {
             WorkoutListScreen(/* Pasa parámetros si necesita */)
