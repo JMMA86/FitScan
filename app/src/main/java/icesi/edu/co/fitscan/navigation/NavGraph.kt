@@ -11,6 +11,9 @@ import icesi.edu.co.fitscan.features.auth.ui.screens.LoginScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
 import icesi.edu.co.fitscan.features.home.ui.screens.DashboardScreen
+import icesi.edu.co.fitscan.features.notifications.ui.screens.NotificationsScreen
+import icesi.edu.co.fitscan.features.profile.ui.screens.ProfileScreen
+import icesi.edu.co.fitscan.features.settings.ui.screens.SettingsScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutListScreen
 import icesi.edu.co.fitscan.ui.theme.greenLess
@@ -83,6 +86,18 @@ fun NavigationHost(navController: NavHostController) {
                     }
                 },
             )
+        }
+
+        composable("profile") {
+            ProfileScreen(navController = navController)
+        }
+
+        composable("settings") {
+            SettingsScreen(navController = navController)
+        }
+
+        composable("notifications") {
+            NotificationsScreen(navController = navController)
         }
     }
 }

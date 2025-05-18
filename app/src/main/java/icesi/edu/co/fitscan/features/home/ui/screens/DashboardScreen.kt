@@ -62,26 +62,32 @@ fun DashboardScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Usuario",
-                    tint = Color.White,
-                    modifier = Modifier.size(28.dp)
-                )
+                IconButton(onClick = { navController.navigate("profile") }) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Usuario",
+                        tint = Color.White,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Notifications,
-                        contentDescription = "Notificaciones",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    IconButton(onClick = { navController.navigate("notifications") }) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "Notificaciones",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                     Spacer(modifier = Modifier.width(16.dp))
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = "Configuración",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    IconButton(onClick = { navController.navigate("settings") }) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Configuración",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             }
 
@@ -125,7 +131,6 @@ fun DashboardScreen(
                     }
                 }
                 else -> {
-                    // TÍTULO
                     Text(
                         text = "FitScanAI",
                         style = MaterialTheme.typography.headlineSmall,
@@ -134,7 +139,7 @@ fun DashboardScreen(
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
-                    // MÉTRICAS
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -157,7 +162,7 @@ fun DashboardScreen(
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    // PROGRESO SEMANAL
+
                     Text(
                         text = "Progreso de esta semana",
                         style = MaterialTheme.typography.titleSmall,
@@ -173,7 +178,7 @@ fun DashboardScreen(
                     ) {
                         CircularProgress(progress = uiState.weeklyProgress)
                     }
-                    // ACTIVIDADES RECIENTES
+
                     if (uiState.recentActivities.isNotEmpty()) {
                         Row(
                             modifier = Modifier
@@ -231,7 +236,7 @@ fun DashboardScreen(
                     }*/
                 }
             }
-            // Barra de navegación inferior
+
             Spacer(modifier = Modifier.weight(1f))
             FitScanNavBar(navController = navController)
         }
@@ -262,7 +267,6 @@ fun MetricCardStyled(value: String, description: String) {
     }
 }
 
-// PROGRESO CIRCULAR
 @Composable
 fun CircularProgress(progress: Float) {
     Box(contentAlignment = Alignment.Center) {
