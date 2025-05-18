@@ -1,9 +1,11 @@
 package icesi.edu.co.fitscan.features.statistics.domain.service
 
+import icesi.edu.co.fitscan.features.common.data.remote.RetrofitInstance
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import icesi.edu.co.fitscan.features.statistics.data.remote.ExerciseStatisticsRemoteDataSource
 import icesi.edu.co.fitscan.features.statistics.data.remote.WorkoutSession
+import icesi.edu.co.fitscan.features.statistics.data.remote.ProgressPhoto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
@@ -11,8 +13,11 @@ import java.time.format.DateTimeFormatter
 import java.time.Duration
 
 class ExerciseStatisticsService(
-    private val remoteDataSource: ExerciseStatisticsRemoteDataSource
+    private val remoteDataSource: ExerciseStatisticsRemoteDataSource = RetrofitInstance.statisticsRepository
 ) {
+    var currentToken: String = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAyMDRhMDVhLWRkN2MtNDFmYS05NWU1LTM4OGZiZmNiNmE2OCIsInJvbGUiOiJjOGI5MzgxNi1jOTZmLTRhNTEtYTZlNi0zYjgyZjZkODhmZGEiLCJhcHBfYWNjZXNzIjp0cnVlLCJhZG1pbl9hY2Nlc3MiOnRydWUsImlhdCI6MTc0NzU3NjUxMiwiZXhwIjoxNzQ3NTgwMTEyLCJpc3MiOiJkaXJlY3R1cyJ9.euLuI6_VmiuKjB0GtTXYS-5Ru63HIGb5P3xrd0lyuv0"
+    var currentCustomerId: String = "012ff1ea-daa1-426b-b537-f5d51abd3f4c"
+
     private val _statisticsData = MutableStateFlow<List<Pair<String, Float>>>(emptyList())
     val statisticsData: StateFlow<List<Pair<String, Float>>> = _statisticsData
 
@@ -20,9 +25,43 @@ class ExerciseStatisticsService(
         _statisticsData.value = newData
     }
 
-    suspend fun fetchWorkoutSessions() = withContext(Dispatchers.IO) {
-        remoteDataSource.getWorkoutSessions().data
+    suspend fun fetchProgressPhotos(): List<ProgressPhoto> = try {
+        remoteDataSource.getProgressPhotos(currentToken, currentCustomerId).data
+    } catch (e: Exception) { emptyList() }
+
+    suspend fun fetchDistanceStats(): Float = try {
+        val sessions = remoteDataSource.getDistanceStats(currentToken, currentCustomerId).data
+        sessions.sumOf { it.distance_km?.toDouble() ?: 0.0 }.toFloat()
+    } catch (e: Exception) { 0f }
+
+    suspend fun fetchWeightStats(): Int = try {
+        val customer = remoteDataSource.getCustomer(currentToken, currentCustomerId).data.firstOrNull()
+        val bodyMeasureId = customer?.body_measure_id ?: ""
+        val measures = remoteDataSource.getWeightStats(currentToken, bodyMeasureId).data
+        measures.firstOrNull()?.weight_kg ?: 0
+    } catch (e: Exception) { 0 }
+
+    suspend fun fetchCaloriesStats(): Int = try {
+        val sessions = remoteDataSource.getCaloriesStats(currentToken, currentCustomerId).data
+        sessions.sumOf { it.calories_burned ?: 0 }
+    } catch (e: Exception) { 0 }
+
+    suspend fun fetchWeightMovedStats(): Int {
+        return try {
+            val sessions = remoteDataSource.getWorkoutSessions(currentToken, currentCustomerId).data
+            val sessionIds = sessions.map { it.id }
+            if (sessionIds.isEmpty()) return 0
+            val completed = remoteDataSource.getWeightMovedStats(currentToken, sessionIds.joinToString(",")).data
+            // Now use weight_kg for total weight moved
+            completed.sumOf { ((it.sets ?: 0) * (it.reps ?: 0) * (it.weight_kg ?: 0)).toDouble() }.toFloat().toInt()
+        } catch (e: Exception) {
+            0
+        }
     }
+
+    suspend fun fetchWorkoutSessions(): List<WorkoutSession> = try {
+        remoteDataSource.getWorkoutSessions(currentToken, currentCustomerId).data
+    } catch (e: Exception) { emptyList() }
 
     suspend fun fetchAndProcessStatistics(
         sessions: List<WorkoutSession>,
@@ -49,11 +88,11 @@ class ExerciseStatisticsService(
             val sessionDuration = Duration.between(start, end).toMinutes().toDouble() / 60
 
             while (start.isAfter(currentIntervalEnd)) {
-            val formattedDate = "${currentIntervalStart.month.name.lowercase().take(3)}-${currentIntervalStart.dayOfMonth}"
-            cumulativeDurations.add(formattedDate to currentIntervalSum)
-            currentIntervalStart = currentIntervalEnd
-            currentIntervalEnd = currentIntervalEnd.plus(intervalDuration)
-            currentIntervalSum = 0.0
+                val formattedDate = "${currentIntervalStart.month.name.lowercase().take(3)}-${currentIntervalStart.dayOfMonth}"
+                cumulativeDurations.add(formattedDate to currentIntervalSum)
+                currentIntervalStart = currentIntervalEnd
+                currentIntervalEnd = currentIntervalEnd.plus(intervalDuration)
+                currentIntervalSum = 0.0
             }
 
             currentIntervalSum += sessionDuration
@@ -74,5 +113,96 @@ class ExerciseStatisticsService(
         }
 
         return cumulativeDurations
+    }
+
+    // --- NEW: Aggregation for charts ---
+    suspend fun getCaloriesPerDayForLast14Days(): Pair<List<Float>, List<Float>> {
+        return try {
+            val sessions = remoteDataSource.getCaloriesStats(currentToken, currentCustomerId).data
+            val now = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+            val caloriesByDay = (0..13).map { i ->
+                val day = now.minusDays(i.toLong())
+                val total = sessions.filter {
+                    val start = LocalDateTime.parse(it.start_time, formatter)
+                    start.toLocalDate() == day.toLocalDate()
+                }.sumOf { (it.calories_burned ?: 0).toDouble() }.toFloat()
+                total
+            }.reversed()
+            val currentWeek = caloriesByDay.takeLast(7)
+            val lastWeek = caloriesByDay.take(7)
+            Pair(currentWeek, lastWeek)
+        } catch (e: Exception) {
+            Pair(List(7) { 0f }, List(7) { 0f })
+        }
+    }
+
+    suspend fun getWeightMovedPerDayForLast14Days(): Pair<List<Float>, List<Float>> {
+        return try {
+            val sessions = remoteDataSource.getWorkoutSessions(currentToken, currentCustomerId).data
+            val sessionIds = sessions.map { it.id }
+            if (sessionIds.isEmpty()) return Pair(List(7) { 0f }, List(7) { 0f })
+            val completed = remoteDataSource.getWeightMovedStats(currentToken, sessionIds.joinToString(",")).data
+            val now = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+            val weightByDay = (0..13).map { i ->
+                val day = now.minusDays(i.toLong())
+                val sessionIdsForDay = sessions.filter {
+                    val start = LocalDateTime.parse(it.start_time, formatter)
+                    start.toLocalDate() == day.toLocalDate()
+                }.map { it.id }
+                val total = completed.filter { it.workout_session_id in sessionIdsForDay }
+                    .sumOf { ((it.sets ?: 0) * (it.reps ?: 0) * (it.weight_kg ?: 0)).toDouble() }.toFloat()
+                total
+            }.reversed()
+            val currentWeek = weightByDay.takeLast(7)
+            val lastWeek = weightByDay.take(7)
+            Pair(currentWeek, lastWeek)
+        } catch (e: Exception) {
+            Pair(List(7) { 0f }, List(7) { 0f })
+        }
+    }
+
+    suspend fun getCaloriesAreaData(): List<Float> {
+        return try {
+            val sessions = remoteDataSource.getCaloriesStats(currentToken, currentCustomerId).data
+            val now = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+            (0..5).map { i ->
+                val start = now.minusDays((5 - i) * 7L)
+                val end = start.plusDays(6)
+                val total = sessions.filter {
+                    val sessionTime = LocalDateTime.parse(it.start_time, formatter)
+                    !sessionTime.isBefore(start) && !sessionTime.isAfter(end)
+                }.sumOf { (it.calories_burned ?: 0).toDouble() }.toFloat()
+                total
+            }
+        } catch (e: Exception) {
+            List(6) { 0f }
+        }
+    }
+
+    suspend fun getWeightAreaData(): List<Float> {
+        return try {
+            val sessions = remoteDataSource.getWorkoutSessions(currentToken, currentCustomerId).data
+            val sessionIds = sessions.map { it.id }
+            if (sessionIds.isEmpty()) return List(6) { 0f }
+            val completed = remoteDataSource.getWeightMovedStats(currentToken, sessionIds.joinToString(",")).data
+            val now = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+            (0..5).map { i ->
+                val start = now.minusDays((5 - i) * 7L)
+                val end = start.plusDays(6)
+                val sessionIdsForPeriod = sessions.filter {
+                    val sessionTime = LocalDateTime.parse(it.start_time, formatter)
+                    !sessionTime.isBefore(start) && !sessionTime.isAfter(end)
+                }.map { it.id }
+                val total = completed.filter { it.workout_session_id in sessionIdsForPeriod }
+                    .sumOf { ((it.sets ?: 0) * (it.reps ?: 0) * (it.weight_kg ?: 0)).toDouble() }.toFloat()
+                total
+            }
+        } catch (e: Exception) {
+            List(6) { 0f }
+        }
     }
 }

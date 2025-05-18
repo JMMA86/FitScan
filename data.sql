@@ -171,7 +171,8 @@ CREATE TABLE completed_exercise (
     exercise_id UUID REFERENCES exercise(id) ON DELETE CASCADE,
     sets INTEGER,
     reps INTEGER,
-    rpe INTEGER
+    rpe INTEGER,
+    weight_kg INTEGER -- NEW: weight moved per set
 );
 
 CREATE TABLE progress_photo (
@@ -387,17 +388,17 @@ BEGIN
     END;
     RAISE NOTICE 'Inserted % workout sessions per workout', num_workout_sessions_per_workout;
 
-    -- Insert completed exercises
     FOR session_rec IN (SELECT id FROM workout_session) LOOP
         FOR i IN 1..num_completed_exercises_per_session LOOP
-            INSERT INTO completed_exercise (id, workout_session_id, exercise_id, sets, reps, rpe)
+            INSERT INTO completed_exercise (id, workout_session_id, exercise_id, sets, reps, rpe, weight_kg)
             VALUES (
                 uuid_generate_v4(),
                 session_rec.id,
                 (SELECT id FROM exercise OFFSET (RANDOM() * (num_exercises - 1))::INTEGER LIMIT 1),
                 3 + (RANDOM() * 3)::INTEGER,
                 8 + (RANDOM() * 12)::INTEGER,
-                5 + (RANDOM() * 5)::INTEGER
+                5 + (RANDOM() * 5)::INTEGER,
+                10 + (RANDOM() * 90)::INTEGER
             );
         END LOOP;
     END LOOP;

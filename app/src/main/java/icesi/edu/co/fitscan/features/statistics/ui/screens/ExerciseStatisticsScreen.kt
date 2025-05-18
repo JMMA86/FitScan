@@ -55,11 +55,14 @@ fun ExerciseStatisticsScreen(
     val pointsData = viewModel.pointsData.collectAsState().value
     val labels = viewModel.labels.collectAsState().value
     val isLoading = viewModel.isLoading.collectAsState().value
-    val distanceKm = 12.4f // TODO: Replace with real data from viewmodel
-    val weightLost = 2.3f // TODO: Replace with real data from viewmodel
-    val weightLostProgress = 0.8f // TODO: Replace with real data from viewmodel
-    val caloriesAreaData = listOf(0.2f, 0.5f, 1f, 0.7f, 0.4f, 0.6f) // TODO: Replace with real data
-    val weightAreaData = listOf(0.1f, 0.4f, 0.8f, 0.6f, 0.3f, 0.5f) // TODO: Replace with real data
+    val distanceKm = viewModel.distanceKm.collectAsState().value
+    val weightLost = viewModel.weightLost.collectAsState().value
+    val weightLostProgress = viewModel.weightLostProgress.collectAsState().value
+    val caloriesAreaData = viewModel.caloriesAreaData.collectAsState().value
+    val weightAreaData = viewModel.weightAreaData.collectAsState().value
+    val progressPhotos = viewModel.progressPhotos.collectAsState().value
+    val currentWeek = viewModel.currentWeek.collectAsState().value
+    val lastWeek = viewModel.lastWeek.collectAsState().value
 
     Column(
         modifier = Modifier
@@ -78,7 +81,7 @@ fun ExerciseStatisticsScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(onClick = { /* Implement back navigation here */ }) {
+                IconButton(onClick = { navController.popBackStack() }) {
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                 }
                 Text(
@@ -89,8 +92,8 @@ fun ExerciseStatisticsScreen(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center
                 )
-                IconButton(onClick = { /* Implement menu action here */ }) {
-                    Icon(Icons.Filled.MoreVert, contentDescription = "Menu", tint = Color.White)
+                IconButton(onClick = { viewModel.loadAllStatistics() }) {
+                    Icon(Icons.Filled.MoreVert, contentDescription = "Reload", tint = Color.White)
                 }
             }
         }
@@ -145,9 +148,9 @@ fun ExerciseStatisticsScreen(
                 }
             } else {
                 StackedBarChart(
-                    currentWeek = listOf(2f, 3f, 4f, 2.5f, 3.5f, 4.2f, 3.8f),
-                    lastWeek = listOf(1.5f, 2.2f, 3.1f, 2.0f, 2.8f, 3.0f, 2.7f),
-                    labels = listOf("L", "M", "X", "J", "V", "S", "D")
+                    currentWeek = currentWeek,
+                    lastWeek = lastWeek,
+                    labels = labels
                 )
             }
         }
