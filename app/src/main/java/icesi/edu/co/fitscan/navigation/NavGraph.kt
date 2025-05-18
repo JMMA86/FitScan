@@ -12,6 +12,8 @@ import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
 import icesi.edu.co.fitscan.features.home.ui.screens.DashboardScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
+import icesi.edu.co.fitscan.features.workout.ui.screens.ExerciseDetailScreen
+import icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutDetailScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutListScreen
 import icesi.edu.co.fitscan.ui.theme.greenLess
 
@@ -28,7 +30,7 @@ fun NavigationHost(navController: NavHostController) {
             DashboardScreen(/* Pasa parámetros si necesita */)
         }
         composable(Screen.Workouts.route) {
-            WorkoutListScreen(/* Pasa parámetros si necesita */)
+            WorkoutListScreen(navController)
         }
 
         composable(
@@ -82,6 +84,31 @@ fun NavigationHost(navController: NavHostController) {
                         launchSingleTop = true
                     }
                 },
+            )
+        }
+        // --- Workout Detail Screen (optional: add if you want to navigate to a specific workout) ---
+        composable(
+            route = "workout_detail/{workoutId}",
+            arguments = listOf(navArgument("workoutId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val workoutId = backStackEntry.arguments?.getString("workoutId")
+            WorkoutDetailScreen(
+                workoutId = workoutId,
+                onNavigateBack = { navController.popBackStack() },
+                onExerciseClick = { workoutExerciseId ->
+                    navController.navigate("exercise_detail/$workoutExerciseId")
+                }
+            )
+        }
+        // --- Exercise Detail Screen ---
+        composable(
+            route = "exercise_detail/{workoutExerciseId}",
+            arguments = listOf(navArgument("workoutExerciseId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val workoutExerciseId = backStackEntry.arguments?.getString("workoutExerciseId")
+            ExerciseDetailScreen(
+                workoutExerciseId = workoutExerciseId,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

@@ -47,7 +47,7 @@ fun WorkoutDetailScreen(
         if (workoutId.isNullOrBlank()) {
             viewModel.loadFirstWorkout()
         } else {
-            //viewModel.loadWorkout(workoutId)
+            viewModel.loadWorkout(workoutId)
         }
     }
 
@@ -93,14 +93,12 @@ fun WorkoutDetailScreen(
             }
             is WorkoutDetailState.Success -> {
                 val workout = (state as WorkoutDetailState.Success).workout
+                val exercises = (state as WorkoutDetailState.Success).exercises
                 val workoutName = workout.name ?: "-"
                 val workoutDuration = "${workout.durationMinutes ?: "-"} min"
                 val workoutDifficulty = workout.difficulty ?: "-"
-                val workoutTags = listOfNotNull(workout.type, "${workout.workoutExercises?.size ?: 0} ejercicios")
-                val exercises = workout.workoutExercises?.mapNotNull {
-                    val ex = it.exercise
-                    if (ex != null) Triple(ex.name ?: "-", it.sets ?: 0, it.reps ?: 0) else null
-                } ?: emptyList()
+                val workoutTags = listOfNotNull(workout.type, "${exercises.size} ejercicios")
+                // Ahora exercises es la lista real de la rutina
 
                 Column(
                     modifier = Modifier
@@ -163,12 +161,13 @@ fun WorkoutDetailScreen(
 
                     // Exercise List
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        exercises.forEach { (name, sets, reps) ->
+                        exercises.forEach { item ->
+                            val ex = item.exercise
                             ExerciseRow(
-                                name = name,
-                                sets = sets,
-                                reps = reps,
-                                onClick = { onExerciseClick(name) },
+                                name = ex?.name ?: "-",
+                                sets = item.sets ?: 0,
+                                reps = item.reps ?: 0,
+                                onClick = { onExerciseClick(item.id ?: "") },
                                 cardBackgroundColor = cardBackgroundColor,
                                 primaryTextColor = primaryTextColor,
                                 secondaryTextColor = secondaryTextColor,

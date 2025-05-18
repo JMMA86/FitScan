@@ -35,4 +35,21 @@ class ExerciseDetailViewModel(
             }
         }
     }
+
+    fun loadExerciseFromWorkoutExercise(workoutExerciseId: String) {
+        viewModelScope.launch {
+            _state.value = ExerciseDetailState.Loading
+            try {
+                val workoutExercise = repository.getWorkoutExerciseById(workoutExerciseId)
+                val exercise = workoutExercise?.exercise
+                if (exercise != null) {
+                    _state.value = ExerciseDetailState.Success(exercise)
+                } else {
+                    _state.value = ExerciseDetailState.Error("No se encontró el ejercicio relacionado")
+                }
+            } catch (e: Exception) {
+                _state.value = ExerciseDetailState.Error(e.localizedMessage ?: "Error desconocido")
+            }
+        }
+    }
 }

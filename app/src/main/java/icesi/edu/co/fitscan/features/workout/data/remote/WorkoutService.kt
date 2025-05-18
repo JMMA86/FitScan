@@ -3,6 +3,8 @@ package icesi.edu.co.fitscan.features.workout.data.remote
 import com.google.gson.annotations.SerializedName
 import icesi.edu.co.fitscan.features.workout.data.model.Exercise
 import icesi.edu.co.fitscan.features.workout.data.model.Workout
+import icesi.edu.co.fitscan.features.workout.data.model.WorkoutExerciseWithExercise
+import icesi.edu.co.fitscan.features.workout.data.model.DirectusListResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -17,6 +19,27 @@ interface WorkoutService {
         @Query("fields") fields: String = "*,workout_exercise.*,workout_exercise.exercise_id.*",
         @Query("limit") limit: Int = 1
     ): Response<DirectusListResponse<Workout>>
+
+    @GET("items/workout/{id}")
+    suspend fun getWorkoutById(
+        @Path("id") workoutId: String,
+        @Header("Authorization") token: String,
+        @Query("fields") fields: String = "*"
+    ): Response<Workout>
+
+    @GET("items/workout_exercise")
+    suspend fun getWorkoutExercisesByWorkoutId(
+        @Header("Authorization") token: String,
+        @Query("filter[workout_id][_eq]") workoutId: String,
+        @Query("fields") fields: String = "*,exercise_id.*"
+    ): Response<DirectusListResponse<WorkoutExerciseWithExercise>>
+
+    @GET("items/workout_exercise/{id}")
+    suspend fun getWorkoutExerciseById(
+        @Path("id") workoutExerciseId: String,
+        @Header("Authorization") token: String,
+        @Query("fields") fields: String = "*,exercise_id.*"
+    ): Response<WorkoutExerciseWithExercise>
 }
 
 interface ExerciseService {

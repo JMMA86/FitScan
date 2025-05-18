@@ -33,14 +33,17 @@ import icesi.edu.co.fitscan.ui.theme.greyStrong
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseDetailScreen(
-    exerciseId: String = "ID_EJERCICIO_AQUI", // Hardcodea un ID para pruebas
+    workoutExerciseId: String? = null, // Recibe el id de workout_exercise
     onNavigateBack: () -> Unit = {}
 ) {
     val viewModel: ExerciseDetailViewModel = viewModel()
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(exerciseId) {
-        viewModel.loadExercise(exerciseId)
+    // Si recibimos el id de workout_exercise, obtenemos el id del ejercicio relacionado
+    LaunchedEffect(workoutExerciseId) {
+        if (!workoutExerciseId.isNullOrBlank()) {
+            viewModel.loadExerciseFromWorkoutExercise(workoutExerciseId)
+        }
     }
 
     // Colores del tema

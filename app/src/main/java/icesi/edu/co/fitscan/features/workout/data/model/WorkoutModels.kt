@@ -30,3 +30,15 @@ data class WorkoutExercise(
     @SerializedName("sets") val sets: Int?,
     @SerializedName("reps") val reps: Int?
 )
+
+data class WorkoutExerciseWithExercise(
+    @SerializedName("id") val id: String,
+    @SerializedName("workout_id") val workoutId: String?,
+    @SerializedName("exercise_id") val exercise: Exercise?,
+    @SerializedName("sets") val sets: Int?,
+    @SerializedName("reps") val reps: Int?
+)
+
+data class DirectusListResponse<T>(
+    @SerializedName("data") val data: List<T>
+)
