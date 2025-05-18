@@ -13,7 +13,8 @@ data class WorkoutExercise(
     val reps: Int,
 )
 
-class Workout(
+data class Workout(
+    val id: String,
     val customer_id: String,
     val name: String,
     val type: String,

@@ -11,6 +11,9 @@ import icesi.edu.co.fitscan.features.auth.ui.screens.LoginScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
 import icesi.edu.co.fitscan.features.home.ui.screens.DashboardScreen
+//import icesi.edu.co.fitscan.features.notifications.ui.screens.NotificationsScreen
+//import icesi.edu.co.fitscan.features.profile.ui.screens.ProfileScreen
+//import icesi.edu.co.fitscan.features.settings.ui.screens.SettingsScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutListScreen
 import icesi.edu.co.fitscan.ui.theme.greenLess
@@ -25,10 +28,15 @@ fun NavigationHost(navController: NavHostController) {
     ) {
         // --- Rutas Principales (requieren login) ---
         composable(Screen.Home.route) {
-            DashboardScreen(/* Pasa parámetros si necesita */)
+            DashboardScreen()
         }
         composable(Screen.Workouts.route) {
-            WorkoutListScreen(/* Pasa parámetros si necesita */)
+            WorkoutListScreen(
+                onNavigateToCreate = { navController.navigate("create_workout") },
+                onNavigateToPerform = { workoutId ->
+                    navController.navigate("perform_workout/$workoutId")
+                }
+            )
         }
 
         composable(
@@ -83,6 +91,27 @@ fun NavigationHost(navController: NavHostController) {
                     }
                 },
             )
+        }
+
+        /*composable("profile") {
+            ProfileScreen(navController = navController)
+        }
+
+        composable("settings") {
+            SettingsScreen(navController = navController)
+        }
+
+        composable("notifications") {
+            NotificationsScreen(navController = navController)
+        }*/
+
+        composable("create_workout") {
+            CreateWorkoutScreen()
+        }
+
+        composable("perform_workout/{workoutId}") { backStackEntry ->
+            val workoutId = backStackEntry.arguments?.getString("workoutId") ?: ""
+            // Implement the logic to navigate to the PerformWorkoutScreen
         }
     }
 }

@@ -2,59 +2,40 @@ package icesi.edu.co.fitscan.features.workout.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import icesi.edu.co.fitscan.features.workout.domain.data.remote.response.Workout
+import icesi.edu.co.fitscan.features.workout.domain.service.WorkoutListService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class WorkoutUi(
-    val name: String,
-    val time: String,
-    val level: String,
-    val exercises: String
-)
+sealed class WorkoutListUiState {
+    object Idle : WorkoutListUiState()
+    object Loading : WorkoutListUiState()
+    data class Success(val workouts: List<Workout>) : WorkoutListUiState()
+    data class Error(val message: String) : WorkoutListUiState()
+}
 
-data class WorkoutListUiState(
-    val isLoading: Boolean = false,
-    val error: String? = null,
-    val myWorkouts: List<WorkoutUi> = emptyList(),
-    val popularWorkouts: List<WorkoutUi> = emptyList()
-)
+class WorkoutListViewModel(
+    private val service: WorkoutListService
+) : ViewModel() {
 
-class WorkoutListViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(WorkoutListUiState())
+    private val _uiState = MutableStateFlow<WorkoutListUiState>(WorkoutListUiState.Idle)
     val uiState: StateFlow<WorkoutListUiState> = _uiState.asStateFlow()
 
     init {
         loadWorkouts()
     }
 
-    fun loadWorkouts() {
+    private fun loadWorkouts() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            _uiState.value = WorkoutListUiState.Loading
             try {
-                // Simulación de carga de datos
-                kotlinx.coroutines.delay(1000)
-                _uiState.value = WorkoutListUiState(
-                    isLoading = false,
-                    myWorkouts = listOf(
-                        WorkoutUi("Fuerza de cuerpo completo", "45 min", "Avanzado", "8 ejercicios"),
-                        WorkoutUi("Carrera matutina", "45 min", "Avanzado", "8 ejercicios"),
-                        WorkoutUi("Tren superior", "45 min", "Avanzado", "8 ejercicios")
-                    ),
-                    popularWorkouts = listOf(
-                        WorkoutUi("Sesión HIIT", "45 min", "Avanzado", "8 ejercicios"),
-                        WorkoutUi("Carrera matutina", "45 min", "Avanzado", "8 ejercicios"),
-                        WorkoutUi("Tren superior", "45 min", "Avanzado", "8 ejercicios")
-                    )
-                )
+                val workouts = service.getWorkouts()
+                _uiState.value = WorkoutListUiState.Success(workouts)
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(isLoading = false, error = e.message ?: "Error desconocido")
+                _uiState.value = WorkoutListUiState.Error(e.message ?: "Error desconocido")
             }
         }
-    }
-
-    fun retry() {
-        loadWorkouts()
     }
 } 
