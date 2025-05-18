@@ -1,6 +1,8 @@
 package icesi.edu.co.fitscan.features.common.data.remote
 
 import icesi.edu.co.fitscan.features.auth.data.remote.AuthRepository
+import icesi.edu.co.fitscan.features.workout.data.remote.WorkoutService
+import icesi.edu.co.fitscan.features.workout.data.remote.ExerciseService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -32,5 +34,13 @@ object RetrofitInstance {
 
     val authRepository: AuthRepository by lazy {
         retrofit.create(AuthRepository::class.java)
+    }
+
+    val workoutService: WorkoutService by lazy {
+        retrofit.create(WorkoutService::class.java)
+    }
+
+    val exerciseService: ExerciseService by lazy {
+        retrofit.create(ExerciseService::class.java)
     }
 }

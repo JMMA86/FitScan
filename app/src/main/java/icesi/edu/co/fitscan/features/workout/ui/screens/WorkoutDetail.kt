@@ -11,6 +11,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.* // Import all filled icons for convenience
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,35 +24,37 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R // Import your R file for drawables
+import icesi.edu.co.fitscan.features.workout.ui.viewmodel.WorkoutDetailState
+import icesi.edu.co.fitscan.features.workout.ui.viewmodel.WorkoutDetailViewModel
 import icesi.edu.co.fitscan.ui.theme.* // Import all from your theme package
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutDetailScreen(
+    workoutId: String? = null, // Ahora es nullable
     onNavigateBack: () -> Unit = {},
     onStartWorkout: () -> Unit = {},
     onEditWorkout: () -> Unit = {},
     onExerciseClick: (String) -> Unit = {} // Takes exercise name, for example
 ) {
-    // Hardcoded data for the workout detail
-    val workoutName = "Fuerza de todo el cuerpo"
-    val workoutDuration = "45 min"
-    val workoutDifficulty = "Avanzado"
-    val workoutTags = listOf("Gym", "8 ejercicios")
-    val exercises = listOf(
-        Triple("Sentadillas con salto", 4, 12),
-        Triple("Press de banca", 4, 10),
-        Triple("Deadlifts", 4, 8),
-        Triple("Pull-ups", 4, 10),
-        Triple("Press de hombro", 4, 12),
-        Triple("Barbell Rows", 4, 12)
-    )
+    val viewModel: WorkoutDetailViewModel = viewModel()
+    val state by viewModel.state.collectAsState()
 
-    // Colors from your theme
+    // Cargar la rutina al entrar
+    LaunchedEffect(workoutId) {
+        if (workoutId.isNullOrBlank()) {
+            viewModel.loadFirstWorkout()
+        } else {
+            //viewModel.loadWorkout(workoutId)
+        }
+    }
+
+    // Colores del tema
     val screenBackgroundColor = greyStrong
     val primaryTextColor = Color.White
-    val secondaryTextColor = Color.LightGray // Or another grey from your theme like greyLightText if you have one
+    val secondaryTextColor = Color.LightGray
     val accentColor = greenLess
     val cardBackgroundColor = greyMed // For exercise item cards
 
@@ -75,108 +80,132 @@ fun WorkoutDetailScreen(
         },
         containerColor = screenBackgroundColor
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .background(screenBackgroundColor)
-                .padding(horizontal = 16.dp) // General horizontal padding for content
-        ) {
-            // Workout Title and Edit Button
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp, bottom = 8.dp),
-                verticalAlignment = Alignment.Top, // Align edit button to the top of the title block
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = workoutName,
-                    style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                    color = primaryTextColor,
-                    modifier = Modifier.weight(1f).padding(end = 8.dp) // Give title space
-                )
-                IconButton(
-                    onClick = onEditWorkout,
+        when (state) {
+            is WorkoutDetailState.Loading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = accentColor)
+                }
+            }
+            is WorkoutDetailState.Error -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text((state as WorkoutDetailState.Error).message, color = Color.Red)
+                }
+            }
+            is WorkoutDetailState.Success -> {
+                val workout = (state as WorkoutDetailState.Success).workout
+                val workoutName = workout.name ?: "-"
+                val workoutDuration = "${workout.durationMinutes ?: "-"} min"
+                val workoutDifficulty = workout.difficulty ?: "-"
+                val workoutTags = listOfNotNull(workout.type, "${workout.workoutExercises?.size ?: 0} ejercicios")
+                val exercises = workout.workoutExercises?.mapNotNull {
+                    val ex = it.exercise
+                    if (ex != null) Triple(ex.name ?: "-", it.sets ?: 0, it.reps ?: 0) else null
+                } ?: emptyList()
+
+                Column(
                     modifier = Modifier
-                        .size(40.dp) // Standard FAB mini size
-                        .clip(CircleShape)
-                        .background(accentColor.copy(alpha = 0.3f)) // Lighter accent for background
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .verticalScroll(rememberScrollState())
+                        .background(screenBackgroundColor)
+                        .padding(horizontal = 16.dp) // General horizontal padding for content
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = "Editar entrenamiento",
-                        tint = accentColor // Icon itself is the accent color
-                    )
+                    // Workout Title and Edit Button
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp, bottom = 8.dp),
+                        verticalAlignment = Alignment.Top, // Align edit button to the top of the title block
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = workoutName,
+                            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                            color = primaryTextColor,
+                            modifier = Modifier.weight(1f).padding(end = 8.dp) // Give title space
+                        )
+                        IconButton(
+                            onClick = onEditWorkout,
+                            modifier = Modifier
+                                .size(40.dp) // Standard FAB mini size
+                                .clip(CircleShape)
+                                .background(accentColor.copy(alpha = 0.3f)) // Lighter accent for background
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Edit,
+                                contentDescription = "Editar entrenamiento",
+                                tint = accentColor // Icon itself is the accent color
+                            )
+                        }
+                    }
+
+                    // Workout Info (Duration, Difficulty)
+                    Row(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        InfoItem(icon = Icons.Filled.Schedule, text = workoutDuration, color = secondaryTextColor)
+                        InfoItem(icon = Icons.Filled.LocalFireDepartment, text = workoutDifficulty, color = secondaryTextColor)
+                    }
+
+                    // Workout Tags
+                    Row(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        workoutTags.forEach { tag ->
+                            TagChip(text = tag, backgroundColor = cardBackgroundColor, textColor = accentColor)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Exercise List
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        exercises.forEach { (name, sets, reps) ->
+                            ExerciseRow(
+                                name = name,
+                                sets = sets,
+                                reps = reps,
+                                onClick = { onExerciseClick(name) },
+                                cardBackgroundColor = cardBackgroundColor,
+                                primaryTextColor = primaryTextColor,
+                                secondaryTextColor = secondaryTextColor,
+                                accentColor = accentColor
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp)) // Space before the button
+
+                    // Start Workout Button
+                    Button(
+                        onClick = onStartWorkout,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = accentColor)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_fitness), // Your dumbbell icon
+                            contentDescription = null, // Decorative
+                            tint = primaryTextColor, // Icon color on button
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Empezar entrenamiento",
+                            color = primaryTextColor, // Text color on button
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp)) // Padding at the very bottom
                 }
             }
-
-            // Workout Info (Duration, Difficulty)
-            Row(
-                modifier = Modifier.padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                InfoItem(icon = Icons.Filled.Schedule, text = workoutDuration, color = secondaryTextColor)
-                InfoItem(icon = Icons.Filled.LocalFireDepartment, text = workoutDifficulty, color = secondaryTextColor)
-            }
-
-            // Workout Tags
-            Row(
-                modifier = Modifier.padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                workoutTags.forEach { tag ->
-                    TagChip(text = tag, backgroundColor = cardBackgroundColor, textColor = accentColor)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Exercise List
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                exercises.forEach { (name, sets, reps) ->
-                    ExerciseRow(
-                        name = name,
-                        sets = sets,
-                        reps = reps,
-                        onClick = { onExerciseClick(name) },
-                        cardBackgroundColor = cardBackgroundColor,
-                        primaryTextColor = primaryTextColor,
-                        secondaryTextColor = secondaryTextColor,
-                        accentColor = accentColor
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp)) // Space before the button
-
-            // Start Workout Button
-            Button(
-                onClick = onStartWorkout,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = accentColor)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_fitness), // Your dumbbell icon
-                    contentDescription = null, // Decorative
-                    tint = primaryTextColor, // Icon color on button
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Empezar entrenamiento",
-                    color = primaryTextColor, // Text color on button
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp)) // Padding at the very bottom
         }
     }
 }
@@ -219,14 +248,14 @@ private fun ExerciseRow(
     reps: Int,
     onClick: () -> Unit,
     cardBackgroundColor: Color,
-    primaryTextColor: Color,
-    secondaryTextColor: Color,
-    accentColor: Color
+    primaryTextColor: Color = Color.White,
+    secondaryTextColor: Color = Color.LightGray,
+    accentColor: Color = greenLess
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp)) // Clip before clickable for ripple effect
+            .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
         color = cardBackgroundColor
@@ -254,7 +283,7 @@ private fun ExerciseRow(
             Icon(
                 imageVector = Icons.Filled.ChevronRight,
                 contentDescription = "Ver detalle",
-                tint = accentColor, // Use accent color for the arrow
+                tint = accentColor,
                 modifier = Modifier.size(28.dp)
             )
         }
