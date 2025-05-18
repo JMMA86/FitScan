@@ -99,6 +99,7 @@ class ExerciseStatisticsViewModel(
             _isLoading.value = true
             try {
                 val sessions = service.fetchWorkoutSessions()
+                // Use duration (worked hours) for statistics, not calories
                 val processedData = service.fetchAndProcessStatistics(sessions, rangeStart, rangeEnd)
                 _statisticsData.value = processedData
                 _pointsData.value = processedData.mapIndexed { index, data ->
@@ -126,9 +127,9 @@ class ExerciseStatisticsViewModel(
                 _weightLostProgress.value = 0.8f // TODO: Calculate real progress
             } catch (e: Exception) { _weightLost.value = 0f; _weightLostProgress.value = 0f }
             try {
-                val (caloriesCurrent, caloriesLast) = service.getCaloriesPerDayForLast14Days()
-                _currentWeek.value = caloriesCurrent
-                _lastWeek.value = caloriesLast
+                val (workedCurrent, workedLast) = service.getWorkedHoursPerDayForLast14Days()
+                _currentWeek.value = workedCurrent
+                _lastWeek.value = workedLast
             } catch (e: Exception) {
                 _currentWeek.value = List(7) { 0f }
                 _lastWeek.value = List(7) { 0f }

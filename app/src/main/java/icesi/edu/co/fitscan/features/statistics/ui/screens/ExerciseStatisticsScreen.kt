@@ -44,8 +44,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import icesi.edu.co.fitscan.R
+import icesi.edu.co.fitscan.features.auth.ui.screens.SectionTitle
 import icesi.edu.co.fitscan.features.statistics.ui.components.TrainedHoursChart
 import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.ExerciseStatisticsViewModel
+import icesi.edu.co.fitscan.ui.theme.greyStrong
+import java.time.LocalDate
 
 @Composable
 fun ExerciseStatisticsScreen(
@@ -67,36 +70,11 @@ fun ExerciseStatisticsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(greyStrong)
     ) {
-        // Top Navigation Bar
-        Surface(
-            color = Color.Black,
-            shadowElevation = 4.dp
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp, horizontal = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
-                }
-                Text(
-                    text = "Estadísticas de rutina",
-                    color = Color.White,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 18.sp,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center
-                )
-                IconButton(onClick = { viewModel.loadAllStatistics() }) {
-                    Icon(Icons.Filled.MoreVert, contentDescription = "Reload", tint = Color.White)
-                }
-            }
-        }
+
+        SectionTitle("Estadísticas de rutina")
+
         Spacer(modifier = Modifier.height(16.dp))
 
         // Progress Visual Card
@@ -399,10 +377,15 @@ fun AreaChart(data: List<Float>, color: Color, modifier: Modifier = Modifier) {
 
 @Composable
 fun StackedBarChart(currentWeek: List<Float>, lastWeek: List<Float>, labels: List<String>, modifier: Modifier = Modifier) {
-    // Simple stacked bar chart for 7 days
-    val barWidth = 20.dp
+    // Side-by-side bar chart for 7 days
+    val barWidth = 12.dp
     val maxVal = (currentWeek + lastWeek).maxOrNull() ?: 1f
-    val barSpace = 16.dp
+    val barSpace = 8.dp
+    // Generate labels for the last 7 days (e.g., Mon, Tue, ...)
+    val today = LocalDate.now()
+    val dayLabels = (6 downTo 0).map { offset ->
+        today.minusDays(offset.toLong()).dayOfWeek.name.take(3).capitalize()
+    }
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomStart
@@ -416,29 +399,28 @@ fun StackedBarChart(currentWeek: List<Float>, lastWeek: List<Float>, labels: Lis
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .height(180.dp)
-                            .width(barWidth),
-                        contentAlignment = Alignment.BottomCenter
+                    Row(
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.Center
                     ) {
-                        // Last week bar
+                        // Last week bar (left)
                         Box(
                             modifier = Modifier
                                 .height((lastWeek.getOrNull(i) ?: 0f) / maxVal * 180.dp)
                                 .width(barWidth)
-                                .background(Color(0xFF8B8B45), shape = RoundedCornerShape(6.dp))
+                                .background(Color(0xFF8B8B45), shape = RoundedCornerShape(4.dp))
                         )
-                        // Current week bar (on top)
+                        Spacer(modifier = Modifier.width(2.dp))
+                        // Current week bar (right)
                         Box(
                             modifier = Modifier
                                 .height((currentWeek.getOrNull(i) ?: 0f) / maxVal * 180.dp)
                                 .width(barWidth)
-                                .background(Color(0xFFADD8E6), shape = RoundedCornerShape(6.dp))
+                                .background(Color(0xFFADD8E6), shape = RoundedCornerShape(4.dp))
                         )
                     }
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(labels.getOrNull(i) ?: "", color = Color.White, fontSize = 12.sp)
+                    Text(dayLabels.getOrNull(i) ?: "", color = Color.White, fontSize = 12.sp)
                 }
                 if (i < 6) Spacer(modifier = Modifier.width(barSpace))
             }

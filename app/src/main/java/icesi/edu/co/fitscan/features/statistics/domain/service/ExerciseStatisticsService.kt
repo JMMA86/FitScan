@@ -15,8 +15,8 @@ import java.time.Duration
 class ExerciseStatisticsService(
     private val remoteDataSource: ExerciseStatisticsRemoteDataSource = RetrofitInstance.statisticsRepository
 ) {
-    var currentToken: String = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAyMDRhMDVhLWRkN2MtNDFmYS05NWU1LTM4OGZiZmNiNmE2OCIsInJvbGUiOiJjOGI5MzgxNi1jOTZmLTRhNTEtYTZlNi0zYjgyZjZkODhmZGEiLCJhcHBfYWNjZXNzIjp0cnVlLCJhZG1pbl9hY2Nlc3MiOnRydWUsImlhdCI6MTc0NzU3NjUxMiwiZXhwIjoxNzQ3NTgwMTEyLCJpc3MiOiJkaXJlY3R1cyJ9.euLuI6_VmiuKjB0GtTXYS-5Ru63HIGb5P3xrd0lyuv0"
-    var currentCustomerId: String = "012ff1ea-daa1-426b-b537-f5d51abd3f4c"
+    var currentToken: String = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAyMDRhMDVhLWRkN2MtNDFmYS05NWU1LTM4OGZiZmNiNmE2OCIsInJvbGUiOiJjOGI5MzgxNi1jOTZmLTRhNTEtYTZlNi0zYjgyZjZkODhmZGEiLCJhcHBfYWNjZXNzIjp0cnVlLCJhZG1pbl9hY2Nlc3MiOnRydWUsImlhdCI6MTc0NzU4MDM0NiwiZXhwIjoxNzQ3NTgzOTQ2LCJpc3MiOiJkaXJlY3R1cyJ9.aj2leHYKV0Ch3isYH3RI894yK1mNA3BxNwYSkmwC418"
+    var currentCustomerId: String = "3ae128fe-5113-4195-b4eb-cdc5b0777298"
 
     private val _statisticsData = MutableStateFlow<List<Pair<String, Float>>>(emptyList())
     val statisticsData: StateFlow<List<Pair<String, Float>>> = _statisticsData
@@ -203,6 +203,31 @@ class ExerciseStatisticsService(
             }
         } catch (e: Exception) {
             List(6) { 0f }
+        }
+    }
+
+    suspend fun getWorkedHoursPerDayForLast14Days(): Pair<List<Float>, List<Float>> {
+        return try {
+            val sessions = remoteDataSource.getWorkoutSessions(currentToken, currentCustomerId).data
+            val now = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+            val hoursByDay = (0..13).map { i ->
+                val day = now.minusDays(i.toLong())
+                val total = sessions.filter {
+                    val start = LocalDateTime.parse(it.start_time, formatter)
+                    start.toLocalDate() == day.toLocalDate()
+                }.sumOf {
+                    val start = LocalDateTime.parse(it.start_time, formatter)
+                    val end = LocalDateTime.parse(it.end_time, formatter)
+                    java.time.Duration.between(start, end).toMinutes().toDouble() / 60.0
+                }.toFloat()
+                total
+            }.reversed()
+            val currentWeek = hoursByDay.takeLast(7)
+            val lastWeek = hoursByDay.take(7)
+            Pair(currentWeek, lastWeek)
+        } catch (e: Exception) {
+            Pair(List(7) { 0f }, List(7) { 0f })
         }
     }
 }
