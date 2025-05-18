@@ -1,7 +1,8 @@
-package icesi.edu.co.fitscan.features.auth.data.remote
+package icesi.edu.co.fitscan.features.common.data.remote
 
 import icesi.edu.co.fitscan.features.statistics.data.remote.ExerciseStatisticsRemoteDataSource
 import okhttp3.Interceptor
+import icesi.edu.co.fitscan.features.auth.data.remote.AuthRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
