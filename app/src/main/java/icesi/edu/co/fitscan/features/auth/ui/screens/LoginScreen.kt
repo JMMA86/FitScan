@@ -34,11 +34,9 @@ fun LoginScreen(
     onNavigateToRegister: () -> Unit, // Callback para ir a registro
     onNavigateToForgotPassword: () -> Unit, // Callback para ir a olvidar contraseña (opcional)
 ) {
-    // Ocultar NavBar y TopBar
-    AppState.setHeaderVisible(false)
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("admin@fitscan.com") }
+    var password by remember { mutableStateOf("123") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     // Observar el estado de la UI desde el ViewModel

@@ -3,6 +3,9 @@ package icesi.edu.co.fitscan.features.statistics.data.remote
 import retrofit2.http.GET
 import retrofit2.http.Query
 import retrofit2.http.Header
+import icesi.edu.co.fitscan.features.statistics.data.remote.dto.ExerciseItem
+import icesi.edu.co.fitscan.features.statistics.data.remote.dto.ExerciseListResponse
+import icesi.edu.co.fitscan.features.statistics.data.remote.dto.CompletedExerciseProgressDto
 
 interface ExerciseStatisticsRemoteDataSource {
     @GET("/items/workout_session")
@@ -46,6 +49,21 @@ interface ExerciseStatisticsRemoteDataSource {
         @Header("Authorization") token: String,
         @Query("filter[id][_eq]") customerId: String
     ): CustomerResponse
+
+    @GET("/items/completed_exercise")
+    suspend fun getCompletedExercisesForProgress(
+        @Header("Authorization") token: String,
+        @Query("filter[workout_session_id][customer_id][_eq]") customerId: String,
+        @Query("filter[exercise_id][_eq]") exerciseId: String,
+        @Query("filter[workout_session_id][start_time][_gte]") fromDate: String?,
+        @Query("filter[workout_session_id][start_time][_lte]") toDate: String?,
+        @Query("fields") fields: String = "id,workout_session_id,exercise_id,sets,reps,rpe,weight_kg,workout_session_id.start_time"
+    ): CompletedExerciseProgressResponse
+
+    @GET("/items/exercise")
+    suspend fun getAllExercises(
+        @Header("Authorization") token: String
+    ): ExerciseListResponse
 }
 
 data class WorkoutSessionResponse(
@@ -90,7 +108,7 @@ data class CompletedExercise(
     val sets: Int?,
     val reps: Int?,
     val rpe: Int?,
-    val weight_kg: Int? // NEW: weight moved per set
+    val weight_kg: Int?
 )
 
 data class CustomerResponse(val data: List<Customer>)
@@ -98,3 +116,5 @@ data class Customer(
     val id: String,
     val body_measure_id: String?
 )
+
+data class CompletedExerciseProgressResponse(val data: List<CompletedExerciseProgressDto>)

@@ -47,7 +47,7 @@ fun FitScanNavBar(navController: NavController) {
             Screen.Home,
             Screen.Workouts,
             Screen.Profile,
-            Screen.Settings
+            Screen.Statistics // This is the statistics button, which should navigate to ExerciseStatisticsScreen
         )
 
         val currentRoute = currentRoute(navController)

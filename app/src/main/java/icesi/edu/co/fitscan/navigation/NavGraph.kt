@@ -13,6 +13,8 @@ import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
 import icesi.edu.co.fitscan.features.home.ui.screens.DashboardScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutListScreen
+import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseProgressScreen
+import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseStatisticsScreen
 import icesi.edu.co.fitscan.ui.theme.greenLess
 
 @Composable
@@ -83,6 +85,14 @@ fun NavigationHost(navController: NavHostController) {
                     }
                 },
             )
+        }
+
+        composable(Screen.Statistics.route) {
+            ExerciseStatisticsScreen(navController = navController)
+        }
+
+        composable(Screen.ExerciseProgress.route) {
+            ExerciseProgressScreen()
         }
     }
 }
