@@ -47,7 +47,7 @@ fun NavigationHost(navController: NavHostController) {
                 greenLess = greenLess,
                 onLoginSuccess = {
                     // Navigate to Home (Dashboard) and clear the history up to Login
-                    navController.navigate(Screen.CreateWorkout.route) {
+                    navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                         launchSingleTop = true
                     }
