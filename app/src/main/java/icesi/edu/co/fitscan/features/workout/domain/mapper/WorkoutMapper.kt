@@ -14,7 +14,7 @@ class WorkoutMapper {
 
         return Workout(
             id = UUID.fromString(dto.id),
-            customerId = UUID.fromString(dto.customerId),
+            customerId = UUID.fromString(dto.customer_id),
             name = dto.name,
             type = WorkoutType.valueOf(dto.type.uppercase()),
             durationMinutes = dto.durationMinutes,
@@ -27,7 +27,7 @@ class WorkoutMapper {
         val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
         return WorkoutDto(
             id = workout.id.toString(),
-            customerId = workout.customerId.toString(),
+            customer_id = workout.customerId.toString(),
             name = workout.name,
             type = workout.type.name,
             durationMinutes = workout.durationMinutes,

@@ -16,7 +16,7 @@ class WorkoutExerciseRepositoryImpl(
         return try {
             val response = api.getExercisesByWorkoutId(workoutId.toString())
             if (response.isSuccessful) {
-                val workoutExercises = response.body()?.map { dto: WorkoutExerciseDto -> mapper.toDomain(dto) } ?: emptyList<WorkoutExercise>()
+                val workoutExercises = response.body()?.map { dto: WorkoutExerciseDto -> mapper.toDomain(dto) } ?: emptyList()
                 Result.success(workoutExercises)
             } else {
                 Result.failure(Exception("Error getting workout exercises: ${response.code()}"))
@@ -26,13 +26,10 @@ class WorkoutExerciseRepositoryImpl(
         }
     }
 
-    override suspend fun addExerciseToWorkout(workoutId: UUID, exerciseId: UUID): Result<WorkoutExercise> {
+    override suspend fun addExerciseToWorkout(workoutExercise: WorkoutExercise): Result<WorkoutExercise> {
         return try {
             
-            val response = api.addExerciseToWorkout(
-                workoutId.toString(),
-                exerciseId.toString()
-            )
+            val response = api.addExerciseToWorkout(mapper.toDto(workoutExercise))
             
             if (response.isSuccessful) {
                 val workoutExercise = response.body()?.let { dto: WorkoutExerciseDto -> mapper.toDomain(dto) }

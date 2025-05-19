@@ -5,7 +5,7 @@ import java.util.UUID
 
 interface WorkoutExerciseRepository {
     suspend fun getWorkoutExercises(workoutId: UUID): Result<List<WorkoutExercise>>
-    suspend fun addExerciseToWorkout(workoutId: UUID, exerciseId: UUID): Result<WorkoutExercise>
+    suspend fun addExerciseToWorkout(workoutExercise: WorkoutExercise): Result<WorkoutExercise>
     suspend fun removeExerciseFromWorkout(workoutId: UUID, exerciseId: UUID): Result<Boolean>
     suspend fun updateWorkoutExercise(workoutId: UUID, exerciseId: UUID, workoutExercise: WorkoutExercise): Result<WorkoutExercise>
     suspend fun markExerciseAsCompleted(workoutId: UUID, exerciseId: UUID): Result<WorkoutExercise>

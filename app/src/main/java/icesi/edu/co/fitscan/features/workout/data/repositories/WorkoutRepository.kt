@@ -13,8 +13,4 @@ interface WorkoutRepository {
     
     suspend fun getWorkoutsByCustomerId(customerId: UUID): Result<List<Workout>>
     
-    suspend fun addExerciseToWorkout(workoutId: UUID, exerciseId: UUID): Result<WorkoutExercise>
-    suspend fun removeExerciseFromWorkout(workoutId: UUID, exerciseId: UUID): Result<Unit>
-    suspend fun updateWorkoutExercise(workoutId: UUID, exerciseId: UUID, workoutExercise: WorkoutExercise): Result<WorkoutExercise>
-    
 } 

@@ -9,8 +9,8 @@ class WorkoutExerciseMapper {
     fun toDomain(dto: WorkoutExerciseDto): WorkoutExercise {
         return WorkoutExercise(
             id = UUID.fromString(dto.id),
-            workoutId = UUID.fromString(dto.workoutId),
-            exerciseId = UUID.fromString(dto.exerciseId),
+            workoutId = UUID.fromString(dto.workout_id),
+            exerciseId = UUID.fromString(dto.exercise_id),
             sets = dto.sets,
             reps = dto.reps,
             isAiSuggested = dto.isAiSuggested
@@ -20,8 +20,8 @@ class WorkoutExerciseMapper {
     fun toDto(workoutExercise: WorkoutExercise): WorkoutExerciseDto {
         return WorkoutExerciseDto(
             id = workoutExercise.id.toString(),
-            workoutId = workoutExercise.workoutId.toString(),
-            exerciseId = workoutExercise.exerciseId.toString(),
+            workout_id = workoutExercise.workoutId.toString(),
+            exercise_id = workoutExercise.exerciseId.toString(),
             sets = workoutExercise.sets,
             reps = workoutExercise.reps,
             isAiSuggested = workoutExercise.isAiSuggested

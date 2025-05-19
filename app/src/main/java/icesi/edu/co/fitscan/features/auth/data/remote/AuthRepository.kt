@@ -6,13 +6,17 @@ import icesi.edu.co.fitscan.features.auth.data.remote.request.CustomerRelationat
 import icesi.edu.co.fitscan.features.auth.data.remote.request.LoginRequest
 import icesi.edu.co.fitscan.features.auth.data.remote.request.User
 import icesi.edu.co.fitscan.features.auth.data.remote.response.BodyMeasureResponseData
+import icesi.edu.co.fitscan.features.auth.data.remote.response.CustomerResponse
 import icesi.edu.co.fitscan.features.auth.data.remote.response.CustomerResponseData
 import icesi.edu.co.fitscan.features.auth.data.remote.response.LoginResponse
+import icesi.edu.co.fitscan.features.auth.data.remote.response.UserResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface AuthRepository {
     @POST("/auth/login")
@@ -39,4 +43,13 @@ interface AuthRepository {
         @Header("Authorization") token: String,
         @retrofit2.http.Path("customerId") customerId: String
     ): Response<Unit>
+
+    @GET("users/me")
+    suspend fun getCurrentUser(@Header("Authorization") authHeader: String): Response<UserResponse>
+
+    @GET("items/customer")
+    suspend fun getCustomerByUserId(
+        @Header("Authorization") authHeader: String,
+        @Query("filter[user_id][_eq]") userId: String
+    ): Response<CustomerResponse>
 }

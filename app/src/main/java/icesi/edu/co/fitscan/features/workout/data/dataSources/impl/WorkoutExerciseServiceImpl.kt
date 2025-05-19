@@ -14,10 +14,9 @@ class WorkoutExerciseServiceImpl(
         return repository.getWorkoutExercises(workoutId)
     }
 
-    override suspend fun addExerciseToWorkout(workoutId: UUID, exerciseId: UUID): Result<WorkoutExercise> {
-        if (workoutId.toString().isBlank()) return Result.failure(Exception("El ID del entrenamiento no puede estar vacío"))
-        if (exerciseId.toString().isBlank()) return Result.failure(Exception("El ID del ejercicio no puede estar vacío"))
-        return repository.addExerciseToWorkout(workoutId, exerciseId)
+    override suspend fun addExerciseToWorkout(workoutExercise: WorkoutExercise): Result<WorkoutExercise> {
+        if (!validateWorkoutExercise(workoutExercise)) return Result.failure(Exception("Datos del ejercicio en el entrenamiento inválidos"))
+        return repository.addExerciseToWorkout(workoutExercise)
     }
 
     override suspend fun removeExerciseFromWorkout(workoutId: UUID, exerciseId: UUID): Result<Unit> {

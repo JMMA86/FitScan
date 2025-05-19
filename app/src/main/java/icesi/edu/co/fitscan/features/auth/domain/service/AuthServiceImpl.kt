@@ -41,6 +41,17 @@ class AuthServiceImpl(
                             "AuthServiceImpl",
                             "Token saved: ${response.body()?.data?.access_token}"
                         )
+
+                        val userResponse = authRepository.getCurrentUser("Bearer ${response.body()?.data?.access_token}")
+
+                        if (userResponse.isSuccessful && userResponse.body()?.data != null) {
+                            val userId = userResponse.body()?.data?.id
+                            val customerResponse = authRepository.getCustomerByUserId("Bearer ${response.body()?.data?.access_token}", userId.toString())
+
+                            if (customerResponse.isSuccessful && customerResponse.body()?.data != null && customerResponse.body()?.data?.isNotEmpty() == true) {
+                                AppState.customerId = customerResponse.body()?.data?.get(0)?.id
+                            }
+                        }
                     }
                     Result.success(response.body()!!.data!!)
                 } else {

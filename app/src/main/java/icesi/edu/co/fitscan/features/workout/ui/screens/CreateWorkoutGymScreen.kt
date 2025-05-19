@@ -11,18 +11,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.common.ui.components.ExerciseList
-import icesi.edu.co.fitscan.features.common.ui.components.FitScanButton
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanTextField
 import icesi.edu.co.fitscan.features.common.ui.components.SectionTitle
 import icesi.edu.co.fitscan.features.common.ui.components.SuggestionChip
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.CreateWorkoutGymViewModel
-import icesi.edu.co.fitscan.features.workout.ui.viewmodel.CreateWorkoutGymViewModelFactory
+import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.CreateWorkoutGymViewModelFactory
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import icesi.edu.co.fitscan.ui.theme.greyStrong
 
@@ -31,9 +32,73 @@ fun CreateWorkoutGymScreen() {
     val viewModel: CreateWorkoutGymViewModel = viewModel(factory = CreateWorkoutGymViewModelFactory())
     val exercises by viewModel.exercises.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val isSaving by viewModel.isSaving.collectAsState()
+    val saveSuccess by viewModel.saveSuccess.collectAsState()
+    val saveError by viewModel.saveError.collectAsState()
+    
     val scrollState = rememberScrollState()
     var workoutName by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
+    
+    // Diálogo de confirmación o error
+    if (saveSuccess != null || saveError != null) {
+        Dialog(onDismissRequest = { 
+            if (saveSuccess != null) {
+                // Si fue exitoso, reiniciar la pantalla
+                workoutName = ""
+                viewModel.reload()
+            } else {
+                // Si hubo error, solo cerrar el diálogo
+                viewModel.resetSaveState()
+            }
+        }) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = if (saveSuccess != null) "¡Entrenamiento creado!" else "Error",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    Text(
+                        text = saveSuccess?.let { "El entrenamiento '${it.name}' ha sido guardado correctamente." }
+                              ?: saveError ?: "Ha ocurrido un error desconocido",
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    Button(
+                        onClick = {
+                            if (saveSuccess != null) {
+                                // Si fue exitoso, reiniciar la pantalla
+                                workoutName = ""
+                                viewModel.reload()
+                            } else {
+                                // Si hubo error, solo cerrar el diálogo
+                                viewModel.resetSaveState()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Aceptar")
+                    }
+                }
+            }
+        }
+    }
     
     // Función para calcular la altura dinámica basada en el número de elementos
     fun calculateDynamicHeight(itemCount: Int): Dp {
@@ -72,7 +137,7 @@ fun CreateWorkoutGymScreen() {
 
     val exerciseData = remember { mutableStateMapOf<String, Pair<Int, Int>>() }
 
-    // Actualizar ejerciseData cuando se cargan nuevos ejercicios
+    // Actualizar exerciseData cuando se cargan nuevos ejercicios
     LaunchedEffect(exercises) {
         exercises.forEach { exercise ->
             if (!exerciseData.containsKey(exercise.name)) {
@@ -262,8 +327,30 @@ fun CreateWorkoutGymScreen() {
             
             Spacer(modifier = Modifier.weight(1f))
 
+            // Botón de guardar (asegúrate de que esta parte está al final de tu composable)
             Box(modifier = Modifier.padding(bottom = 16.dp)) {
-                FitScanButton({}, R.drawable.ic_fitness)
+                Button(
+                    onClick = {
+                        // Preparar la lista de ejercicios a guardar
+                        val exercisesToSave = addedExercises.map { name ->
+                            name to (exerciseData[name] ?: Pair(4, 10))
+                        }
+                        // Llamar al ViewModel para crear el workout
+                        viewModel.createWorkout(workoutName, exercisesToSave)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isSaving && workoutName.isNotBlank() && addedExercises.isNotEmpty()
+                ) {
+                    if (isSaving) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Guardar entrenamiento")
+                    }
+                }
             }
         }
     }

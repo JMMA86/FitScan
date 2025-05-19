@@ -14,5 +14,5 @@ data class Workout(
 )
 
 enum class WorkoutType {
-    GYM, RUNNING
+    Gym, Running
 }
