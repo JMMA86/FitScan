@@ -35,8 +35,8 @@ fun LoginScreen(
     onNavigateToForgotPassword: () -> Unit, // Callback para ir a olvidar contraseña (opcional)
 ) {
 
-    var email by remember { mutableStateOf("admin@fitscan.com") }
-    var password by remember { mutableStateOf("123") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     // Observar el estado de la UI desde el ViewModel

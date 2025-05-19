@@ -19,6 +19,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.common.ui.components.ExerciseList
+import icesi.edu.co.fitscan.features.common.ui.components.FitScanButton
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanTextField
 import icesi.edu.co.fitscan.features.common.ui.components.SectionTitle
 import icesi.edu.co.fitscan.features.common.ui.components.SuggestionChip
@@ -330,30 +331,19 @@ fun CreateWorkoutGymScreen() {
             
             Spacer(modifier = Modifier.weight(1f))
 
-            // Botón de guardar (asegúrate de que esta parte está al final de tu composable)
             Box(modifier = Modifier.padding(bottom = 16.dp)) {
-                Button(
+                FitScanButton(
                     onClick = {
-                        // Preparar la lista de ejercicios a guardar
                         val exercisesToSave = addedExercises.map { name ->
                             name to (exerciseData[name] ?: Pair(4, 10))
                         }
-                        // Llamar al ViewModel para crear el workout
                         viewModel.createWorkout(workoutName, exercisesToSave)
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !isSaving && workoutName.isNotBlank() && addedExercises.isNotEmpty()
-                ) {
-                    if (isSaving) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = Color.White,
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text("Guardar entrenamiento")
-                    }
-                }
+                    icon = R.drawable.ic_fitness,
+                    text = "Guardar entrenamiento",
+                    enabled = !isSaving && workoutName.isNotBlank() && addedExercises.isNotEmpty(),
+                    isLoading = isSaving
+                )
             }
         }
     }
