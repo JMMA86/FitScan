@@ -97,7 +97,7 @@ fun NavigationHost(navController: NavHostController) {
         }
 
         composable(Screen.ExerciseProgress.route) {
-            ExerciseProgressScreen()
+            ExerciseProgressScreen(navController = navController)
         }
     }
 }

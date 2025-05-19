@@ -18,7 +18,7 @@ import java.time.Duration
 class ExerciseStatisticsService(
     private val remoteDataSource: ExerciseStatisticsRemoteDataSource = RetrofitInstance.statisticsRepository
 ) {
-    var currentToken: String = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAyMDRhMDVhLWRkN2MtNDFmYS05NWU1LTM4OGZiZmNiNmE2OCIsInJvbGUiOiJjOGI5MzgxNi1jOTZmLTRhNTEtYTZlNi0zYjgyZjZkODhmZGEiLCJhcHBfYWNjZXNzIjp0cnVlLCJhZG1pbl9hY2Nlc3MiOnRydWUsImlhdCI6MTc0NzYyNTg4NywiZXhwIjoxNzQ3NjI5NDg3LCJpc3MiOiJkaXJlY3R1cyJ9.lau95C7qxQZHO6yzvybjumNUN0-7Y3gojuOR1yZSO8M"
+    var currentToken: String = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAyMDRhMDVhLWRkN2MtNDFmYS05NWU1LTM4OGZiZmNiNmE2OCIsInJvbGUiOiJjOGI5MzgxNi1jOTZmLTRhNTEtYTZlNi0zYjgyZjZkODhmZGEiLCJhcHBfYWNjZXNzIjp0cnVlLCJhZG1pbl9hY2Nlc3MiOnRydWUsImlhdCI6MTc0NzYzMDE1MywiZXhwIjoxNzQ3NjMzNzUzLCJpc3MiOiJkaXJlY3R1cyJ9.ONp3vWWT2IVYjL0bFK4oFsdi61NQXieBdMNLv7uEijM"
     var currentCustomerId: String = "3ae128fe-5113-4195-b4eb-cdc5b0777298"
 
     private val _statisticsData = MutableStateFlow<List<Pair<String, Float>>>(emptyList())
