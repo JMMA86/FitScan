@@ -114,7 +114,7 @@ class CreateWorkoutGymViewModel(
                 // Crear el objeto Workout
                 val workout = Workout(
                     id = UUID.randomUUID(),
-                    customerId = UUID.fromString(customerId),
+                    customerId = if (customerId != "") UUID.fromString(customerId) else UUID.fromString("32db6c2b-c79c-4a0e-adb4-0809a8ecb1a4"), // Quemado hasta que se solucione lo de los roles
                     name = name,
                     type = WorkoutType.Gym,
                     durationMinutes = 60,

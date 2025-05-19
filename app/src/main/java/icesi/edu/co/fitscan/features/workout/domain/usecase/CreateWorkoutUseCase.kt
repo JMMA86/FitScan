@@ -10,7 +10,6 @@ class CreateWorkoutUseCase(
     private val workoutExerciseService: WorkoutExerciseService
 ) {
     suspend operator fun invoke(workout: Workout, workoutExercises: List<WorkoutExercise>): Result<Workout> {
-        // Validaciones básicas
         if (workout.name.isBlank()) {
             return Result.failure(IllegalArgumentException("El nombre del workout no puede estar vacío"))
         }
@@ -20,22 +19,13 @@ class CreateWorkoutUseCase(
         }
         
         try {
-            val workoutResult = workoutService.createWorkout(workout)
-
-            if (workoutResult.isFailure) {
-                return workoutResult
-            }
+            workoutService.createWorkout(workout)
 
             for (workoutExercise in workoutExercises) {
-                val exerciseResult = workoutExerciseService.addExerciseToWorkout(workoutExercise)
-
-                if (exerciseResult.isFailure) {
-                    return Result.failure(exerciseResult.exceptionOrNull()
-                        ?: IllegalStateException("Error al agregar ejercicio"))
-                }
+                workoutExerciseService.addExerciseToWorkout(workoutExercise)
             }
             
-            return Result.success(workoutResult.getOrThrow())
+            return Result.success(workout)
             
         } catch (e: Exception) {
             return Result.failure(e)

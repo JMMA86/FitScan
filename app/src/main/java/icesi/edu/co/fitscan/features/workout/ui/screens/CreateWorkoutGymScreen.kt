@@ -22,6 +22,7 @@ import icesi.edu.co.fitscan.features.common.ui.components.ExerciseList
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanTextField
 import icesi.edu.co.fitscan.features.common.ui.components.SectionTitle
 import icesi.edu.co.fitscan.features.common.ui.components.SuggestionChip
+import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.CreateWorkoutGymViewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.CreateWorkoutGymViewModelFactory
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
@@ -39,6 +40,8 @@ fun CreateWorkoutGymScreen() {
     val scrollState = rememberScrollState()
     var workoutName by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
+
+    AppState.setHeaderVisible(true)
     
     // Diálogo de confirmación o error
     if (saveSuccess != null || saveError != null) {
