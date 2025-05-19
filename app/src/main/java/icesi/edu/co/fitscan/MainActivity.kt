@@ -9,18 +9,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
 import icesi.edu.co.fitscan.navigation.NavigationHost
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
-import icesi.edu.co.fitscan.features.common.ui.components.FitScanHeader
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanNavBar
-import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
+import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseStatisticsScreen
+import icesi.edu.co.fitscan.navigation.Screen
 import icesi.edu.co.fitscan.ui.theme.greenLess
 
 class MainActivity : ComponentActivity() {
@@ -29,6 +29,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FitScanTheme {
+                ExerciseStatisticsScreen()
                 App()
             }
         }
@@ -38,36 +39,25 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun App() {
     val navController = rememberNavController()
-    val showHeader by AppState.showHeader.collectAsState()
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStackEntry?.destination?.route
+    val authRoutes = setOf(
+        Screen.Login.route,
+        Screen.Registration.route,
+        Screen.BodyMeasurements.route
+    )
+    val showHeaderAndNavBar = currentRoute != null && authRoutes.none { currentRoute?.startsWith(it) == true }
+
     Scaffold (
-        topBar = { if(showHeader) FitScanHeader(
-            title="FitScanAI",
-            onBackClick = { /* TODO */ },
-            navController=navController
-        ) else Box{} },
-        bottomBar = { if(showHeader) FitScanNavBar(navController) else Box {} }
+        bottomBar = {
+            if (showHeaderAndNavBar) FitScanNavBar(navController) else Box {}
+        }
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             NavigationHost(navController)
         }
     }
 }
-
-// @Preview(showBackground = true)
-// @Composable
-// fun GreetingPreview() {
-//    FitScanTheme {
-//         App()
-//     }
-// }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun LoginScreenPreview() {
-//    FitScanTheme {
-//        LoginScreen(greenLess)
-//    }
-//}
 
 @Preview(showBackground = true)
 @Composable

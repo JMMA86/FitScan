@@ -8,18 +8,29 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
     primary = greenLess,
+    onPrimary = Color.White,
     secondary = greyMed,
-    tertiary = greyStrong
+    onSecondary = Color.White,
+    tertiary = greyStrong,
+    onTertiary = Color.White,
+    background = greyStrong,
+    onBackground = Color.White,
+    surface = greyMed,
+    onSurface = Color.White,
+    error = redDangerous,
+    onError = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = greenLess,
     secondary = greyMed,
-    tertiary = greyStrong
+    tertiary = greyStrong,
+    background = greyStrong
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -34,7 +45,7 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun FitScanTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = true /* isSystemInDarkTheme()*/,
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit

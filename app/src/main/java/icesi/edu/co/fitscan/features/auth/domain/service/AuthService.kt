@@ -9,7 +9,7 @@ interface AuthService {
     suspend fun register(
         email: String,
         password: String,
-        firsName: String,
+        firstName: String,
         lastName: String
     ): Result<Unit>
 

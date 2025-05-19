@@ -9,6 +9,8 @@ object AppState {
 
     val showHeader = MutableStateFlow(true)
     var token: String? = null
+        private set
+        
     var customerId: String? = null
 
     fun init(prefs: SharedPreferences) {
@@ -30,6 +32,11 @@ object AppState {
         showHeader.value = newValue
     }
 
+    fun setAuthToken(newToken: String) {
+        token = newToken
+    }
+
+    // Limpia los datos de sesión al cerrar sesión
     fun clear() {
         showHeader.value = false
         customerId = null
