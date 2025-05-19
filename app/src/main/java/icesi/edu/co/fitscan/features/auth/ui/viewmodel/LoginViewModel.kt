@@ -7,6 +7,7 @@ import icesi.edu.co.fitscan.features.auth.domain.service.AuthServiceImpl
 import icesi.edu.co.fitscan.features.auth.domain.usecase.LoginUseCase
 import icesi.edu.co.fitscan.features.auth.ui.model.LoginUiState
 import icesi.edu.co.fitscan.features.common.data.remote.RetrofitInstance
+import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,12 +37,31 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
             result.fold(
                 onSuccess = { loginData ->
-                    _uiState.value = LoginUiState.Success()
+                    AppState.token = loginData.access_token
+                    val userId = extractUserIdFromToken(loginData.access_token)
+                    if (userId != null) {
+                        AppState.customerId = userId
+                        _uiState.value = LoginUiState.Success()
+                    } else {
+                        _uiState.value = LoginUiState.Error("Error al procesar los datos de usuario")
+                    }
                 },
                 onFailure = { exception ->
                     handleError(exception)
                 }
             )
+        }
+    }
+
+    private fun extractUserIdFromToken(token: String): String? {
+        return try {
+            val parts = token.split(".")
+            if (parts.size < 2) return null
+            val payload = String(android.util.Base64.decode(parts[1], android.util.Base64.DEFAULT))
+            val json = org.json.JSONObject(payload)
+            json.getString("id")
+        } catch (e: Exception) {
+            null
         }
     }
 

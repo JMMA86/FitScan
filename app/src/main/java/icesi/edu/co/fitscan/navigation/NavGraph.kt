@@ -20,18 +20,21 @@ import icesi.edu.co.fitscan.ui.theme.greenLess
 
 @Composable
 fun NavigationHost(navController: NavHostController) {
-
     NavHost(
         navController = navController,
         startDestination = Screen.Login.route
-        // startDestination = Screen.Home.route
     ) {
-        // --- Rutas Principales (requieren login) ---
         composable(Screen.Home.route) {
             DashboardScreen(navController = navController)
         }
+
         composable(Screen.Workouts.route) {
-            WorkoutListScreen(/* Pasa parámetros si necesita */)
+            WorkoutListScreen(
+                onNavigateToCreate = { navController.navigate("create_workout") },
+                onNavigateToPerform = { workoutId ->
+                    navController.navigate("perform_workout/$workoutId")
+                }
+            )
         }
 
         composable(
@@ -48,7 +51,6 @@ fun NavigationHost(navController: NavHostController) {
             LoginScreen(
                 greenLess = greenLess,
                 onLoginSuccess = {
-                    // Navigate to Home (Dashboard) and clear the history up to Login
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                         launchSingleTop = true
@@ -67,7 +69,6 @@ fun NavigationHost(navController: NavHostController) {
             RegisterScreen(
                 greenLess = greenLess,
                 onRegisterSuccess = {
-                    // Navigate to body measurements screen after registration
                     navController.navigate(Screen.BodyMeasurements.route) {
                         popUpTo(Screen.Registration.route) { inclusive = true }
                     }
@@ -79,12 +80,11 @@ fun NavigationHost(navController: NavHostController) {
             PersonalDataScreen(
                 greenLess = greenLess,
                 onMeasurementsComplete = {
-                    // Navigate to Home screen after measurements are saved
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                         launchSingleTop = true
                     }
-                },
+                }
             )
         }
 
@@ -98,6 +98,15 @@ fun NavigationHost(navController: NavHostController) {
 
         composable("notifications") {
             NotificationsScreen(navController = navController)
+        }
+
+        composable("create_workout") {
+            CreateWorkoutScreen()
+        }
+
+        composable("perform_workout/{workoutId}") { backStackEntry ->
+            val workoutId = backStackEntry.arguments?.getString("workoutId") ?: ""
+            // Implement PerformWorkoutScreen navigation
         }
     }
 }

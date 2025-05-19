@@ -22,6 +22,5 @@ val greyButton = Color(0xFF3F4946)
 
 val redDangerous = Color(0xFF9F423C)
 
-// Dashboard specific colors
-val dashboardCardBackground: Color = Color(0xFF23272A)
-val dashboardGreen: Color = Color(0xFF4ADE80)
+val dashboardCardBackground = Color(0xFF23272A)
+val dashboardGreen = Color(0xFF4ADE80)
