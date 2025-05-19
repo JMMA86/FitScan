@@ -1,20 +1,20 @@
 package icesi.edu.co.fitscan.features.workout.data.repositories.impl
 
-import icesi.edu.co.fitscan.features.workout.data.api.ExerciseApiService
+import icesi.edu.co.fitscan.features.workout.data.dataSources.ExerciseDataSource
 import icesi.edu.co.fitscan.features.workout.data.dto.ExerciseDto
 import icesi.edu.co.fitscan.features.workout.domain.model.Exercise
 import icesi.edu.co.fitscan.features.workout.data.repositories.ExerciseRepository
-import icesi.edu.co.fitscan.features.workout.domain.mapper.ExerciseMapper
+import icesi.edu.co.fitscan.features.workout.data.mapper.ExerciseMapper
 import java.util.UUID
 
 class ExerciseRepositoryImpl(
-    private val api: ExerciseApiService,
+    private val datasource: ExerciseDataSource,
     private val mapper: ExerciseMapper
 ) : ExerciseRepository {
 
     override suspend fun getAllExercises(): Result<List<Exercise>> {
         return try {
-            val response = api.getAllExercises()
+            val response = datasource.getAllExercises()
             if (response.isSuccessful) {
                 val responseBody = response.body()
                 val exerciseDto = responseBody?.data ?: emptyList()
@@ -30,7 +30,7 @@ class ExerciseRepositoryImpl(
 
     override suspend fun getExerciseById(id: UUID): Result<Exercise> {
         return try {
-            val response = api.getExerciseById(id.toString())
+            val response = datasource.getExerciseById(id.toString())
             if (response.isSuccessful) {
                 val exercise = response.body()?.let { dto: ExerciseDto -> mapper.toDomain(dto) }
                 if (exercise != null) {
@@ -48,7 +48,7 @@ class ExerciseRepositoryImpl(
 
     override suspend fun createExercise(exercise: Exercise): Result<Exercise> {
         return try {
-            val response = api.createExercise(mapper.toDto(exercise))
+            val response = datasource.createExercise(mapper.toDto(exercise))
             if (response.isSuccessful) {
                 val exercise = response.body()?.let { dto: ExerciseDto -> mapper.toDomain(dto) }
                 if (exercise != null) {
@@ -66,7 +66,7 @@ class ExerciseRepositoryImpl(
 
     override suspend fun updateExercise(id: UUID, exercise: Exercise): Result<Exercise> {
         return try {
-            val response = api.updateExercise(id.toString(), mapper.toDto(exercise))
+            val response = datasource.updateExercise(id.toString(), mapper.toDto(exercise))
             if (response.isSuccessful) {
                 val exercise = response.body()?.let { dto: ExerciseDto -> mapper.toDomain(dto) }
                 if (exercise != null) {
@@ -84,7 +84,7 @@ class ExerciseRepositoryImpl(
 
     override suspend fun deleteExercise(id: UUID): Result<Unit> {
         return try {
-            val response = api.deleteExercise(id.toString())
+            val response = datasource.deleteExercise(id.toString())
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {

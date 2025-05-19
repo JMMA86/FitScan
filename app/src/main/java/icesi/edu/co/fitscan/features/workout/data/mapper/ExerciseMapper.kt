@@ -1,4 +1,4 @@
-package icesi.edu.co.fitscan.features.workout.domain.mapper
+package icesi.edu.co.fitscan.features.workout.data.mapper
 
 import icesi.edu.co.fitscan.features.workout.data.dto.ExerciseDto
 import icesi.edu.co.fitscan.features.workout.domain.model.Exercise

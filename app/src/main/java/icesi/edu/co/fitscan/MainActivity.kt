@@ -46,7 +46,7 @@ fun App() {
         Screen.Registration.route,
         Screen.BodyMeasurements.route
     )
-    val showHeaderAndNavBar = currentRoute != null && authRoutes.none { currentRoute?.startsWith(it) == true }
+    val showHeaderAndNavBar = true || currentRoute != null && authRoutes.none { currentRoute?.startsWith(it) == true }
 
     Scaffold (
         bottomBar = {

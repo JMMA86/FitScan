@@ -1,11 +1,11 @@
-package icesi.edu.co.fitscan.features.workout.data.api
+package icesi.edu.co.fitscan.features.workout.data.dataSources
 
 import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutExerciseDto
 import retrofit2.Response
 import retrofit2.http.*
 
 @JvmSuppressWildcards
-interface WorkoutExerciseApiService {
+interface WorkoutExerciseDataSource {
 
     companion object {
         const val BASE_PATH = "items"

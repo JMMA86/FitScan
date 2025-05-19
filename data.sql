@@ -183,6 +183,8 @@ CREATE TABLE progress_photo (
     image_path TEXT
 );
 
+DELETE FROM directus_users WHERE email <> 'admin@fitscan.com';
+
 -- =============================
 -- INSERTAR DATOS DE PRUEBA
 -- =============================
@@ -257,11 +259,11 @@ BEGIN
     RAISE NOTICE 'Inserted % body measures', num_body_measures;
 
     -- Insert users into directus_users
-    FOR i IN 1..num_customers LOOP
+    FOR i IN 1..num_customers-1 LOOP
         INSERT INTO directus_users (id, email, password, first_name, last_name)
         VALUES (
             uuid_generate_v4(),
-            'user' || i || '_' || (RANDOM() * 100000)::INTEGER || '@example.com', -- Ensure unique email
+            'user' || i || '@example.com', -- Ensure unique email
             '$argon2id$v=19$m=65536,t=3,p=4$O09OkqGHl74ucu293lNxuw$OgTadbPObj9sc2EZFm0hK4ppzSCb7ro8WtAK3cOQLbg',
             'FirstName' || i,
             'LastName' || i
@@ -443,10 +445,3 @@ END $$;
 -- TRUNCATE TABLE dietary_restriction CASCADE;
 -- TRUNCATE TABLE fitness_goal CASCADE;
 -- TRUNCATE TABLE training_level CASCADE;
-
-DELETE FROM directus_users WHERE email = 'juan@example.com' or email = 'maria@example.com';
-
-INSERT INTO directus_users (id, email, password, first_name, last_name)
-VALUES 
-(uuid_generate_v4(), 'juan@example.com', '$argon2id$v=19$m=65536,t=3,p=4$O09OkqGHl74ucu293lNxuw$OgTadbPObj9sc2EZFm0hK4ppzSCb7ro8WtAK3cOQLbg', 'Juan', 'Pérez'),
-(uuid_generate_v4(), 'maria@example.com', '$argon2id$v=19$m=65536,t=3,p=4$O09OkqGHl74ucu293lNxuw$OgTadbPObj9sc2EZFm0hK4ppzSCb7ro8WtAK3cOQLbg', 'María', 'López');

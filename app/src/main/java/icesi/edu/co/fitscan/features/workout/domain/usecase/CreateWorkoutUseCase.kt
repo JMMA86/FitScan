@@ -1,13 +1,13 @@
 package icesi.edu.co.fitscan.features.workout.domain.usecase
 
-import icesi.edu.co.fitscan.features.workout.data.dataSources.WorkoutExerciseService
+import icesi.edu.co.fitscan.features.workout.data.repositories.WorkoutRepository
+import icesi.edu.co.fitscan.features.workout.data.repositories.WorkoutExerciseRepository
 import icesi.edu.co.fitscan.features.workout.domain.model.Workout
 import icesi.edu.co.fitscan.features.workout.domain.model.WorkoutExercise
-import icesi.edu.co.fitscan.features.workout.data.dataSources.WorkoutService
 
 class CreateWorkoutUseCase(
-    private val workoutService: WorkoutService,
-    private val workoutExerciseService: WorkoutExerciseService
+    private val workoutRepository: WorkoutRepository,
+    private val workoutExerciseRepository: WorkoutExerciseRepository
 ) {
     suspend operator fun invoke(workout: Workout, workoutExercises: List<WorkoutExercise>): Result<Workout> {
         if (workout.name.isBlank()) {
@@ -19,10 +19,10 @@ class CreateWorkoutUseCase(
         }
         
         try {
-            workoutService.createWorkout(workout)
+            workoutRepository.createWorkout(workout)
 
             for (workoutExercise in workoutExercises) {
-                workoutExerciseService.addExerciseToWorkout(workoutExercise)
+                workoutExerciseRepository.addExerciseToWorkout(workoutExercise)
             }
             
             return Result.success(workout)
