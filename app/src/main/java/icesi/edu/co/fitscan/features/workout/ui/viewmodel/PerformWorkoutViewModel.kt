@@ -2,9 +2,9 @@ package icesi.edu.co.fitscan.features.workout.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import icesi.edu.co.fitscan.features.workout.domain.data.remote.response.NextExercise
-import icesi.edu.co.fitscan.features.workout.domain.data.remote.response.WorkoutUiState
+import icesi.edu.co.fitscan.features.workout.domain.usecase.NextExercise
 import icesi.edu.co.fitscan.features.workout.domain.usecase.PerformWorkoutUseCase
+import icesi.edu.co.fitscan.features.workout.domain.usecase.WorkoutUiState
 import icesi.edu.co.fitscan.features.workout.ui.model.PerformWorkoutUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,13 +26,14 @@ class PerformWorkoutViewModel(
                 // Map workoutResponse to WorkoutUiState as needed
                 // For now, just use the default
                 workoutState = WorkoutUiState(
-                    title = workoutResponse.data.firstOrNull()?.name ?: "Workout",
+                    title = "Workout",
                     // Map other fields as needed
                 )
                 _uiState.value = PerformWorkoutUiState.Success(workoutState)
             }.onFailure { e ->
                 _uiState.value = PerformWorkoutUiState.Error(e.message ?: "Unknown error")
             }
+
         }
     }
 

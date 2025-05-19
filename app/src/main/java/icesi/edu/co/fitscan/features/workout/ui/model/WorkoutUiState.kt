@@ -1,6 +1,6 @@
-package icesi.edu.co.fitscan.features.workout.domain.data.remote.response
+package icesi.edu.co.fitscan.features.workout.domain.usecase
 
-// Representa el estado actual del ejercicio en ejecución
+// Represents the current exercise
 data class CurrentExercise(
     val name: String = "Pull up",
     val time: String = "10:32",
@@ -8,21 +8,21 @@ data class CurrentExercise(
     val remainingTime: String = "Quedan 55 segundos"
 )
 
-// Representa el siguiente ejercicio
+// represents the next exercise
 data class NextExercise(
     val name: String = "Nombre del ejercicio",
     val sets: Int = 4,
     val reps: Int = 12
 )
 
-// Representa un ejercicio restante en la lista
+// Represents the remaining exercises
 data class RemainingExercise(
     val title: String,
     val sets: String,
     val reps: String
 )
 
-// Estado global de la pantalla
+// Global state of the workout screen
 data class WorkoutUiState(
     val title: String = "Fuerza de todo el cuerpo",
     val subtitle: String = "Subtítulos",

@@ -1,8 +1,9 @@
-package icesi.edu.co.fitscan.features.workout.ui.viewmodel
+package icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import icesi.edu.co.fitscan.features.workout.domain.usecase.PerformWorkoutUseCase
+import icesi.edu.co.fitscan.features.workout.ui.viewmodel.PerformWorkoutViewModel
 
 class PerformWorkoutViewModelFactory(
     private val performWorkoutUseCase: PerformWorkoutUseCase
