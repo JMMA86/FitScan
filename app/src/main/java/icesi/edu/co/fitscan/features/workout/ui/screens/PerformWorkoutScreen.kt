@@ -24,9 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,8 +36,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
+import icesi.edu.co.fitscan.features.workout.domain.usecase.PerformWorkoutUseCase
 import icesi.edu.co.fitscan.features.workout.ui.model.PerformWorkoutUiState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.PerformWorkoutViewModel
+import icesi.edu.co.fitscan.features.workout.ui.viewmodel.PerformWorkoutViewModelFactory
 import icesi.edu.co.fitscan.ui.theme.Dimensions
 import icesi.edu.co.fitscan.ui.theme.backgroundGrey
 import icesi.edu.co.fitscan.ui.theme.greenLess
@@ -52,26 +51,33 @@ import icesi.edu.co.fitscan.ui.theme.redDangerous
 @Composable
 fun PerformWorkoutScreen(
     modifier: Modifier = Modifier,
-    viewModel: PerformWorkoutViewModel = viewModel()
+    performWorkoutUseCase: PerformWorkoutUseCase
 ) {
+    val viewModel: PerformWorkoutViewModel = viewModel(
+        factory = PerformWorkoutViewModelFactory(performWorkoutUseCase)
+    )
+
     val uiState by viewModel.uiState.collectAsState()
 
     when (uiState) {
         is PerformWorkoutUiState.Idle -> {
             // Optionally show nothing or a placeholder
         }
+
         is PerformWorkoutUiState.Loading -> {
             // Show a loading indicator
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Text("Loading...")
             }
         }
+
         is PerformWorkoutUiState.Error -> {
             val message = (uiState as PerformWorkoutUiState.Error).message
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Text("Error: $message", color = Color.Red)
             }
         }
+
         is PerformWorkoutUiState.Success -> {
             val data = (uiState as PerformWorkoutUiState.Success).data
 
@@ -277,7 +283,10 @@ fun PerformWorkoutScreen(
 
                 // Finish workout button
                 item {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
                         Button(
                             onClick = { viewModel.finishWorkout() },
                             colors = ButtonDefaults.outlinedButtonColors(contentColor = redDangerous),

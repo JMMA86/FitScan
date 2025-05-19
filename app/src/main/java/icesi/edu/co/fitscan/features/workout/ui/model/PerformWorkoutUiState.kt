@@ -1,5 +1,7 @@
 package icesi.edu.co.fitscan.features.workout.ui.model
 
+import icesi.edu.co.fitscan.features.workout.domain.data.remote.response.WorkoutUiState
+
 sealed interface PerformWorkoutUiState {
     object Idle : PerformWorkoutUiState
     object Loading : PerformWorkoutUiState

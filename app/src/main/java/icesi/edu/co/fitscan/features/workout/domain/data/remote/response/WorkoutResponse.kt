@@ -29,3 +29,4 @@ class WorkoutExerciseResponse(
 class WorkoutResponse(
     val data: List<Workout>
 )
+

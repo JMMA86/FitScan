@@ -1,23 +1,39 @@
-// File: app/src/main/java/icesi/edu/co/fitscan/features/workout/ui/viewmodel/PerformWorkoutViewModel.kt
 package icesi.edu.co.fitscan.features.workout.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import icesi.edu.co.fitscan.features.workout.ui.model.NextExercise
+import icesi.edu.co.fitscan.features.workout.domain.data.remote.response.NextExercise
+import icesi.edu.co.fitscan.features.workout.domain.data.remote.response.WorkoutUiState
+import icesi.edu.co.fitscan.features.workout.domain.usecase.PerformWorkoutUseCase
 import icesi.edu.co.fitscan.features.workout.ui.model.PerformWorkoutUiState
-import icesi.edu.co.fitscan.features.workout.ui.model.WorkoutUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class PerformWorkoutViewModel : ViewModel() {
+class PerformWorkoutViewModel(
+    private val performWorkoutUseCase: PerformWorkoutUseCase
+) : ViewModel() {
     private val _uiState = MutableStateFlow<PerformWorkoutUiState>(PerformWorkoutUiState.Idle)
     val uiState: StateFlow<PerformWorkoutUiState> = _uiState
 
     private var workoutState = WorkoutUiState()
 
-    init {
-        _uiState.value = PerformWorkoutUiState.Success(workoutState)
+    fun startWorkout(customerId: String) {
+        _uiState.value = PerformWorkoutUiState.Loading
+        viewModelScope.launch {
+            val result = performWorkoutUseCase(customerId)
+            result.onSuccess { workoutResponse ->
+                // Map workoutResponse to WorkoutUiState as needed
+                // For now, just use the default
+                workoutState = WorkoutUiState(
+                    title = workoutResponse.data.firstOrNull()?.name ?: "Workout",
+                    // Map other fields as needed
+                )
+                _uiState.value = PerformWorkoutUiState.Success(workoutState)
+            }.onFailure { e ->
+                _uiState.value = PerformWorkoutUiState.Error(e.message ?: "Unknown error")
+            }
+        }
     }
 
     fun endSet() {
@@ -49,7 +65,6 @@ class PerformWorkoutViewModel : ViewModel() {
     }
 
     fun finishWorkout() {
-        // Handle workout finish logic
         _uiState.value = PerformWorkoutUiState.Idle
     }
 

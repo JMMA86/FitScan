@@ -1,4 +1,4 @@
-package icesi.edu.co.fitscan.features.workout.ui.model
+package icesi.edu.co.fitscan.features.workout.domain.data.remote.response
 
 // Representa el estado actual del ejercicio en ejecución
 data class CurrentExercise(
