@@ -1,6 +1,8 @@
 package icesi.edu.co.fitscan.features.statistics.domain.service
 
+import android.util.Log
 import icesi.edu.co.fitscan.features.common.data.remote.RetrofitInstance
+import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import icesi.edu.co.fitscan.features.statistics.data.remote.ExerciseStatisticsRemoteDataSource
@@ -18,8 +20,8 @@ import java.time.Duration
 class ExerciseStatisticsService(
     private val remoteDataSource: ExerciseStatisticsRemoteDataSource = RetrofitInstance.statisticsRepository
 ) {
-    var currentToken: String = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAyMDRhMDVhLWRkN2MtNDFmYS05NWU1LTM4OGZiZmNiNmE2OCIsInJvbGUiOiJjOGI5MzgxNi1jOTZmLTRhNTEtYTZlNi0zYjgyZjZkODhmZGEiLCJhcHBfYWNjZXNzIjp0cnVlLCJhZG1pbl9hY2Nlc3MiOnRydWUsImlhdCI6MTc0NzYzMDE1MywiZXhwIjoxNzQ3NjMzNzUzLCJpc3MiOiJkaXJlY3R1cyJ9.ONp3vWWT2IVYjL0bFK4oFsdi61NQXieBdMNLv7uEijM"
-    var currentCustomerId: String = "3ae128fe-5113-4195-b4eb-cdc5b0777298"
+    var currentToken: String = "Bearer ${ AppState.token }"
+    var currentCustomerId: String = AppState.customerId ?: "defaultCustomerId"
 
     private val _statisticsData = MutableStateFlow<List<Pair<String, Float>>>(emptyList())
     val statisticsData: StateFlow<List<Pair<String, Float>>> = _statisticsData
@@ -188,9 +190,11 @@ class ExerciseStatisticsService(
     suspend fun getWeightAreaData(): List<Float> {
         return try {
             val sessions = remoteDataSource.getWorkoutSessions(currentToken, currentCustomerId).data
+            Log.e(">>>", sessions.toString())
             val sessionIds = sessions.map { it.id }
             if (sessionIds.isEmpty()) return List(6) { 0f }
             val completed = remoteDataSource.getWeightMovedStats(currentToken, sessionIds.joinToString(",")).data
+            Log.e(">>>", completed.toString())
             val now = LocalDateTime.now()
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
             (0..5).map { i ->
