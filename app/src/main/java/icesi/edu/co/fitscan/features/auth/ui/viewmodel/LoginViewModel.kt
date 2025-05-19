@@ -7,6 +7,7 @@ import icesi.edu.co.fitscan.features.auth.domain.service.AuthServiceImpl
 import icesi.edu.co.fitscan.features.auth.domain.usecase.LoginUseCase
 import icesi.edu.co.fitscan.features.auth.ui.model.LoginUiState
 import icesi.edu.co.fitscan.features.common.data.remote.RetrofitInstance
+import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,7 +36,10 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             val result = loginUseCase(email, password)
 
             result.fold(
-                onSuccess = { loginData ->
+                onSuccess = { loginResponse ->
+                    val token = loginResponse.access_token
+                    AppState.setAuthToken(token)
+
                     _uiState.value = LoginUiState.Success()
                 },
                 onFailure = { exception ->
