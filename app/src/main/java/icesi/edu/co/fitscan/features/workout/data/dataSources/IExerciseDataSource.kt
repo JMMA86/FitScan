@@ -6,7 +6,7 @@ import retrofit2.Response
 import retrofit2.http.*
 
 @JvmSuppressWildcards
-interface ExerciseDataSource {
+interface IExerciseDataSource {
 
     companion object {
         const val BASE_PATH = "items"

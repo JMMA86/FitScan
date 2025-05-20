@@ -1,4 +1,4 @@
-package icesi.edu.co.fitscan.features.common.ui.components
+package icesi.edu.co.fitscan.features.workout.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,7 +17,7 @@ import icesi.edu.co.fitscan.ui.theme.greenLess
 import icesi.edu.co.fitscan.ui.theme.greyStrong
 
 @Composable
-fun FitScanButton(
+fun CreateWorkoutButton(
     onClick: () -> Unit,
     icon: Int,
     text: String = "Crear entrenamiento",

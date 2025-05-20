@@ -1,7 +1,7 @@
 package icesi.edu.co.fitscan.features.workout.data.mapper
 
 import icesi.edu.co.fitscan.features.workout.data.dto.ExerciseDto
-import icesi.edu.co.fitscan.features.workout.domain.model.Exercise
+import icesi.edu.co.fitscan.domain.model.Exercise
 import java.util.UUID
 
 class ExerciseMapper {

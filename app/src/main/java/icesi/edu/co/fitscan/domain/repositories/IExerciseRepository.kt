@@ -1,9 +1,9 @@
-package icesi.edu.co.fitscan.features.workout.data.repositories
+package icesi.edu.co.fitscan.domain.repositories
 
-import icesi.edu.co.fitscan.features.workout.domain.model.Exercise
+import icesi.edu.co.fitscan.domain.model.Exercise
 import java.util.UUID
 
-interface ExerciseRepository {
+interface IExerciseRepository {
     suspend fun getAllExercises(): Result<List<Exercise>>
     suspend fun getExerciseById(id: UUID): Result<Exercise>
     suspend fun createExercise(exercise: Exercise): Result<Exercise>

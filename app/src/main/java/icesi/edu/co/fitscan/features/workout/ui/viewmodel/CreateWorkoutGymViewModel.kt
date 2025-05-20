@@ -2,13 +2,13 @@ package icesi.edu.co.fitscan.features.workout.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import icesi.edu.co.fitscan.domain.model.Exercise
+import icesi.edu.co.fitscan.domain.model.Workout
+import icesi.edu.co.fitscan.domain.model.WorkoutExercise
+import icesi.edu.co.fitscan.domain.model.WorkoutType
+import icesi.edu.co.fitscan.domain.usecases.ICreateWorkoutUseCase
+import icesi.edu.co.fitscan.domain.usecases.IGetExercisesUseCase
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
-import icesi.edu.co.fitscan.features.workout.domain.model.Exercise
-import icesi.edu.co.fitscan.features.workout.domain.model.Workout
-import icesi.edu.co.fitscan.features.workout.domain.model.WorkoutExercise
-import icesi.edu.co.fitscan.features.workout.domain.model.WorkoutType
-import icesi.edu.co.fitscan.features.workout.domain.usecase.CreateWorkoutUseCase
-import icesi.edu.co.fitscan.features.workout.domain.usecase.GetExercisesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -16,8 +16,8 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class CreateWorkoutGymViewModel(
-    private val getExercisesUseCase: GetExercisesUseCase,
-    private val createWorkoutUseCase: CreateWorkoutUseCase
+    private val getExercisesUseCase: IGetExercisesUseCase,
+    private val createWorkoutUseCase: ICreateWorkoutUseCase
 ) : ViewModel() {
 
     private val _exercises = MutableStateFlow<List<Exercise>>(emptyList())

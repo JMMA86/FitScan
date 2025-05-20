@@ -5,7 +5,7 @@ import retrofit2.Response
 import retrofit2.http.*
 
 @JvmSuppressWildcards
-interface WorkoutExerciseDataSource {
+interface IWorkoutExerciseDataSource {
 
     companion object {
         const val BASE_PATH = "items"

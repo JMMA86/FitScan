@@ -1,16 +1,16 @@
-package icesi.edu.co.fitscan.features.workout.data.repositories.impl
+package icesi.edu.co.fitscan.features.workout.data.repositories
 
-import icesi.edu.co.fitscan.features.workout.data.dataSources.WorkoutExerciseDataSource
+import icesi.edu.co.fitscan.features.workout.data.dataSources.IWorkoutExerciseDataSource
 import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutExerciseDto
-import icesi.edu.co.fitscan.features.workout.domain.model.WorkoutExercise
-import icesi.edu.co.fitscan.features.workout.data.repositories.WorkoutExerciseRepository
+import icesi.edu.co.fitscan.domain.model.WorkoutExercise
+import icesi.edu.co.fitscan.domain.repositories.IWorkoutExerciseRepository
 import icesi.edu.co.fitscan.features.workout.data.mapper.WorkoutExerciseMapper
 import java.util.UUID
 
 class WorkoutExerciseRepositoryImpl(
-    private val datasource: WorkoutExerciseDataSource,
+    private val datasource: IWorkoutExerciseDataSource,
     private val mapper: WorkoutExerciseMapper
-) : WorkoutExerciseRepository {
+) : IWorkoutExerciseRepository {
 
     override suspend fun getWorkoutExercises(workoutId: UUID): Result<List<WorkoutExercise>> {
         return try {
