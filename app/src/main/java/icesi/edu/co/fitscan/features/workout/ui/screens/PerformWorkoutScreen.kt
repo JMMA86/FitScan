@@ -38,20 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
-import icesi.edu.co.fitscan.features.common.data.remote.RetrofitInstance
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
-import icesi.edu.co.fitscan.features.workout.data.api.WorkoutApiService
-import icesi.edu.co.fitscan.features.workout.data.api.WorkoutExerciseApiService
-import icesi.edu.co.fitscan.features.workout.data.dataSources.impl.WorkoutServiceImpl
-import icesi.edu.co.fitscan.features.workout.data.repositories.impl.WorkoutExerciseRepositoryImpl
-import icesi.edu.co.fitscan.features.workout.data.repositories.impl.WorkoutRepositoryImpl
-import icesi.edu.co.fitscan.features.workout.domain.mapper.WorkoutExerciseMapper
-import icesi.edu.co.fitscan.features.workout.domain.mapper.WorkoutMapper
-import icesi.edu.co.fitscan.features.workout.domain.usecase.CurrentExercise
-import icesi.edu.co.fitscan.features.workout.domain.usecase.NextExercise
 import icesi.edu.co.fitscan.features.workout.domain.usecase.PerformWorkoutUseCase
-import icesi.edu.co.fitscan.features.workout.domain.usecase.RemainingExercise
-import icesi.edu.co.fitscan.features.workout.domain.usecase.WorkoutUiState
 import icesi.edu.co.fitscan.features.workout.ui.model.PerformWorkoutUiState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.PerformWorkoutViewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.PerformWorkoutViewModelFactory
@@ -66,10 +54,9 @@ import icesi.edu.co.fitscan.ui.theme.redDangerous
 @Composable
 fun PerformWorkoutScreen(
     modifier: Modifier = Modifier,
-    performWorkoutUseCase: PerformWorkoutUseCase
 ) {
     val viewModel: PerformWorkoutViewModel = viewModel(
-        factory = PerformWorkoutViewModelFactory(performWorkoutUseCase)
+        factory = PerformWorkoutViewModelFactory()
     )
 
     Log.e("PerformWorkoutScreen", "Customer ID: ${AppState.customerId}")
@@ -91,7 +78,12 @@ fun PerformWorkoutScreen(
 }
 
 @Composable
-fun PerformWorkoutListComponent(title: String = "NA", sets: String = "NA", reps: String = "NA") {
+fun PerformWorkoutListComponent(
+    title: String = "NA",
+    sets: String = "NA",
+    reps: String = "NA",
+    onClick: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -123,7 +115,7 @@ fun PerformWorkoutListComponent(title: String = "NA", sets: String = "NA", reps:
         Spacer(modifier = Modifier.weight(1f))
 
         Button(
-            onClick = {},
+            onClick = onClick,
             shape = RectangleShape,
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.buttonColors(containerColor = greyMed),
@@ -133,7 +125,7 @@ fun PerformWorkoutListComponent(title: String = "NA", sets: String = "NA", reps:
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.chevron_right),
-                contentDescription = "Motrar ejercicio",
+                contentDescription = "Mostrar ejercicio",
                 tint = greenLess,
                 modifier = Modifier
                     .size(Dimensions.LargeIconSize)
@@ -367,7 +359,8 @@ fun PerformWorkoutScreenContent(
                         PerformWorkoutListComponent(
                             title = exercise.title,
                             sets = exercise.sets,
-                            reps = exercise.reps
+                            reps = exercise.reps,
+                            onClick = { /* TODO: Show exercise details or navigate */ }
                         )
                     }
                     Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
@@ -400,41 +393,5 @@ fun PerformWorkoutScreenContent(
 @Preview
 @Composable
 fun PerformWorkoutScreenPreview() {
-    val workoutApiService = RetrofitInstance.create(WorkoutApiService::class.java)
-    val workoutExerciseApiService = RetrofitInstance.create(WorkoutExerciseApiService::class.java)
-    val workoutMapper = WorkoutMapper()
-    val workoutExerciseMapper = WorkoutExerciseMapper()
 
-    val workoutRepository = WorkoutRepositoryImpl(workoutApiService, workoutMapper)
-    val workoutExerciseRepository =
-        WorkoutExerciseRepositoryImpl(workoutExerciseApiService, workoutExerciseMapper)
-    val workoutService = WorkoutServiceImpl(workoutRepository, workoutExerciseRepository)
-    val performWorkoutUseCase = PerformWorkoutUseCase(workoutService)
-    val mockUiState = PerformWorkoutUiState.Success(
-        data = WorkoutUiState(
-            title = "Full Body Workout",
-            subtitle = "Intermediate · 45 min",
-            progress = "2/5 exercises completed",
-            currentExercise = CurrentExercise(
-                name = "Push Ups",
-                time = "00:45",
-                series = "2/4",
-                remainingTime = "Rest: 00:30"
-            ),
-            nextExercise = NextExercise(
-                name = "Squats",
-                sets = 3,
-                reps = 12
-            ),
-            remainingExercises = listOf(
-                RemainingExercise("Pull Ups", "3", "8"),
-                RemainingExercise("Lunges", "3", "10"),
-                RemainingExercise("Plank", "2", "60s")
-            )
-        )
-    )
-    PerformWorkoutScreen(
-        modifier = Modifier,
-        performWorkoutUseCase = performWorkoutUseCase
-    )
 }

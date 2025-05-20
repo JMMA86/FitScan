@@ -37,19 +37,25 @@ class AuthServiceImpl(
                             putString("AUTH_TOKEN", response.body()?.data?.access_token)
                             apply()
                         }
+                        AppState.setAuthToken(response.body()?.data?.access_token.toString())
                         Log.d(
                             "AuthServiceImpl",
                             "Token saved: ${response.body()?.data?.access_token}"
                         )
 
-                        val userResponse = authRepository.getCurrentUser("Bearer ${response.body()?.data?.access_token}")
+                        val userResponse =
+                            authRepository.getCurrentUser("Bearer ${response.body()?.data?.access_token}")
 
                         if (userResponse.isSuccessful && userResponse.body()?.data != null) {
                             val userId = userResponse.body()?.data?.id
-                            val customerResponse = authRepository.getCustomerByUserId("Bearer ${response.body()?.data?.access_token}", userId.toString())
+                            val customerResponse = authRepository.getCustomerByUserId(
+                                "Bearer ${response.body()?.data?.access_token}",
+                                userId.toString()
+                            )
 
                             if (customerResponse.isSuccessful && customerResponse.body()?.data != null && customerResponse.body()?.data?.isNotEmpty() == true) {
                                 AppState.customerId = customerResponse.body()?.data?.get(0)?.id
+                                Log.d(">>>AuthServiceImpl", "Customer ID: $customerResponse")
                             }
                         }
                     }
@@ -120,6 +126,7 @@ class AuthServiceImpl(
                 )
 
                 AppState.customerId = response.body()?.data?.id
+                Log.e("AuthServiceImpl register customer", "Customer ID: ${AppState.customerId}")
 
                 if (response.isSuccessful) {
                     Result.success(Unit)

@@ -1,7 +1,6 @@
 package icesi.edu.co.fitscan.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -10,18 +9,9 @@ import androidx.navigation.navArgument
 import icesi.edu.co.fitscan.features.auth.ui.screens.LoginScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
-import icesi.edu.co.fitscan.features.common.data.remote.RetrofitInstance
 import icesi.edu.co.fitscan.features.home.ui.screens.DashboardScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseProgressScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseStatisticsScreen
-import icesi.edu.co.fitscan.features.workout.data.api.WorkoutApiService
-import icesi.edu.co.fitscan.features.workout.data.api.WorkoutExerciseApiService
-import icesi.edu.co.fitscan.features.workout.data.dataSources.impl.WorkoutServiceImpl
-import icesi.edu.co.fitscan.features.workout.data.repositories.impl.WorkoutExerciseRepositoryImpl
-import icesi.edu.co.fitscan.features.workout.data.repositories.impl.WorkoutRepositoryImpl
-import icesi.edu.co.fitscan.features.workout.domain.mapper.WorkoutExerciseMapper
-import icesi.edu.co.fitscan.features.workout.domain.mapper.WorkoutMapper
-import icesi.edu.co.fitscan.features.workout.domain.usecase.PerformWorkoutUseCase
 import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.PerformWorkoutScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutListScreen
@@ -31,16 +21,6 @@ import icesi.edu.co.fitscan.ui.theme.greenLess
 fun NavigationHost(
     navController: NavHostController
 ) {
-    val workoutApiService = RetrofitInstance.create(WorkoutApiService::class.java)
-    val workoutExerciseApiService = RetrofitInstance.create(WorkoutExerciseApiService::class.java)
-    val workoutMapper = WorkoutMapper()
-    val workoutExerciseMapper = WorkoutExerciseMapper()
-
-    val workoutRepository = WorkoutRepositoryImpl(workoutApiService, workoutMapper)
-    val workoutExerciseRepository =
-        WorkoutExerciseRepositoryImpl(workoutExerciseApiService, workoutExerciseMapper)
-    val workoutService = WorkoutServiceImpl(workoutRepository, workoutExerciseRepository)
-    val performWorkoutUseCase = PerformWorkoutUseCase(workoutService)
 
     NavHost(
         navController = navController,
@@ -122,7 +102,7 @@ fun NavigationHost(
         }
 
         composable(Screen.PerformWorkout.route) {
-            PerformWorkoutScreen(performWorkoutUseCase = performWorkoutUseCase)
+            PerformWorkoutScreen()
         }
     }
 }

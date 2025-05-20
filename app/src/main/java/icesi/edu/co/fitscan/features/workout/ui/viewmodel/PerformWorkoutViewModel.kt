@@ -14,54 +14,49 @@ class PerformWorkoutViewModel(
     private val performWorkoutUseCase: PerformWorkoutUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<PerformWorkoutUiState>(PerformWorkoutUiState.Idle)
-    val uiState: StateFlow<PerformWorkoutUiState> = _uiState
+    val uiState: StateFlow<PerformWorkoutUiState> get() = _uiState
 
-    private var workoutState = WorkoutUiState()
+    private var _workoutState = WorkoutUiState()
+    val workoutState: WorkoutUiState get() = _workoutState
 
     fun startWorkout(customerId: String) {
         _uiState.value = PerformWorkoutUiState.Loading
         viewModelScope.launch {
-            val result = performWorkoutUseCase(customerId)
-            result.onSuccess { workoutResponse ->
-                // Map workoutResponse to WorkoutUiState as needed
-                // For now, just use the default
-                workoutState = WorkoutUiState(
-                    title = "Workout",
-                    // Map other fields as needed
-                )
-                _uiState.value = PerformWorkoutUiState.Success(workoutState)
+            val result = performWorkoutUseCase.getWorkout(customerId)
+            result.onSuccess { workoutUiState ->
+                _workoutState = workoutUiState
+                _uiState.value = PerformWorkoutUiState.Success(_workoutState)
             }.onFailure { e ->
                 _uiState.value = PerformWorkoutUiState.Error(e.message ?: "Unknown error")
             }
-
         }
     }
 
     fun endSet() {
         viewModelScope.launch {
-            val current = workoutState.currentExercise
+            val current = _workoutState.currentExercise
             val completed = current.series.split(" ")[0].toInt() + 1
             val total = current.series.split(" ")[2]
             val updatedSeries = "$completed de $total"
-            workoutState = workoutState.copy(
+            _workoutState = _workoutState.copy(
                 currentExercise = current.copy(series = updatedSeries),
                 progress = updateProgress()
             )
-            _uiState.value = PerformWorkoutUiState.Success(workoutState)
+            _uiState.value = PerformWorkoutUiState.Success(_workoutState)
         }
     }
 
     fun skipToNextExercise() {
         viewModelScope.launch {
-            val updatedList = workoutState.remainingExercises.drop(1)
+            val updatedList = _workoutState.remainingExercises.drop(1)
             val next = updatedList.getOrNull(0)?.let {
                 NextExercise(it.title, it.sets.toInt(), it.reps.toInt())
             } ?: NextExercise()
-            workoutState = workoutState.copy(
+            _workoutState = _workoutState.copy(
                 nextExercise = next,
                 remainingExercises = updatedList
             )
-            _uiState.value = PerformWorkoutUiState.Success(workoutState)
+            _uiState.value = PerformWorkoutUiState.Success(_workoutState)
         }
     }
 
@@ -70,8 +65,8 @@ class PerformWorkoutViewModel(
     }
 
     private fun updateProgress(): String {
-        val completed = workoutState.progress.split("/")[0].toInt() + 1
-        val total = workoutState.progress.split("/")[1].split(" ")[0].toInt()
+        val completed = _workoutState.progress.split("/")[0].toInt() + 1
+        val total = _workoutState.progress.split("/")[1].split(" ")[0].toInt()
         return "$completed/$total ejercicios completados"
     }
 }
