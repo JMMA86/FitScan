@@ -16,10 +16,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
+import icesi.edu.co.fitscan.features.common.data.local.MultipartProvider
 import icesi.edu.co.fitscan.navigation.NavigationHost
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanNavBar
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseStatisticsScreen
+import icesi.edu.co.fitscan.features.statistics.ui.screens.VisualProgressScreen
+import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.VisualProgressViewModel
 import icesi.edu.co.fitscan.navigation.Screen
 import icesi.edu.co.fitscan.ui.theme.greenLess
 
@@ -27,9 +30,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        MultipartProvider.init(applicationContext)
         setContent {
             FitScanTheme {
-                ExerciseStatisticsScreen()
                 App()
             }
         }
@@ -46,7 +49,7 @@ fun App() {
         Screen.Registration.route,
         Screen.BodyMeasurements.route
     )
-    val showHeaderAndNavBar = true || currentRoute != null && authRoutes.none { currentRoute?.startsWith(it) == true }
+    val showHeaderAndNavBar = currentRoute != null && authRoutes.none { currentRoute?.startsWith(it) == true }
 
     Scaffold (
         bottomBar = {

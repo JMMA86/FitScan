@@ -16,6 +16,7 @@ import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutListScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseProgressScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseStatisticsScreen
+import icesi.edu.co.fitscan.features.statistics.ui.screens.VisualProgressScreen
 import icesi.edu.co.fitscan.ui.theme.greenLess
 
 @Composable
@@ -98,6 +99,10 @@ fun NavigationHost(navController: NavHostController) {
 
         composable(Screen.ExerciseProgress.route) {
             ExerciseProgressScreen(navController = navController)
+        }
+
+        composable(Screen.VisualProgress.route) {
+            VisualProgressScreen(navController = navController)
         }
     }
 }

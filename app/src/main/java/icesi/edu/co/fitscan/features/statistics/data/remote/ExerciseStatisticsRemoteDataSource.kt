@@ -1,8 +1,16 @@
 package icesi.edu.co.fitscan.features.statistics.data.remote
 
+import okhttp3.MultipartBody
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
+import retrofit2.http.Body
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 import retrofit2.http.Header
+import retrofit2.http.PATCH
+import retrofit2.http.Path
 import icesi.edu.co.fitscan.features.statistics.data.remote.dto.ExerciseItem
 import icesi.edu.co.fitscan.features.statistics.data.remote.dto.ExerciseListResponse
 import icesi.edu.co.fitscan.features.statistics.data.remote.dto.CompletedExerciseProgressDto
@@ -64,6 +72,26 @@ interface ExerciseStatisticsRemoteDataSource {
     suspend fun getAllExercises(
         @Header("Authorization") token: String
     ): ExerciseListResponse
+
+    @Multipart
+    @POST("/files")
+    suspend fun uploadFile(
+        @Header("Authorization") token: String,
+        @Part file: MultipartBody.Part
+    ): FileUploadResponse
+
+    @POST("/items/progress_photo")
+    suspend fun createProgressPhoto(
+        @Header("Authorization") token: String,
+        @Body request: ProgressPhotoCreateRequest
+    ): Response<Unit>
+
+    @PATCH("/files/{id}")
+    suspend fun makeFilePublic(
+        @Header("Authorization") token: String,
+        @Path("id") fileId: String,
+        @Body body: FileUpdateRequest
+    ): Response<Unit>
 }
 
 data class WorkoutSessionResponse(
@@ -118,3 +146,18 @@ data class Customer(
 )
 
 data class CompletedExerciseProgressResponse(val data: List<CompletedExerciseProgressDto>)
+
+data class FileUploadResponse(val data: FileUploadData)
+data class FileUploadData(val id: String)
+
+data class ProgressPhotoCreateRequest(
+    val customer_id: String,
+    val image_path: String,
+    val title: String? = null
+)
+
+data class FileUpdateRequest(
+    val title: String,
+    val filename_download: String,
+    val public: Boolean = true
+)

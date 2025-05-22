@@ -1,18 +1,25 @@
 package icesi.edu.co.fitscan.features.statistics.domain.service
 
 import android.util.Log
+import android.content.Context
+import android.net.Uri
+import icesi.edu.co.fitscan.features.common.data.local.MultipartProvider
 import icesi.edu.co.fitscan.features.common.data.remote.RetrofitInstance
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import icesi.edu.co.fitscan.features.statistics.data.remote.ExerciseStatisticsRemoteDataSource
+import icesi.edu.co.fitscan.features.statistics.data.remote.FileUpdateRequest
 import icesi.edu.co.fitscan.features.statistics.data.remote.WorkoutSession
 import icesi.edu.co.fitscan.features.statistics.data.remote.ProgressPhoto
+import icesi.edu.co.fitscan.features.statistics.data.remote.FileUploadResponse
+import icesi.edu.co.fitscan.features.statistics.data.remote.ProgressPhotoCreateRequest
 import icesi.edu.co.fitscan.features.statistics.data.remote.dto.ExerciseItem
 import icesi.edu.co.fitscan.features.statistics.data.remote.dto.ExerciseListResponse
 import icesi.edu.co.fitscan.features.statistics.data.remote.dto.CompletedExerciseProgressDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MultipartBody
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.Duration
@@ -25,6 +32,8 @@ class ExerciseStatisticsService(
 
     private val _statisticsData = MutableStateFlow<List<Pair<String, Float>>>(emptyList())
     val statisticsData: StateFlow<List<Pair<String, Float>>> = _statisticsData
+
+    private var lastUploadedFileId: String? = null
 
     fun updateStatistics(newData: List<Pair<String, Float>>) {
         _statisticsData.value = newData
@@ -299,6 +308,36 @@ class ExerciseStatisticsService(
             remoteDataSource.getAllExercises(currentToken).data.map { it.name to it.id }
         } catch (e: Exception) {
             emptyList()
+        }
+    }
+
+    suspend fun uploadProgressPhoto(context: Context, uri: Uri, title: String? = null): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val filePart: MultipartBody.Part = MultipartProvider.get().prepareMultipartFromUri(uri)
+            val fileResponse: FileUploadResponse = remoteDataSource.uploadFile(currentToken, filePart)
+            Log.e(">>>", fileResponse.toString())
+            val fileId = fileResponse.data.id
+            lastUploadedFileId = fileId
+            val request = ProgressPhotoCreateRequest(
+                customer_id = currentCustomerId,
+                image_path = fileId,
+                title = title
+            )
+
+            val response = remoteDataSource.createProgressPhoto(currentToken, request)
+            Log.e(">>>", response.toString())
+
+            response.isSuccessful
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun makeLastUploadedFilePublic() {
+        lastUploadedFileId?.let { fileId ->
+            try {
+                remoteDataSource.makeFilePublic(currentToken, fileId, FileUpdateRequest(fileId, fileId, true))
+            } catch (_: Exception) {}
         }
     }
 }

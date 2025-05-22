@@ -178,9 +178,9 @@ CREATE TABLE completed_exercise (
 CREATE TABLE progress_photo (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     customer_id UUID REFERENCES customer(id) ON DELETE CASCADE,
-    photo_date DATE,
+    photo_date DATE DEFAULT CURRENT_DATE,
     title TEXT,
-    image_path TEXT
+    image_path UUID REFERENCES directus_files(id) ON DELETE CASCADE
 );
 
 DELETE FROM directus_users WHERE email <> 'admin@fitscan.com';
@@ -407,20 +407,21 @@ BEGIN
     END LOOP;
     RAISE NOTICE 'Inserted % completed exercises per session', num_completed_exercises_per_session;
 
-    -- Insert progress photos
-    FOR customer_rec IN (SELECT id FROM customer) LOOP
-        FOR i IN 1..num_progress_photos_per_customer LOOP
-            INSERT INTO progress_photo (id, customer_id, photo_date, title, image_path)
-            VALUES (
-                uuid_generate_v4(),
-                customer_rec.id,
-                CURRENT_DATE - (i || ' weeks')::INTERVAL,
-                'Progress Photo ' || i,
-                '/images/customer_' || customer_rec.id || '_photo_' || i || '.jpg'
-            );
-        END LOOP;
-    END LOOP;
-    RAISE NOTICE 'Inserted % progress photos per customer', num_progress_photos_per_customer;
+    
+    -- -- Insert progress photos
+    -- FOR customer_rec IN (SELECT id FROM customer) LOOP
+    --     FOR i IN 1..num_progress_photos_per_customer LOOP
+    --         INSERT INTO progress_photo (id, customer_id, photo_date, title, image_path)
+    --         VALUES (
+    --             uuid_generate_v4(),
+    --             customer_rec.id,
+    --             CURRENT_DATE - (i || ' weeks')::INTERVAL,
+    --             'Progress Photo ' || i,
+    --             '/images/customer_' || customer_rec.id || '_photo_' || i || '.jpg'
+    --         );
+    --     END LOOP;
+    -- END LOOP;
+    -- RAISE NOTICE 'Inserted % progress photos per customer', num_progress_photos_per_customer;
 END $$;
 
 -- =============================

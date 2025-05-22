@@ -70,7 +70,7 @@ fun ExerciseStatisticsScreen(
                 title = "Progreso visual",
                 subtitle = "¡Próximamente!",
                 iconRes = R.drawable.ic_camera,
-                onClick = { /* TODO: Implement visual progress screen */ }
+                onClick = { navController.navigate(Screen.VisualProgress.route) }
             )
             Spacer(modifier = Modifier.height(12.dp))
             // Progreso por ejercicio Card
