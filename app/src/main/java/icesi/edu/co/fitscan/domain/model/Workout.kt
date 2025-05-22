@@ -1,4 +1,4 @@
-package icesi.edu.co.fitscan.features.workout.domain.model
+package icesi.edu.co.fitscan.domain.model
 
 import java.util.UUID
 import java.util.Date
@@ -13,6 +13,3 @@ data class Workout(
     val dateCreated: Date = Date()
 )
 
-enum class WorkoutType {
-    Gym, Running
-}

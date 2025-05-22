@@ -1,4 +1,4 @@
-package icesi.edu.co.fitscan.features.common.ui.components
+package icesi.edu.co.fitscan.features.workout.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

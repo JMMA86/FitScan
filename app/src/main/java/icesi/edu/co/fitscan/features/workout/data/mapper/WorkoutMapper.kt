@@ -1,8 +1,8 @@
 package icesi.edu.co.fitscan.features.workout.data.mapper
 
 import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutDto
-import icesi.edu.co.fitscan.features.workout.domain.model.Workout
-import icesi.edu.co.fitscan.features.workout.domain.model.WorkoutType
+import icesi.edu.co.fitscan.domain.model.Workout
+import icesi.edu.co.fitscan.domain.model.WorkoutType
 import java.text.SimpleDateFormat
 import java.util.*
 

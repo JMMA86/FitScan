@@ -18,12 +18,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
-import icesi.edu.co.fitscan.features.common.ui.components.ExerciseList
-import icesi.edu.co.fitscan.features.common.ui.components.FitScanButton
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanTextField
 import icesi.edu.co.fitscan.features.common.ui.components.SectionTitle
 import icesi.edu.co.fitscan.features.common.ui.components.SuggestionChip
-import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
+import icesi.edu.co.fitscan.features.workout.ui.components.CreateWorkoutButton
+import icesi.edu.co.fitscan.features.workout.ui.components.ExerciseList
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.CreateWorkoutGymViewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.CreateWorkoutGymViewModelFactory
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
@@ -41,8 +40,6 @@ fun CreateWorkoutGymScreen() {
     val scrollState = rememberScrollState()
     var workoutName by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
-
-    AppState.setHeaderVisible(true)
     
     // Diálogo de confirmación o error
     if (saveSuccess != null || saveError != null) {
@@ -332,7 +329,7 @@ fun CreateWorkoutGymScreen() {
             Spacer(modifier = Modifier.weight(1f))
 
             Box(modifier = Modifier.padding(bottom = 16.dp)) {
-                FitScanButton(
+                CreateWorkoutButton(
                     onClick = {
                         val exercisesToSave = addedExercises.map { name ->
                             name to (exerciseData[name] ?: Pair(4, 10))
