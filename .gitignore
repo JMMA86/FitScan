@@ -10,3 +10,5 @@ local.properties
 
 .idea
 .vscode
+
+app/src/main/res/raw/openai.properties
