@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
-import icesi.edu.co.fitscan.features.workout.domain.usecase.PerformWorkoutUseCase
 import icesi.edu.co.fitscan.features.workout.ui.model.PerformWorkoutUiState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.PerformWorkoutViewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.PerformWorkoutViewModelFactory
