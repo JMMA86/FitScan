@@ -1,6 +1,6 @@
-package icesi.edu.co.fitscan.features.auth.data.remote.request
+package icesi.edu.co.fitscan.features.auth.data.dto
 
-data class LoginRequest(
+data class LoginRequestDTO(
     val email: String,
     val password: String,
     //val mode: String = "json" //Todavia no se si se necesita

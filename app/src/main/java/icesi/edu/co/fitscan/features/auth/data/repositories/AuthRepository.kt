@@ -1,10 +1,10 @@
-package icesi.edu.co.fitscan.features.auth.domain.service
+package icesi.edu.co.fitscan.features.auth.data.repositories
 
-import icesi.edu.co.fitscan.features.auth.data.remote.request.BodyMeasure
-import icesi.edu.co.fitscan.features.auth.data.remote.request.Customer
-import icesi.edu.co.fitscan.features.auth.data.remote.response.LoginResponseData
+import icesi.edu.co.fitscan.features.auth.data.dto.BodyMeasure
+import icesi.edu.co.fitscan.features.auth.data.dto.Customer
+import icesi.edu.co.fitscan.features.auth.data.dto.LoginResponseData
 
-interface AuthService {
+interface AuthRepository {
     suspend fun login(email: String, password: String): Result<LoginResponseData>
     suspend fun register(
         email: String,

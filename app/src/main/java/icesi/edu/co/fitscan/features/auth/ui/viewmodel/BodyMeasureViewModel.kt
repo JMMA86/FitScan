@@ -4,8 +4,8 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import icesi.edu.co.fitscan.features.auth.data.remote.request.BodyMeasure
-import icesi.edu.co.fitscan.features.auth.domain.service.AuthServiceImpl
+import icesi.edu.co.fitscan.features.auth.data.dto.BodyMeasure
+import icesi.edu.co.fitscan.features.auth.data.repositories.AuthRepositoryImpl
 import icesi.edu.co.fitscan.features.auth.ui.model.BodyMeasureUiState
 import icesi.edu.co.fitscan.features.common.data.remote.RetrofitInstance
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +18,7 @@ import java.io.IOException
 
 
 class BodyMeasurementViewModel(application: Application) : AndroidViewModel(application) {
-    private val authService = AuthServiceImpl(RetrofitInstance.authRepository, application)
+    private val authService = AuthRepositoryImpl(RetrofitInstance.IAuthDataSource, application)
 
     private val _uiState = MutableStateFlow<BodyMeasureUiState>(BodyMeasureUiState.Idle)
     val uiState: StateFlow<BodyMeasureUiState> = _uiState.asStateFlow()

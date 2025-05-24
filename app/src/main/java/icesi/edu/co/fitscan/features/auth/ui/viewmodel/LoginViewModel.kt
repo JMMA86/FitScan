@@ -3,8 +3,8 @@ package icesi.edu.co.fitscan.features.auth.ui.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import icesi.edu.co.fitscan.features.auth.domain.service.AuthServiceImpl
-import icesi.edu.co.fitscan.features.auth.domain.usecase.LoginUseCase
+import icesi.edu.co.fitscan.features.auth.data.repositories.AuthRepositoryImpl
+import icesi.edu.co.fitscan.features.auth.data.usecases.LoginUseCase
 import icesi.edu.co.fitscan.features.auth.ui.model.LoginUiState
 import icesi.edu.co.fitscan.features.common.data.remote.RetrofitInstance
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
@@ -16,7 +16,7 @@ import retrofit2.HttpException
 import java.io.IOException
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
-    private val authService = AuthServiceImpl(RetrofitInstance.authRepository, application)
+    private val authService = AuthRepositoryImpl(RetrofitInstance.IAuthDataSource, application)
     private val loginUseCase = LoginUseCase(authService)
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)

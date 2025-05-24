@@ -4,10 +4,10 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import icesi.edu.co.fitscan.features.auth.domain.service.AuthServiceImpl
-import icesi.edu.co.fitscan.features.auth.domain.usecase.CustomerRegistrationUseCase
-import icesi.edu.co.fitscan.features.auth.domain.usecase.LoginUseCase
-import icesi.edu.co.fitscan.features.auth.domain.usecase.RegisterUseCase
+import icesi.edu.co.fitscan.features.auth.data.repositories.AuthRepositoryImpl
+import icesi.edu.co.fitscan.features.auth.data.usecases.CustomerRegistrationUseCase
+import icesi.edu.co.fitscan.features.auth.data.usecases.LoginUseCase
+import icesi.edu.co.fitscan.features.auth.data.usecases.RegisterUseCase
 import icesi.edu.co.fitscan.features.auth.ui.model.RegisterUiState
 import icesi.edu.co.fitscan.features.common.data.remote.RetrofitInstance
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +19,7 @@ import retrofit2.HttpException
 import java.io.IOException
 
 class RegisterViewModel(application: Application) : AndroidViewModel(application) {
-    private val authService = AuthServiceImpl(RetrofitInstance.authRepository, application)
+    private val authService = AuthRepositoryImpl(RetrofitInstance.IAuthDataSource, application)
     private val registerUseCase = RegisterUseCase(authService)
     private val loginUseCase = LoginUseCase(authService)
     private val customerRegistrationUseCase = CustomerRegistrationUseCase(authService)

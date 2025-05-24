@@ -1,15 +1,15 @@
-package icesi.edu.co.fitscan.features.auth.domain.service
+package icesi.edu.co.fitscan.features.auth.data.repositories
 
 import android.app.Application
 import android.content.Context
 import android.util.Log
-import icesi.edu.co.fitscan.features.auth.data.remote.AuthRepository
-import icesi.edu.co.fitscan.features.auth.data.remote.request.BodyMeasure
-import icesi.edu.co.fitscan.features.auth.data.remote.request.Customer
-import icesi.edu.co.fitscan.features.auth.data.remote.request.CustomerRelationated
-import icesi.edu.co.fitscan.features.auth.data.remote.request.LoginRequest
-import icesi.edu.co.fitscan.features.auth.data.remote.request.User
-import icesi.edu.co.fitscan.features.auth.data.remote.response.LoginResponseData
+import icesi.edu.co.fitscan.features.auth.data.dataSources.IAuthDataSource
+import icesi.edu.co.fitscan.features.auth.data.dto.BodyMeasure
+import icesi.edu.co.fitscan.features.auth.data.dto.Customer
+import icesi.edu.co.fitscan.features.auth.data.dto.CustomerRelationated
+import icesi.edu.co.fitscan.features.auth.data.dto.LoginRequestDTO
+import icesi.edu.co.fitscan.features.auth.data.dto.LoginResponseData
+import icesi.edu.co.fitscan.features.auth.data.dto.User
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,16 +17,16 @@ import retrofit2.HttpException
 import java.io.IOException
 
 
-class AuthServiceImpl(
-    private val authRepository: AuthRepository,
+class AuthRepositoryImpl(
+    private val IAuthDataSource: IAuthDataSource,
     private val application: Application? = null
-) : AuthService {
+) : AuthRepository {
 
     override suspend fun login(email: String, password: String): Result<LoginResponseData> {
         return withContext(Dispatchers.IO) {
             try {
-                val request = LoginRequest(email = email, password = password)
-                val response = authRepository.login(request)
+                val request = LoginRequestDTO(email = email, password = password)
+                val response = IAuthDataSource.login(request)
 
                 if (response.isSuccessful && response.body()?.data != null) {
                     // Save the token to SharedPreferences
@@ -42,11 +42,15 @@ class AuthServiceImpl(
                             "Token saved: ${response.body()?.data?.access_token}"
                         )
 
-                        val userResponse = authRepository.getCurrentUser("Bearer ${response.body()?.data?.access_token}")
+                        val userResponse =
+                            IAuthDataSource.getCurrentUser("Bearer ${response.body()?.data?.access_token}")
 
                         if (userResponse.isSuccessful && userResponse.body()?.data != null) {
                             val userId = userResponse.body()?.data?.id
-                            val customerResponse = authRepository.getCustomerByUserId("Bearer ${response.body()?.data?.access_token}", userId.toString())
+                            val customerResponse = IAuthDataSource.getCustomerByUserId(
+                                "Bearer ${response.body()?.data?.access_token}",
+                                userId.toString()
+                            )
 
                             if (customerResponse.isSuccessful && customerResponse.body()?.data != null && customerResponse.body()?.data?.isNotEmpty() == true) {
                                 AppState.customerId = customerResponse.body()?.data?.get(0)?.id
@@ -78,7 +82,7 @@ class AuthServiceImpl(
                     first_name = firstName,
                     last_name = lastName
                 )
-                val response = authRepository.register(request)
+                val response = IAuthDataSource.register(request)
 
                 if (response.isSuccessful) {
                     Result.success(Unit)
@@ -114,7 +118,7 @@ class AuthServiceImpl(
                     ?: return@withContext Result.failure(Exception("User not authenticated"))
 
                 // Make the request with the token in the header
-                val response = authRepository.registerCustomer(
+                val response = IAuthDataSource.registerCustomer(
                     customer,
                     "Bearer $token"
                 )
@@ -151,7 +155,7 @@ class AuthServiceImpl(
 
                 Log.d("AuthServiceImpl", "Saving body measurements: $bodyMeasure")
 
-                val response = authRepository.saveBodyMeasurements(
+                val response = IAuthDataSource.saveBodyMeasurements(
                     bodyMeasure,
                     "Bearer $token"
                 )
@@ -160,7 +164,7 @@ class AuthServiceImpl(
                     val customer = CustomerRelationated(
                         body_measure_id = response.body()?.data?.id ?: "",
                     )
-                    authRepository.updateCustomer(
+                    IAuthDataSource.updateCustomer(
                         customer, "Bearer $token",
                         AppState.customerId.toString()
                     )

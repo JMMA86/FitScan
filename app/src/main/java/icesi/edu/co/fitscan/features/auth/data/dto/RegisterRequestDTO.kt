@@ -1,6 +1,6 @@
 @file:Suppress("PropertyName")
 
-package icesi.edu.co.fitscan.features.auth.data.remote.request
+package icesi.edu.co.fitscan.features.auth.data.dto
 
 data class User(
     val email: String,

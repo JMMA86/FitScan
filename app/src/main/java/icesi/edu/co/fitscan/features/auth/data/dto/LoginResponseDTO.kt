@@ -1,6 +1,6 @@
 @file:Suppress("PropertyName")
 
-package icesi.edu.co.fitscan.features.auth.data.remote.response
+package icesi.edu.co.fitscan.features.auth.data.dto
 
 data class LoginResponseData(
     val access_token: String, //Esto es lo que devuelve postman
