@@ -171,7 +171,8 @@ CREATE TABLE completed_exercise (
     exercise_id UUID REFERENCES exercise(id) ON DELETE CASCADE,
     sets INTEGER,
     reps INTEGER,
-    rpe INTEGER
+    rpe INTEGER,
+    weight_kg INTEGER -- NEW: weight moved per set
 );
 
 CREATE TABLE progress_photo (
@@ -181,6 +182,8 @@ CREATE TABLE progress_photo (
     title TEXT,
     image_path TEXT
 );
+
+DELETE FROM directus_users WHERE email <> 'admin@fitscan.com';
 
 -- =============================
 -- INSERTAR DATOS DE PRUEBA
@@ -193,15 +196,16 @@ DECLARE
     num_dietary_restrictions INTEGER := 25;
     num_dietary_preferences INTEGER := 25;
     num_body_measures INTEGER := 100;
-    num_customers INTEGER := 10;
+    num_customers INTEGER := 2;
     num_meal_plans_per_customer INTEGER := 25;
     num_meals_per_plan INTEGER := 10;
     num_exercises INTEGER := 50;
-    num_workouts_per_customer INTEGER := 10;
-    num_workout_exercises_per_workout INTEGER := 10;
-    num_workout_sessions_per_workout INTEGER := 300;
+    num_workouts_per_customer INTEGER := 5;
+    num_workout_exercises_per_workout INTEGER := 5;
+    num_workout_sessions_per_workout INTEGER := 500;
     num_completed_exercises_per_session INTEGER := 10;
     num_progress_photos_per_customer INTEGER := 10;
+    workout_session_day_offset INTEGER := 30;
 
     customer_rec RECORD;
     meal_plan_rec RECORD;
@@ -255,11 +259,11 @@ BEGIN
     RAISE NOTICE 'Inserted % body measures', num_body_measures;
 
     -- Insert users into directus_users
-    FOR i IN 1..num_customers LOOP
+    FOR i IN 1..num_customers-1 LOOP
         INSERT INTO directus_users (id, email, password, first_name, last_name)
         VALUES (
             uuid_generate_v4(),
-            'user' || i || '_' || (RANDOM() * 100000)::INTEGER || '@example.com', -- Ensure unique email
+            'user' || i || '@example.com', -- Ensure unique email
             '$argon2id$v=19$m=65536,t=3,p=4$O09OkqGHl74ucu293lNxuw$OgTadbPObj9sc2EZFm0hK4ppzSCb7ro8WtAK3cOQLbg',
             'FirstName' || i,
             'LastName' || i
@@ -363,12 +367,12 @@ BEGIN
     RAISE NOTICE 'Inserted % workout exercises per workout', num_workout_exercises_per_workout;
     -- Insert workout sessions
     DECLARE
-        base_start_date DATE := CURRENT_DATE - INTERVAL '1 year';
+        base_start_date DATE := CURRENT_DATE - workout_session_day_offset;
     BEGIN
         FOR workout_rec IN (SELECT id, customer_id FROM workout) LOOP
             FOR i IN 1..num_workout_sessions_per_workout LOOP
                 DECLARE
-                    session_start_date DATE := base_start_date + ((RANDOM() * 365)::INTEGER || ' days')::INTERVAL;
+                    session_start_date DATE := base_start_date + ((RANDOM() * workout_session_day_offset)::INTEGER);
                 BEGIN
                     INSERT INTO workout_session (id, customer_id, workout_id, start_time, end_time, calories_burned, distance_km, average_heart_rate)
                     VALUES (
@@ -387,17 +391,17 @@ BEGIN
     END;
     RAISE NOTICE 'Inserted % workout sessions per workout', num_workout_sessions_per_workout;
 
-    -- Insert completed exercises
     FOR session_rec IN (SELECT id FROM workout_session) LOOP
         FOR i IN 1..num_completed_exercises_per_session LOOP
-            INSERT INTO completed_exercise (id, workout_session_id, exercise_id, sets, reps, rpe)
+            INSERT INTO completed_exercise (id, workout_session_id, exercise_id, sets, reps, rpe, weight_kg)
             VALUES (
                 uuid_generate_v4(),
                 session_rec.id,
                 (SELECT id FROM exercise OFFSET (RANDOM() * (num_exercises - 1))::INTEGER LIMIT 1),
                 3 + (RANDOM() * 3)::INTEGER,
                 8 + (RANDOM() * 12)::INTEGER,
-                5 + (RANDOM() * 5)::INTEGER
+                5 + (RANDOM() * 5)::INTEGER,
+                10 + (RANDOM() * 90)::INTEGER
             );
         END LOOP;
     END LOOP;
@@ -441,10 +445,3 @@ END $$;
 -- TRUNCATE TABLE dietary_restriction CASCADE;
 -- TRUNCATE TABLE fitness_goal CASCADE;
 -- TRUNCATE TABLE training_level CASCADE;
-
-DELETE FROM directus_users WHERE email = 'juan@example.com' or email = 'maria@example.com';
-
-INSERT INTO directus_users (id, email, password, first_name, last_name)
-VALUES 
-(uuid_generate_v4(), 'juan@example.com', '$argon2id$v=19$m=65536,t=3,p=4$O09OkqGHl74ucu293lNxuw$OgTadbPObj9sc2EZFm0hK4ppzSCb7ro8WtAK3cOQLbg', 'Juan', 'Pérez'),
-(uuid_generate_v4(), 'maria@example.com', '$argon2id$v=19$m=65536,t=3,p=4$O09OkqGHl74ucu293lNxuw$OgTadbPObj9sc2EZFm0hK4ppzSCb7ro8WtAK3cOQLbg', 'María', 'López');

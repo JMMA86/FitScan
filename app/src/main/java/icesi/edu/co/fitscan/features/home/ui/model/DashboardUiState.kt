@@ -1,17 +1,7 @@
 package icesi.edu.co.fitscan.features.home.ui.model
 
-data class WeeklyMetrics(
-    val trainingHours: String = "0h",
-    val trainedDays: String = "0",
-    val totalDistance: String = "0km"
-)
-
-data class RecentActivity(
-    val title: String,
-    val time: String,
-    val level: String,
-    val exercises: String
-)
+import icesi.edu.co.fitscan.domain.model.RecentActivity
+import icesi.edu.co.fitscan.domain.model.WeeklyMetrics
 
 data class DashboardUiState(
     val weeklyMetrics: WeeklyMetrics = WeeklyMetrics(),

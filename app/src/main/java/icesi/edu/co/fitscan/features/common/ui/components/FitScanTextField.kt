@@ -16,7 +16,7 @@ fun FitScanTextField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     leadingIcon: @Composable (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier
 ) {
     OutlinedTextField(
         value = value,
@@ -28,8 +28,11 @@ fun FitScanTextField(
             focusedContainerColor = greyMed,
             cursorColor = Color.White,
             focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White
         ),
+        textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
         modifier = modifier,
         shape = RoundedCornerShape(10.dp)
     )

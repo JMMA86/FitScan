@@ -36,32 +36,16 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             val result = loginUseCase(email, password)
 
             result.fold(
-                onSuccess = { loginData ->
-                    AppState.token = loginData.access_token
-                    val userId = extractUserIdFromToken(loginData.access_token)
-                    if (userId != null) {
-                        AppState.customerId = userId
-                        _uiState.value = LoginUiState.Success()
-                    } else {
-                        _uiState.value = LoginUiState.Error("Error al procesar los datos de usuario")
-                    }
+                onSuccess = { loginResponse ->
+                    val token = loginResponse.access_token
+                    AppState.setAuthToken(token)
+
+                    _uiState.value = LoginUiState.Success()
                 },
                 onFailure = { exception ->
                     handleError(exception)
                 }
             )
-        }
-    }
-
-    private fun extractUserIdFromToken(token: String): String? {
-        return try {
-            val parts = token.split(".")
-            if (parts.size < 2) return null
-            val payload = String(android.util.Base64.decode(parts[1], android.util.Base64.DEFAULT))
-            val json = org.json.JSONObject(payload)
-            json.getString("id")
-        } catch (e: Exception) {
-            null
         }
     }
 

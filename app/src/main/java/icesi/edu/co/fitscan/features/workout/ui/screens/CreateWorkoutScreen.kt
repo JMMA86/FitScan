@@ -38,23 +38,30 @@ import icesi.edu.co.fitscan.ui.theme.greyStrong
 @Composable
 fun WorkoutTypeSelector(
     selectedTab: String,
-    onTabSelected: (String) -> Unit,
-    modifier: Modifier = Modifier
+    onTabSelected: (String) -> Unit
 ) {
+    val options = listOf("Gym", "Carrera")
+    val icons = listOf(R.drawable.ic_fitness, R.drawable.ic_run)
+
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         ToggleOption(
             label = "Gym",
             selected = selectedTab == "Gym",
-            onSelect = { onTabSelected("Gym") },
+            onSelected = { onTabSelected("Gym") },
+            options = options,
+            icons = icons,
             modifier = Modifier.weight(1f)
         )
+
         ToggleOption(
             label = "Carrera",
             selected = selectedTab == "Carrera",
-            onSelect = { onTabSelected("Carrera") },
+            onSelected = { onTabSelected("Carrera") },
+            options = options,
+            icons = icons,
             modifier = Modifier.weight(1f)
         )
     }

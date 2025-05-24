@@ -1,7 +1,6 @@
 package icesi.edu.co.fitscan.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -12,10 +11,12 @@ import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
 import icesi.edu.co.fitscan.features.home.ui.screens.DashboardScreen
 import icesi.edu.co.fitscan.features.notifications.ui.screens.NotificationsScreen
+import icesi.edu.co.fitscan.features.nutrition.ui.screens.NutritionPlanListScreen
 import icesi.edu.co.fitscan.features.profile.ui.screens.ProfileScreen
 import icesi.edu.co.fitscan.features.settings.ui.screens.SettingsScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
-import icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutListScreen
+import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseProgressScreen
+import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseStatisticsScreen
 import icesi.edu.co.fitscan.ui.theme.greenLess
 
 @Composable
@@ -28,13 +29,27 @@ fun NavigationHost(navController: NavHostController) {
             DashboardScreen(navController = navController)
         }
 
+        composable(Screen.Profile.route) {
+            ProfileScreen(navController = navController)
+        }
+
+        composable(Screen.Settings.route) {
+            SettingsScreen(navController = navController)
+        }
+
+        composable(Screen.Notifications.route) {
+            NotificationsScreen(navController = navController)
+        }
+
         composable(Screen.Workouts.route) {
-            WorkoutListScreen(
-                onNavigateToCreate = { navController.navigate("create_workout") },
-                onNavigateToPerform = { workoutId ->
-                    navController.navigate("perform_workout/$workoutId")
-                }
-            )
+            // To implement
+        }
+        composable(Screen.Meal.route) {
+            NutritionPlanListScreen(/* Pasa parámetros si necesita */)
+        }
+
+        composable(Screen.Statistics.route) {
+            ExerciseStatisticsScreen(navController = navController)
         }
 
         composable(
@@ -84,29 +99,16 @@ fun NavigationHost(navController: NavHostController) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                         launchSingleTop = true
                     }
-                }
+                },
             )
         }
 
-        composable("profile") {
-            ProfileScreen(navController = navController)
+        composable(Screen.ExerciseProgress.route) {
+            ExerciseProgressScreen(navController = navController)
         }
 
-        composable("settings") {
-            SettingsScreen(navController = navController)
-        }
-
-        composable("notifications") {
-            NotificationsScreen(navController = navController)
-        }
-
-        composable("create_workout") {
+        composable(Screen.CreateWorkout.route) {
             CreateWorkoutScreen()
-        }
-
-        composable("perform_workout/{workoutId}") { backStackEntry ->
-            val workoutId = backStackEntry.arguments?.getString("workoutId") ?: ""
-            // Implement PerformWorkoutScreen navigation
         }
     }
 }
