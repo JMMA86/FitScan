@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
@@ -28,9 +29,9 @@ import icesi.edu.co.fitscan.features.common.ui.components.OptionButton
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import icesi.edu.co.fitscan.features.home.ui.viewmodel.DashboardViewModel
 import icesi.edu.co.fitscan.features.home.ui.viewmodel.factory.DashboardViewModelFactory
-import icesi.edu.co.fitscan.features.notifications.ui.components.CircularProgress
-import icesi.edu.co.fitscan.features.notifications.ui.components.MetricContainer
-import icesi.edu.co.fitscan.features.notifications.ui.components.RecentActivityCard
+import icesi.edu.co.fitscan.features.home.ui.components.CircularProgress
+import icesi.edu.co.fitscan.features.home.ui.components.MetricContainer
+import icesi.edu.co.fitscan.features.common.ui.components.RecentActivityCard
 import icesi.edu.co.fitscan.navigation.Screen
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import icesi.edu.co.fitscan.ui.theme.dashboardGreen
@@ -167,13 +168,29 @@ fun DashboardScreen(
                 }
 
                 if (recentActivities.isNotEmpty()) {
-                    Text(
-                        text = "Actividades recientes",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.White,
-                        fontSize = 22.sp,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Actividades recientes",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = Color.White,
+                            fontSize = 22.sp,
+                        )
+                        IconButton(
+                            onClick = { navController.navigate(Screen.Workouts.route) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "Ver rutinas",
+                                tint = Color.White
+                            )
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -183,7 +200,7 @@ fun DashboardScreen(
                             .padding(horizontal = 16.dp)
                     ) {
                         LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
                             modifier = Modifier.fillMaxSize()
                         ) {
                             items(recentActivities) { activity ->

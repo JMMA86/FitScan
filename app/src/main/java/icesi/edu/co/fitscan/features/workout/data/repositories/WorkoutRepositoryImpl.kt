@@ -30,7 +30,7 @@ class WorkoutRepositoryImpl(
         return try {
             val response = datasource.getWorkoutsByCustomerId(customerId.toString())
             if (response.isSuccessful) {
-                val workouts = response.body()?.map { dto: WorkoutDto -> mapper.toDomain(dto) } ?: emptyList()
+                val workouts = response.body()?.data?.map { dto: WorkoutDto -> mapper.toDomain(dto) } ?: emptyList()
                 Result.success(workouts)
             } else {
                 Result.failure(Exception("Error: ${response.code()}"))

@@ -1,4 +1,4 @@
-package icesi.edu.co.fitscan.features.notifications.ui.components
+package icesi.edu.co.fitscan.features.home.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

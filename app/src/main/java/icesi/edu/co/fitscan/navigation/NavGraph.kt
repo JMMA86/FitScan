@@ -17,6 +17,7 @@ import icesi.edu.co.fitscan.features.settings.ui.screens.SettingsScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseProgressScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseStatisticsScreen
+import icesi.edu.co.fitscan.features.workoutlist.ui.screens.WorkoutListScreen
 import icesi.edu.co.fitscan.ui.theme.greenLess
 
 @Composable
@@ -42,8 +43,14 @@ fun NavigationHost(navController: NavHostController) {
         }
 
         composable(Screen.Workouts.route) {
-            // To implement
+            WorkoutListScreen(
+                onNavigateToCreate = { navController.navigate(Screen.CreateWorkout.route) },
+                onNavigateToPerform = { workoutId ->
+                    // Por definir
+                }
+            )
         }
+        
         composable(Screen.Meal.route) {
             NutritionPlanListScreen(/* Pasa parámetros si necesita */)
         }
