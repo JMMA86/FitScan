@@ -52,4 +52,16 @@ interface AuthRepository {
         @Header("Authorization") authHeader: String,
         @Query("filter[user_id][_eq]") userId: String
     ): Response<CustomerResponse>
+
+    @GET("items/customer")
+    suspend fun getCustomerByCustomerId(
+        @Header("Authorization") authHeader: String,
+        @Query("filter[id][_eq]") userId: String
+    ): Response<CustomerResponse>
+
+    @GET("items/body_measure/{id}")
+    suspend fun getBodyMeasureById(
+        @Header("Authorization") authHeader: String,
+        @retrofit2.http.Path("id") id: String
+    ): Response<BodyMeasureResponseData>
 }
