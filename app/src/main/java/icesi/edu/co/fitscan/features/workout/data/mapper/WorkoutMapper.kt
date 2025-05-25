@@ -10,15 +10,19 @@ class WorkoutMapper {
 
     fun toDomain(dto: WorkoutDto): Workout {
         val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-        val parsedDate = formatter.parse(dto.dateCreated) ?: Date()
+        val parsedDate = try {
+            formatter.parse(dto.dateCreated) ?: Date()
+        } catch (e: Exception) {
+            Date()
+        }
 
         return Workout(
-            id = UUID.fromString(dto.id),
-            customerId = UUID.fromString(dto.customer_id),
-            name = dto.name,
-            type = WorkoutType.valueOf(dto.type.uppercase()),
+            id = try { UUID.fromString(dto.id) } catch (e: Exception) { UUID.randomUUID() },
+            customerId = try { UUID.fromString(dto.customer_id) } catch (e: Exception) { UUID.randomUUID() },
+            name = dto.name ?: "Sin nombre",
+            type = try { WorkoutType.valueOf(dto.type?.uppercase() ?: WorkoutType.Gym.name) } catch (e: Exception) { WorkoutType.Gym },
             durationMinutes = dto.durationMinutes,
-            difficulty = dto.difficulty,
+            difficulty = dto.difficulty ?: "Sin nivel",
             dateCreated = parsedDate
         )
     }
@@ -35,5 +39,4 @@ class WorkoutMapper {
             dateCreated = formatter.format(workout.dateCreated)
         )
     }
-    
 }

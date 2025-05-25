@@ -8,6 +8,7 @@ import icesi.edu.co.fitscan.domain.model.WorkoutExercise
 import icesi.edu.co.fitscan.domain.model.WorkoutType
 import icesi.edu.co.fitscan.domain.usecases.IManageExercisesUseCase
 import icesi.edu.co.fitscan.domain.usecases.IManageWorkoutUseCase
+import icesi.edu.co.fitscan.domain.usecases.ICreateExerciseUseCase
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +18,8 @@ import java.util.UUID
 
 class CreateWorkoutGymViewModel(
     private val getExercisesUseCase: IManageExercisesUseCase,
-    private val createWorkoutUseCase: IManageWorkoutUseCase
+    private val createWorkoutUseCase: IManageWorkoutUseCase,
+    private val createExerciseUseCase: ICreateExerciseUseCase
 ) : ViewModel() {
 
     private val _exercises = MutableStateFlow<List<Exercise>>(emptyList())
@@ -136,8 +138,31 @@ class CreateWorkoutGymViewModel(
                     val (sets, reps) = setsReps
 
                     // Buscar el ID del ejercicio por su nombre
-                    val exercise = _exercises.value.find { it.name == exerciseName }
-
+                    var exercise = _exercises.value.find { it.name == exerciseName }
+                    
+                    if (exercise?.id == null) {
+                        // Crear ejercicio por IA si no existe
+                        val aiExercise = Exercise(
+                            id = UUID.randomUUID(),
+                            name = exerciseName,
+                            description = "Ejercicio sugerido por IA",
+                            muscleGroups = "No definido"
+                        )
+                        val result = createExerciseUseCase(aiExercise)
+                        exercise = result.getOrNull()
+                        // Agregarlo a la lista
+                        workoutExercises.add(
+                            WorkoutExercise(
+                                id = UUID.randomUUID(),
+                                workoutId = workout.id,
+                                exerciseId = aiExercise.id,
+                                sets = sets,
+                                reps = reps,
+                                isAiSuggested = true
+                            )
+                        )
+                    }
+                    
                     if (exercise?.id != null) {
                         workoutExercises.add(
                             WorkoutExercise(

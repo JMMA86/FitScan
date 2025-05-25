@@ -7,6 +7,7 @@ import icesi.edu.co.fitscan.domain.repositories.IWorkoutExerciseRepository
 import icesi.edu.co.fitscan.domain.repositories.IWorkoutRepository
 import icesi.edu.co.fitscan.domain.usecases.IManageExercisesUseCase
 import icesi.edu.co.fitscan.domain.usecases.IManageWorkoutUseCase
+import icesi.edu.co.fitscan.domain.usecases.ICreateExerciseUseCase
 import icesi.edu.co.fitscan.features.common.data.remote.RetrofitInstance
 import icesi.edu.co.fitscan.features.workout.data.dataSources.IExerciseDataSource
 import icesi.edu.co.fitscan.features.workout.data.dataSources.IWorkoutDataSource
@@ -19,6 +20,7 @@ import icesi.edu.co.fitscan.features.workout.data.repositories.WorkoutExerciseRe
 import icesi.edu.co.fitscan.features.workout.data.repositories.WorkoutRepositoryImpl
 import icesi.edu.co.fitscan.features.workout.data.usecases.ManageExercisesUseCaseImpl
 import icesi.edu.co.fitscan.features.workout.data.usecases.ManageWorkoutUseCaseImpl
+import icesi.edu.co.fitscan.features.workout.data.usecases.CreateExerciseUseCaseImpl
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.CreateWorkoutGymViewModel
 
 class CreateWorkoutGymViewModelFactory : ViewModelProvider.Factory {
@@ -51,11 +53,13 @@ class CreateWorkoutGymViewModelFactory : ViewModelProvider.Factory {
                 ManageExercisesUseCaseImpl(exerciseRepository)
             val createWorkoutUseCase: IManageWorkoutUseCase =
                 ManageWorkoutUseCaseImpl(workoutRepository, workoutExerciseRepository)
+            val createExerciseUseCase: ICreateExerciseUseCase = CreateExerciseUseCaseImpl(exerciseRepository)
 
             @Suppress("UNCHECKED_CAST")
             return CreateWorkoutGymViewModel(
                 getExercisesUseCase = getExercisesUseCase,
-                createWorkoutUseCase = createWorkoutUseCase
+                createWorkoutUseCase = createWorkoutUseCase,
+                createExerciseUseCase = createExerciseUseCase
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
