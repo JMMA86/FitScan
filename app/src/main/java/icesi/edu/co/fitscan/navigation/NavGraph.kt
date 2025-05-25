@@ -20,6 +20,8 @@ import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseProgressScree
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseStatisticsScreen
 import icesi.edu.co.fitscan.features.workoutlist.ui.screens.WorkoutListScreen
 import icesi.edu.co.fitscan.ui.theme.greenLess
+import icesi.edu.co.fitscan.features.workout.ui.screens.ExerciseDetailScreen
+import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.ExerciseDetailViewModelFactory
 
 @Composable
 fun NavigationHost(navController: NavHostController) {
@@ -127,7 +129,29 @@ fun NavigationHost(navController: NavHostController) {
         ) { backStackEntry ->
             val workoutId = backStackEntry.arguments?.getString("workoutId")
             Log.d("NavGraph", "Navegando a workout_detail con workoutId: $workoutId")
-            icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutDetailScreen(workoutId = workoutId)
+            icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutDetailScreen(
+                workoutId = workoutId,
+                onExerciseClick = { workoutId, workoutExerciseId ->
+                    navController.navigate("exercise_detail/$workoutId/$workoutExerciseId")
+                }
+            )
+        }
+
+        composable(
+            route = "exercise_detail/{workoutId}/{workoutExerciseId}",
+            arguments = listOf(
+                navArgument("workoutId") { type = NavType.StringType },
+                navArgument("workoutExerciseId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val workoutId = backStackEntry.arguments?.getString("workoutId")
+            val workoutExerciseId = backStackEntry.arguments?.getString("workoutExerciseId")
+            ExerciseDetailScreen(
+                workoutExerciseId = workoutExerciseId,
+                workoutId = workoutId,
+                onNavigateBack = { navController.popBackStack() },
+                viewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = ExerciseDetailViewModelFactory())
+            )
         }
     }
 }

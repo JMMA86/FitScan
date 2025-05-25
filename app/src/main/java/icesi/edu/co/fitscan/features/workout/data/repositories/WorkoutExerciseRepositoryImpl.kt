@@ -1,5 +1,6 @@
 package icesi.edu.co.fitscan.features.workout.data.repositories
 
+import android.util.Log
 import icesi.edu.co.fitscan.features.workout.data.dataSources.IWorkoutExerciseDataSource
 import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutExerciseDto
 import icesi.edu.co.fitscan.domain.model.WorkoutExercise
@@ -122,6 +123,24 @@ class WorkoutExerciseRepositoryImpl(
                 Result.failure(Exception("Error reordering workout exercises: ${response.code()}"))
             }
         } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getWorkoutExerciseById(workoutId: UUID, id: UUID): Result<WorkoutExercise> {
+        return try {
+            val result = getWorkoutExercises(workoutId)
+            val lista = result.getOrNull()
+            Log.d("WorkoutRepo", "Buscando id: $id en la lista: ${lista?.map { it.id }}")
+            val exercise = lista?.find { it.id == id }
+            if (exercise != null) {
+                Result.success(exercise)
+            } else {
+                Log.e("WorkoutRepo", "No se encontró el id: $id en la lista")
+                Result.failure(Exception("No se encontró el ejercicio en la rutina"))
+            }
+        } catch (e: Exception) {
+            Log.e("WorkoutRepo", "Error buscando ejercicio", e)
             Result.failure(e)
         }
     }

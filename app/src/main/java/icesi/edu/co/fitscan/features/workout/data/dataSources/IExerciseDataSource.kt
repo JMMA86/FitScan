@@ -2,6 +2,7 @@ package icesi.edu.co.fitscan.features.workout.data.dataSources
 
 import icesi.edu.co.fitscan.features.workout.data.dto.ExerciseDto
 import icesi.edu.co.fitscan.features.workout.data.dto.ExerciseResponseDto
+import icesi.edu.co.fitscan.features.workout.data.dto.ExerciseSingleResponseDto
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -16,7 +17,7 @@ interface IExerciseDataSource {
     suspend fun getAllExercises(): Response<ExerciseResponseDto>
 
     @GET("$BASE_PATH/exercise/{id}")
-    suspend fun getExerciseById(@Path("id") id: String): Response<ExerciseDto>
+    suspend fun getExerciseById(@Path("id") id: String): Response<ExerciseSingleResponseDto>
 
     @POST("$BASE_PATH/exercise")
     suspend fun createExercise(@Body exercise: ExerciseDto): Response<ExerciseDto>

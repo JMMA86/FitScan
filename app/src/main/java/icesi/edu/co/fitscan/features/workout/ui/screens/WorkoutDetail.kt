@@ -43,7 +43,7 @@ fun WorkoutDetailScreen(
     onNavigateBack: () -> Unit = {},
     onStartWorkout: () -> Unit = {},
     onEditWorkout: () -> Unit = {},
-    onExerciseClick: (String) -> Unit = {} // Takes exercise name, for example
+    onExerciseClick: (String, String) -> Unit = { _, _ -> } // Ahora recibe workoutId y workoutExerciseId
 ) {
     val viewModel: WorkoutDetailViewModel = viewModel(factory = WorkoutDetailViewModelFactory())
     val state by viewModel.state.collectAsState()
@@ -172,7 +172,7 @@ fun WorkoutDetailScreen(
                                 name = item.name, // Show the name, not the ID
                                 sets = item.sets,
                                 reps = item.reps,
-                                onClick = { onExerciseClick(item.id) },
+                                onClick = { onExerciseClick(workoutId ?: "", item.id) },
                                 cardBackgroundColor = cardBackgroundColor,
                                 primaryTextColor = primaryTextColor,
                                 secondaryTextColor = secondaryTextColor,
