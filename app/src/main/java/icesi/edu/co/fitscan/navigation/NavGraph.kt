@@ -1,5 +1,6 @@
 package icesi.edu.co.fitscan.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -46,7 +47,7 @@ fun NavigationHost(navController: NavHostController) {
             WorkoutListScreen(
                 onNavigateToCreate = { navController.navigate(Screen.CreateWorkout.route) },
                 onNavigateToPerform = { workoutId ->
-                    // Por definir
+                    navController.navigate("workout_detail/$workoutId")
                 }
             )
         }
@@ -116,6 +117,17 @@ fun NavigationHost(navController: NavHostController) {
 
         composable(Screen.CreateWorkout.route) {
             CreateWorkoutScreen()
+        }
+
+        composable(
+            route = "workout_detail/{workoutId}",
+            arguments = listOf(
+                navArgument("workoutId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val workoutId = backStackEntry.arguments?.getString("workoutId")
+            Log.d("NavGraph", "Navegando a workout_detail con workoutId: $workoutId")
+            icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutDetailScreen(workoutId = workoutId)
         }
     }
 }

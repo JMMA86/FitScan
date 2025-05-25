@@ -16,10 +16,10 @@ class WorkoutExerciseRepositoryImpl(
         return try {
             val response = datasource.getExercisesByWorkoutId(workoutId.toString())
             if (response.isSuccessful) {
-                val workoutExercises = response.body()?.map { dto: WorkoutExerciseDto -> mapper.toDomain(dto) } ?: emptyList()
+                val workoutExercises = response.body()?.data?.map { dto: WorkoutExerciseDto -> mapper.toDomain(dto) } ?: emptyList()
                 Result.success(workoutExercises)
             } else {
-                Result.failure(Exception("Error getting workout exercises: ${response.code()}"))
+                Result.failure(Exception("Error getting workout exercises: \\${response.code()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)

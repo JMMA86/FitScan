@@ -1,5 +1,6 @@
 package icesi.edu.co.fitscan.features.common.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,17 +30,20 @@ import icesi.edu.co.fitscan.ui.theme.greySuperLight
 
 @Composable
 fun RecentActivityCard(
+    id: String, // Nuevo parámetro para el ID
     title: String,
     time: String,
     level: String,
-    exercises: String
+    exercises: String,
+    onClick: (String) -> Unit // Callback para el click
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.DarkGray.copy(alpha = 0.8f)),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp),
+            .padding(vertical = 6.dp)
+            .clickable { onClick(id) }, // Acción de click
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row(
