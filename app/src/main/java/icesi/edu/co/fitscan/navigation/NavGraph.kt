@@ -54,7 +54,7 @@ fun NavigationHost(
                 greenLess = greenLess,
                 onLoginSuccess = {
                     // Navigate to Home (Dashboard) and clear the history up to Login
-                    navController.navigate(Screen.PerformWorkout.route) {
+                    navController.navigate("${Screen.PerformWorkout.route}/${0}") {
                         popUpTo(Screen.Login.route) { inclusive = true }
                         launchSingleTop = true
                     }
@@ -105,8 +105,10 @@ fun NavigationHost(
             ExerciseProgressScreen(navController = navController)
         }
 
-        composable(Screen.PerformWorkout.route) {
-            PerformWorkoutScreen()
+        composable(Screen.PerformWorkout.route) { backStackEntry ->
+            //val workoutSessionId = backStackEntry.arguments?.getString("workoutSessionId")
+            val workoutSessionId = "000b70cd-9af8-428d-b3ad-a8a8aa0c66cf"
+            PerformWorkoutScreen(workoutSessionId = workoutSessionId)
         }
     }
 }

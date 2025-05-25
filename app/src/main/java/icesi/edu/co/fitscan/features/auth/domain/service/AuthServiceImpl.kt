@@ -55,7 +55,7 @@ class AuthServiceImpl(
 
                             if (customerResponse.isSuccessful && customerResponse.body()?.data != null && customerResponse.body()?.data?.isNotEmpty() == true) {
                                 AppState.customerId = customerResponse.body()?.data?.get(0)?.id
-                                Log.d(">>>AuthServiceImpl", "Customer ID: $customerResponse")
+                                Log.d(">>>AuthServiceImpl", "Customer ID: ${AppState.customerId}")
                             }
                         }
                     }

@@ -19,20 +19,20 @@ import java.util.UUID
 class PerformWorkoutViewModel(
     private val performWorkoutUseCase: IManageWorkoutExercisesUseCase,
     private val exerciseUseCase: IManageExercisesUseCase,
-    private val workoutUseCase: IManageWorkoutUseCase
+    private val workoutUseCase: IManageWorkoutUseCase,
+    private val workoutSessionId: String
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<PerformWorkoutUiState>(PerformWorkoutUiState.Idle)
     val uiState: StateFlow<PerformWorkoutUiState> get() = _uiState
     var actualExerciseId: Int = 0
 
     private var _workoutState = WorkoutUiState()
-    val workoutState: WorkoutUiState get() = _workoutState
 
-    fun startWorkout(customerId: String) {
+    fun startWorkout() {
         _uiState.value = PerformWorkoutUiState.Loading
         viewModelScope.launch {
-            val customerId = UUID.fromString(customerId)
-            val exercisesResponse = performWorkoutUseCase.getWorkoutExercises(customerId)
+            val workoutId = UUID.fromString(workoutSessionId)
+            val exercisesResponse = performWorkoutUseCase.getWorkoutExercises(workoutId)
             var actualWorkout: Workout? = null
             val exercises = exercisesResponse.getOrNull()?.map {
                 val exercise = exerciseUseCase.getExerciseById(it.exerciseId)
@@ -64,7 +64,7 @@ class PerformWorkoutViewModel(
             _workoutState = _workoutState.copy(
                 title = actualWorkout?.name.toString(),
                 subtitle = actualWorkout?.type.toString(),
-                progress = "${exercises.size}/$customerId ejercicios completados",
+                progress = "0/${exercises.size} ejercicios completados",
                 currentExercise = currentExercise,
                 nextExercise = nextExercise,
                 remainingExercises = exercises
