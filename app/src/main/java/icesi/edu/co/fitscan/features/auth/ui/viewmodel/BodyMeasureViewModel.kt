@@ -82,4 +82,39 @@ class BodyMeasurementViewModel(application: Application) : AndroidViewModel(appl
     fun resetState() {
         _uiState.update { BodyMeasureUiState.Idle }
     }
+
+    private fun getBodyMeasurementsByBodyMeasureId(bodyMeasureId: String) {
+        _uiState.update { BodyMeasureUiState.Loading }
+        viewModelScope.launch {
+            val result = authService.getBodyMeasureById(bodyMeasureId)
+            result.fold(
+                onSuccess = { data ->
+                    _uiState.update { BodyMeasureUiState.SuccessData(data) }
+                },
+                onFailure = { exception ->
+                    _uiState.update { BodyMeasureUiState.Error(exception.message ?: "Error desconocido") }
+                }
+            )
+        }
+    }
+
+    fun getBodyMeasurementsByCustomerId(userId: String) {
+        _uiState.update { BodyMeasureUiState.Loading }
+        viewModelScope.launch {
+            val customerResult = authService.getCustomerByCustomerId(userId)
+            customerResult.fold(
+                onSuccess = { customerData ->
+                    val bodyMeasureId = customerData.body_measure_id
+                    if (bodyMeasureId.isNotEmpty()) {
+                        getBodyMeasurementsByBodyMeasureId(bodyMeasureId)
+                    } else {
+                        _uiState.update { BodyMeasureUiState.Error("No se encontró body_measure_id para el usuario.") }
+                    }
+                },
+                onFailure = { exception ->
+                    _uiState.update { BodyMeasureUiState.Error(exception.message ?: "Error desconocido") }
+                }
+            )
+        }
+    }
 }

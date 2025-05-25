@@ -16,7 +16,7 @@ fun FitScanTextField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     leadingIcon: @Composable (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier
 ) {
     OutlinedTextField(
         value = value,

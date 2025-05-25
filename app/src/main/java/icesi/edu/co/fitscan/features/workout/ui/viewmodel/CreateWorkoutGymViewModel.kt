@@ -2,13 +2,14 @@ package icesi.edu.co.fitscan.features.workout.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import icesi.edu.co.fitscan.domain.model.Exercise
+import icesi.edu.co.fitscan.domain.model.Workout
+import icesi.edu.co.fitscan.domain.model.WorkoutExercise
+import icesi.edu.co.fitscan.domain.model.WorkoutType
+import icesi.edu.co.fitscan.domain.usecases.ICreateWorkoutUseCase
+import icesi.edu.co.fitscan.domain.usecases.IGetExercisesUseCase
+import icesi.edu.co.fitscan.domain.usecases.ICreateExerciseUseCase
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
-import icesi.edu.co.fitscan.features.workout.domain.model.Exercise
-import icesi.edu.co.fitscan.features.workout.domain.model.Workout
-import icesi.edu.co.fitscan.features.workout.domain.model.WorkoutExercise
-import icesi.edu.co.fitscan.features.workout.domain.model.WorkoutType
-import icesi.edu.co.fitscan.features.workout.domain.usecase.CreateWorkoutUseCase
-import icesi.edu.co.fitscan.features.workout.domain.usecase.GetExercisesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -16,8 +17,9 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class CreateWorkoutGymViewModel(
-    private val getExercisesUseCase: GetExercisesUseCase,
-    private val createWorkoutUseCase: CreateWorkoutUseCase
+    private val getExercisesUseCase: IGetExercisesUseCase,
+    private val createWorkoutUseCase: ICreateWorkoutUseCase,
+    private val createExerciseUseCase: ICreateExerciseUseCase
 ) : ViewModel() {
 
     private val _exercises = MutableStateFlow<List<Exercise>>(emptyList())
@@ -128,7 +130,30 @@ class CreateWorkoutGymViewModel(
                     val (sets, reps) = setsReps
                     
                     // Buscar el ID del ejercicio por su nombre
-                    val exercise = _exercises.value.find { it.name == exerciseName }
+                    var exercise = _exercises.value.find { it.name == exerciseName }
+                    
+                    if (exercise?.id == null) {
+                        // Crear ejercicio por IA si no existe
+                        val aiExercise = Exercise(
+                            id = UUID.randomUUID(),
+                            name = exerciseName,
+                            description = "Ejercicio sugerido por IA",
+                            muscleGroups = "No definido"
+                        )
+                        val result = createExerciseUseCase(aiExercise)
+                        exercise = result.getOrNull()
+                        // Agregarlo a la lista
+                        workoutExercises.add(
+                            WorkoutExercise(
+                                id = UUID.randomUUID(),
+                                workoutId = workout.id,
+                                exerciseId = aiExercise.id,
+                                sets = sets,
+                                reps = reps,
+                                isAiSuggested = true
+                            )
+                        )
+                    }
                     
                     if (exercise?.id != null) {
                         workoutExercises.add(
