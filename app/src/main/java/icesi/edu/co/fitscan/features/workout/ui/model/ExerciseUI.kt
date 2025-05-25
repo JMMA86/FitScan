@@ -1,4 +1,4 @@
-package icesi.edu.co.fitscan.features.workout.domain.usecase
+package icesi.edu.co.fitscan.features.workout.ui.model
 
 // Represents the current exercise
 data class CurrentExercise(

@@ -2,19 +2,28 @@ package icesi.edu.co.fitscan.features.workout.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import icesi.edu.co.fitscan.features.workout.domain.usecase.NextExercise
-import icesi.edu.co.fitscan.features.workout.domain.usecase.PerformWorkoutUseCase
-import icesi.edu.co.fitscan.features.workout.domain.usecase.WorkoutUiState
+import icesi.edu.co.fitscan.domain.model.Workout
+import icesi.edu.co.fitscan.domain.usecases.IManageExercisesUseCase
+import icesi.edu.co.fitscan.domain.usecases.IManageWorkoutExercisesUseCase
+import icesi.edu.co.fitscan.domain.usecases.IManageWorkoutUseCase
+import icesi.edu.co.fitscan.features.workout.ui.model.CurrentExercise
+import icesi.edu.co.fitscan.features.workout.ui.model.NextExercise
 import icesi.edu.co.fitscan.features.workout.ui.model.PerformWorkoutUiState
+import icesi.edu.co.fitscan.features.workout.ui.model.RemainingExercise
+import icesi.edu.co.fitscan.features.workout.ui.model.WorkoutUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class PerformWorkoutViewModel(
-    private val performWorkoutUseCase: PerformWorkoutUseCase
+    private val performWorkoutUseCase: IManageWorkoutExercisesUseCase,
+    private val exerciseUseCase: IManageExercisesUseCase,
+    private val workoutUseCase: IManageWorkoutUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<PerformWorkoutUiState>(PerformWorkoutUiState.Idle)
     val uiState: StateFlow<PerformWorkoutUiState> get() = _uiState
+    var actualExerciseId: Int = 0
 
     private var _workoutState = WorkoutUiState()
     val workoutState: WorkoutUiState get() = _workoutState
@@ -22,13 +31,46 @@ class PerformWorkoutViewModel(
     fun startWorkout(customerId: String) {
         _uiState.value = PerformWorkoutUiState.Loading
         viewModelScope.launch {
-            val result = performWorkoutUseCase.getWorkout(customerId)
-            result.onSuccess { workoutUiState ->
-                _workoutState = workoutUiState
-                _uiState.value = PerformWorkoutUiState.Success(_workoutState)
-            }.onFailure { e ->
-                _uiState.value = PerformWorkoutUiState.Error(e.message ?: "Unknown error")
-            }
+            val customerId = UUID.fromString(customerId)
+            val exercisesResponse = performWorkoutUseCase.getWorkoutExercises(customerId)
+            var actualWorkout: Workout? = null
+            val exercises = exercisesResponse.getOrNull()?.map {
+                val exercise = exerciseUseCase.getExerciseById(it.exerciseId)
+                actualWorkout = workoutUseCase.getWorkoutById(it.workoutId).getOrNull()
+                RemainingExercise(
+                    title = exercise.name.toString(),
+                    sets = it.sets.toString(),
+                    reps = it.reps.toString()
+                )
+            } ?: emptyList()
+
+            val currentExercise: CurrentExercise = (exercises.getOrNull(actualExerciseId)?.let {
+                CurrentExercise(
+                    it.title,
+                    actualWorkout?.durationMinutes?.toString() ?: "N/A",
+                    it.sets,
+                    actualWorkout?.durationMinutes?.toString() ?: "N/A"
+                )
+            } ?: NextExercise()) as CurrentExercise
+
+            actualExerciseId++
+
+            val nextExercise = exercises.getOrNull(actualExerciseId)?.let {
+                NextExercise(it.title, it.sets.toInt(), it.reps.toInt())
+            } ?: NextExercise()
+
+            actualExerciseId++
+
+            _workoutState = _workoutState.copy(
+                title = actualWorkout?.name.toString(),
+                subtitle = actualWorkout?.type.toString(),
+                progress = "${exercises.size}/$customerId ejercicios completados",
+                currentExercise = currentExercise,
+                nextExercise = nextExercise,
+                remainingExercises = exercises
+            )
+
+            _uiState.value = PerformWorkoutUiState.Success(_workoutState)
         }
     }
 
