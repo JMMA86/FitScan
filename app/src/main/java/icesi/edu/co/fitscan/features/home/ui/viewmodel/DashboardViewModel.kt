@@ -48,6 +48,7 @@ class DashboardViewModel(
                     _weeklyProgress.value = response.weeklyProgress
                     _recentActivities.value = response.recentActivities.map { activity ->
                         RecentActivity(
+                            id = activity.id, // Propagar el id
                             title = activity.title,
                             time = activity.time,
                             level = activity.level,

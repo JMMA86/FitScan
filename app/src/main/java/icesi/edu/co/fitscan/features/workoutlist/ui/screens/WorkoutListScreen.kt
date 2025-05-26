@@ -126,19 +126,19 @@ fun WorkoutListScreen(
                     ) {
                         items(workouts) { workout ->
                             RecentActivityCard(
+                                id = workout.id.toString(),
                                 title = workout.name,
                                 time = workout.durationMinutes?.let { "$it min" } ?: "Sin tiempo",
                                 level = workout.difficulty ?: "Sin nivel",
                                 exercises = workout.type.name,
+                                onClick = { onNavigateToPerform(workout.id.toString()) }
                             )
-                            // Navegación al tocar la tarjeta
                             Spacer(modifier = Modifier.height(4.dp))
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(1.dp)
                                     .background(Color.Transparent)
-                                    .clickable { onNavigateToPerform(workout.id.toString()) }
                             )
                         }
                     }
