@@ -1,6 +1,5 @@
 package icesi.edu.co.fitscan.features.workout.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -38,7 +37,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
-import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import icesi.edu.co.fitscan.features.workout.ui.model.PerformWorkoutUiState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.PerformWorkoutViewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.PerformWorkoutViewModelFactory
@@ -59,7 +57,6 @@ fun PerformWorkoutScreen(
         factory = PerformWorkoutViewModelFactory(workoutId)
     )
 
-    Log.e("PerformWorkoutScreen", "Customer ID: ${AppState.customerId}")
     // Call startWorkout only once when the screen is shown
     LaunchedEffect(workoutId) {
         viewModel.startWorkout()
@@ -277,17 +274,19 @@ fun PerformWorkoutScreenContent(
                         }
 
                         // Workout controls
-                        Spacer(modifier = Modifier.height(Dimensions.smallestPadding))
-                        Button(
-                            onClick = { viewModel.endSet() },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = greenLess),
-                        ) {
-                            Text(
-                                text = "Terminar set",
-                                fontSize = Dimensions.MediumTextSize
-                            )
-                        }
+                        // This is going to be added in the next sprint as this is not
+                        // specified enough
+//                        Spacer(modifier = Modifier.height(Dimensions.smallestPadding))
+//                        Button(
+//                            onClick = { viewModel.endSet() },
+//                            modifier = Modifier.fillMaxWidth(),
+//                            colors = ButtonDefaults.buttonColors(containerColor = greenLess),
+//                        ) {
+//                            Text(
+//                                text = "Terminar set",
+//                                fontSize = Dimensions.MediumTextSize
+//                            )
+//                        }
                         Spacer(modifier = Modifier.height(Dimensions.smallestPadding))
 
                         Row(

@@ -10,6 +10,8 @@ import icesi.edu.co.fitscan.features.workout.ui.model.NextExercise
 import icesi.edu.co.fitscan.features.workout.ui.model.PerformWorkoutUiState
 import icesi.edu.co.fitscan.features.workout.ui.model.RemainingExercise
 import icesi.edu.co.fitscan.features.workout.ui.model.WorkoutUiState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -32,21 +34,26 @@ class PerformWorkoutViewModel(
     private var currentExerciseIndex: Int = 0
     private var isPaused: Boolean = false
 
+    // Timer state
+    private val _exerciseSeconds = MutableStateFlow(0)
+    private var timerJob: Job? = null
+
     fun startWorkout() {
         _uiState.value = PerformWorkoutUiState.Loading
         viewModelScope.launch {
             exercises = loadExercises()
-            val actualWorkout = loadWorkout(exercises)
+            val actualWorkout = loadWorkout()
             val formattedTime = getCurrentTimeFormatted()
-            val (hours, minutes) = getWorkoutDuration(actualWorkout?.durationMinutes ?: 0)
 
             currentExerciseIndex = 0
+            _exerciseSeconds.value = 0
+            startTimer()
+
             val currentExercise = createCurrentExercise(
                 exercises,
                 currentExerciseIndex,
                 formattedTime,
-                hours,
-                minutes
+                _exerciseSeconds.value
             )
             val nextExercise = createNextExercise(exercises, currentExerciseIndex + 1)
             val remainingExercises = exercises.drop(1)
@@ -79,6 +86,8 @@ class PerformWorkoutViewModel(
         viewModelScope.launch {
             if (currentExerciseIndex < exercises.size - 1) {
                 currentExerciseIndex++
+                _exerciseSeconds.value = 0
+                startTimer()
                 updateCurrentAndNextExercises()
             }
         }
@@ -88,6 +97,8 @@ class PerformWorkoutViewModel(
         viewModelScope.launch {
             if (currentExerciseIndex > 0) {
                 currentExerciseIndex--
+                _exerciseSeconds.value = 0
+                startTimer()
                 updateCurrentAndNextExercises()
             }
         }
@@ -95,8 +106,11 @@ class PerformWorkoutViewModel(
 
     fun pauseExercise() {
         isPaused = !isPaused
-        // Add additional pause logic if needed (e.g., timers)
-        // Optionally update UI state to reflect pause
+        if (isPaused) {
+            timerJob?.cancel()
+        } else {
+            startTimer()
+        }
     }
 
     fun skipToNextExercise() {
@@ -104,6 +118,7 @@ class PerformWorkoutViewModel(
     }
 
     fun finishWorkout() {
+        timerJob?.cancel()
         _uiState.value = PerformWorkoutUiState.Idle
     }
 
@@ -120,7 +135,7 @@ class PerformWorkoutViewModel(
         }
     }
 
-    private suspend fun loadWorkout(exercises: List<RemainingExercise>): icesi.edu.co.fitscan.domain.model.Workout? {
+    private suspend fun loadWorkout(): icesi.edu.co.fitscan.domain.model.Workout? {
         val firstWorkoutId = performWorkoutUseCase
             .getWorkoutExercises(UUID.fromString(workoutId))
             .getOrNull()
@@ -135,25 +150,19 @@ class PerformWorkoutViewModel(
         return currentTime.format(formatter)
     }
 
-    private fun getWorkoutDuration(totalMinutes: Int): Pair<Int, Int> {
-        val hours = totalMinutes / 60
-        val minutes = totalMinutes % 60
-        return Pair(hours, minutes)
-    }
-
     private fun createCurrentExercise(
         exercises: List<RemainingExercise>,
         index: Int,
         formattedTime: String,
-        hours: Int,
-        minutes: Int
+        seconds: Int
     ): CurrentExercise {
+        val elapsed = formatSeconds(seconds)
         return exercises.getOrNull(index)?.let {
             CurrentExercise(
                 it.title,
                 formattedTime,
                 it.sets,
-                "Duración total: $hours h : $minutes m"
+                "Tiempo transcurrido: $elapsed"
             )
         } ?: CurrentExercise()
     }
@@ -183,7 +192,12 @@ class PerformWorkoutViewModel(
 
     private fun updateCurrentAndNextExercises() {
         val formattedTime = getCurrentTimeFormatted()
-        val current = createCurrentExercise(exercises, currentExerciseIndex, formattedTime, 0, 0)
+        val current = createCurrentExercise(
+            exercises,
+            currentExerciseIndex,
+            formattedTime,
+            _exerciseSeconds.value
+        )
         val next = createNextExercise(exercises, currentExerciseIndex + 1)
         val remaining = exercises.drop(currentExerciseIndex + 1)
         _workoutState = _workoutState.copy(
@@ -193,5 +207,22 @@ class PerformWorkoutViewModel(
             progress = "${currentExerciseIndex}/${exercises.size} ejercicios completados"
         )
         _uiState.value = PerformWorkoutUiState.Success(_workoutState)
+    }
+
+    private fun startTimer() {
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            while (!isPaused) {
+                delay(1000)
+                _exerciseSeconds.value += 1
+                updateCurrentAndNextExercises()
+            }
+        }
+    }
+
+    private fun formatSeconds(seconds: Int): String {
+        val min = seconds / 60
+        val sec = seconds % 60
+        return "%02d:%02d".format(min, sec)
     }
 }
