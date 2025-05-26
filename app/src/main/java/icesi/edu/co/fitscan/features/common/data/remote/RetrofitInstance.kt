@@ -3,8 +3,8 @@ package icesi.edu.co.fitscan.features.common.data.remote
 import android.util.Log
 import icesi.edu.co.fitscan.features.auth.data.remote.AuthRepository
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
-import android.util.Log
 import icesi.edu.co.fitscan.features.statistics.data.remote.StatisticsRemoteDataSource
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
