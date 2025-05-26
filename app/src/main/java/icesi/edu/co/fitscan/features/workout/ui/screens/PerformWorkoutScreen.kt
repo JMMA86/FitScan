@@ -53,15 +53,15 @@ import icesi.edu.co.fitscan.ui.theme.redDangerous
 @Composable
 fun PerformWorkoutScreen(
     modifier: Modifier = Modifier,
-    workoutSessionId: String = "b48b68ba-1863-4ca7-87f7-5b32a5f4414e",
+    workoutId: String = "b48b68ba-1863-4ca7-87f7-5b32a5f4414e",
 ) {
     val viewModel: PerformWorkoutViewModel = viewModel(
-        factory = PerformWorkoutViewModelFactory(workoutSessionId)
+        factory = PerformWorkoutViewModelFactory(workoutId)
     )
 
     Log.e("PerformWorkoutScreen", "Customer ID: ${AppState.customerId}")
     // Call startWorkout only once when the screen is shown
-    LaunchedEffect(workoutSessionId) {
+    LaunchedEffect(workoutId) {
         viewModel.startWorkout()
     }
 

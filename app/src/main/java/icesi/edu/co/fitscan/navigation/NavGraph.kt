@@ -10,7 +10,6 @@ import androidx.navigation.navArgument
 import icesi.edu.co.fitscan.features.auth.ui.screens.LoginScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
-import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import icesi.edu.co.fitscan.features.home.ui.screens.DashboardScreen
 import icesi.edu.co.fitscan.features.notifications.ui.screens.NotificationsScreen
 import icesi.edu.co.fitscan.features.nutrition.ui.screens.NutritionPlanListScreen
@@ -19,11 +18,11 @@ import icesi.edu.co.fitscan.features.settings.ui.screens.SettingsScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseProgressScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseStatisticsScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
+import icesi.edu.co.fitscan.features.workout.ui.screens.ExerciseDetailScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.PerformWorkoutScreen
+import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.ExerciseDetailViewModelFactory
 import icesi.edu.co.fitscan.features.workoutlist.ui.screens.WorkoutListScreen
 import icesi.edu.co.fitscan.ui.theme.greenLess
-import icesi.edu.co.fitscan.features.workout.ui.screens.ExerciseDetailScreen
-import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.ExerciseDetailViewModelFactory
 
 @Composable
 fun NavigationHost(
@@ -127,14 +126,9 @@ fun NavigationHost(
         }
 
         composable(Screen.PerformWorkout.route) { backStackEntry ->
-            if (AppState.isLoggedIn) {
-                //val workoutSessionId = backStackEntry.arguments?.getString("workoutSessionId")
-                val workoutSessionId = "b48b68ba-1863-4ca7-87f7-5b32a5f4414e"
-                PerformWorkoutScreen(workoutSessionId = workoutSessionId)
-            } else {
-                // Redirect to login if not authenticated
-                navController.navigate(Screen.Login.route)
-            }
+            //val workoutSessionId = backStackEntry.arguments?.getString("workoutSessionId")
+            val workoutSessionId = "b48b68ba-1863-4ca7-87f7-5b32a5f4414e"
+            PerformWorkoutScreen(workoutId = workoutSessionId)
         }
 
         composable(

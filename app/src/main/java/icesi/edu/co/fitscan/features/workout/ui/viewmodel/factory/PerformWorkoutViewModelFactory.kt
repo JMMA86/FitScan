@@ -24,7 +24,7 @@ import icesi.edu.co.fitscan.features.workout.data.usecases.ManageWorkoutUseCaseI
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.PerformWorkoutViewModel
 
 class PerformWorkoutViewModelFactory(
-    private val workoutSessionId: String,
+    private val workoutId: String,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PerformWorkoutViewModel::class.java)) {
@@ -65,7 +65,7 @@ class PerformWorkoutViewModelFactory(
                 performWorkoutUseCase = workoutExerciseUseCase,
                 exerciseUseCase = exerciseUseCase,
                 workoutUseCase = workoutUseCase,
-                workoutSessionId = workoutSessionId
+                workoutId = workoutId
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

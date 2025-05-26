@@ -13,13 +13,15 @@ import icesi.edu.co.fitscan.features.workout.ui.model.WorkoutUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 class PerformWorkoutViewModel(
     private val performWorkoutUseCase: IManageWorkoutExercisesUseCase,
     private val exerciseUseCase: IManageExercisesUseCase,
     private val workoutUseCase: IManageWorkoutUseCase,
-    private val workoutSessionId: String
+    private val workoutId: String
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<PerformWorkoutUiState>(PerformWorkoutUiState.Idle)
     val uiState: StateFlow<PerformWorkoutUiState> get() = _uiState
@@ -30,7 +32,7 @@ class PerformWorkoutViewModel(
     fun startWorkout() {
         _uiState.value = PerformWorkoutUiState.Loading
         viewModelScope.launch {
-            val workoutId = UUID.fromString(workoutSessionId)
+            val workoutId = UUID.fromString(workoutId)
             val exercisesResponse = performWorkoutUseCase.getWorkoutExercises(workoutId)
             val exercises = mutableListOf<RemainingExercise>()
             for (item in exercisesResponse.getOrNull().orEmpty()) {
@@ -48,12 +50,20 @@ class PerformWorkoutViewModel(
             var actualWorkout =
                 firstWorkoutId?.let { workoutUseCase.getWorkoutById(it).getOrNull() }
 
+            val currentTime = LocalTime.now()
+            val formatter = DateTimeFormatter.ofPattern("HH:mm")
+            val formattedTime = currentTime.format(formatter)
+
+            val totalMinutes = actualWorkout?.durationMinutes ?: 0
+            val hours = totalMinutes / 60
+            val minutes = totalMinutes % 60
+
             val currentExercise: CurrentExercise = (exercises.getOrNull(actualExerciseId)?.let {
                 CurrentExercise(
                     it.title,
-                    actualWorkout?.durationMinutes?.toString() ?: "N/A",
+                    formattedTime,
                     it.sets,
-                    actualWorkout?.durationMinutes?.toString() ?: "N/A"
+                    "Duración total: $hours h : $minutes m"
                 )
             } ?: NextExercise()) as CurrentExercise
 

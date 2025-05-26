@@ -1,9 +1,9 @@
 package icesi.edu.co.fitscan.features.workout.data.repositories
 
-import icesi.edu.co.fitscan.features.workout.data.dataSources.IWorkoutDataSource
-import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutDto
 import icesi.edu.co.fitscan.domain.model.Workout
 import icesi.edu.co.fitscan.domain.repositories.IWorkoutRepository
+import icesi.edu.co.fitscan.features.workout.data.dataSources.IWorkoutDataSource
+import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutDto
 import icesi.edu.co.fitscan.features.workout.data.mapper.WorkoutMapper
 import java.util.UUID
 
@@ -16,7 +16,8 @@ class WorkoutRepositoryImpl(
         return try {
             val response = datasource.getAllWorkouts()
             if (response.isSuccessful) {
-                val workouts = response.body()?.map { dto: WorkoutDto -> mapper.toDomain(dto) } ?: emptyList()
+                val workouts =
+                    response.body()?.map { dto: WorkoutDto -> mapper.toDomain(dto) } ?: emptyList()
                 Result.success(workouts)
             } else {
                 Result.failure(Exception("Error: ${response.code()}"))
@@ -30,7 +31,9 @@ class WorkoutRepositoryImpl(
         return try {
             val response = datasource.getWorkoutsByCustomerId(customerId.toString())
             if (response.isSuccessful) {
-                val workouts = response.body()?.data?.map { dto: WorkoutDto -> mapper.toDomain(dto) } ?: emptyList()
+                val workouts =
+                    response.body()?.data?.map { dto: WorkoutDto -> mapper.toDomain(dto) }
+                        ?: emptyList()
                 Result.success(workouts)
             } else {
                 Result.failure(Exception("Error: ${response.code()}"))
@@ -44,7 +47,7 @@ class WorkoutRepositoryImpl(
         return try {
             val response = datasource.getWorkoutById(id.toString())
             if (response.isSuccessful) {
-                val workout = response.body()?.let { dto: WorkoutDto -> mapper.toDomain(dto) }
+                val workout = response.body()?.data?.let { dto: WorkoutDto -> mapper.toDomain(dto) }
                 if (workout != null) {
                     Result.success(workout)
                 } else {
@@ -62,7 +65,8 @@ class WorkoutRepositoryImpl(
         return try {
             val response = datasource.createWorkout(mapper.toDto(workout))
             if (response.isSuccessful) {
-                val createdWorkout = response.body()?.let { dto: WorkoutDto -> mapper.toDomain(dto) }
+                val createdWorkout =
+                    response.body()?.let { dto: WorkoutDto -> mapper.toDomain(dto) }
                 if (createdWorkout != null) {
                     Result.success(createdWorkout)
                 } else {
@@ -80,7 +84,8 @@ class WorkoutRepositoryImpl(
         return try {
             val response = datasource.updateWorkout(id.toString(), mapper.toDto(workout))
             if (response.isSuccessful) {
-                val updatedWorkout = response.body()?.let { dto: WorkoutDto -> mapper.toDomain(dto) }
+                val updatedWorkout =
+                    response.body()?.let { dto: WorkoutDto -> mapper.toDomain(dto) }
                 if (updatedWorkout != null) {
                     Result.success(updatedWorkout)
                 } else {
