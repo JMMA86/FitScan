@@ -178,9 +178,9 @@ CREATE TABLE completed_exercise (
 CREATE TABLE progress_photo (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     customer_id UUID REFERENCES customer(id) ON DELETE CASCADE,
-    photo_date DATE,
+    photo_date DATE DEFAULT CURRENT_DATE,
     title TEXT,
-    image_path TEXT
+    image_path UUID REFERENCES directus_files(id) ON DELETE CASCADE
 );
 
 DELETE FROM directus_users WHERE email <> 'admin@fitscan.com';
@@ -263,7 +263,7 @@ BEGIN
         INSERT INTO directus_users (id, email, password, first_name, last_name)
         VALUES (
             uuid_generate_v4(),
-            'user' || i || '@example.com', -- Ensure unique email
+            'user' || i || '@fitscan.com', -- Ensure unique email
             '$argon2id$v=19$m=65536,t=3,p=4$O09OkqGHl74ucu293lNxuw$OgTadbPObj9sc2EZFm0hK4ppzSCb7ro8WtAK3cOQLbg',
             'FirstName' || i,
             'LastName' || i
@@ -367,7 +367,7 @@ BEGIN
     RAISE NOTICE 'Inserted % workout exercises per workout', num_workout_exercises_per_workout;
     -- Insert workout sessions
     DECLARE
-        base_start_date DATE := CURRENT_DATE - workout_session_day_offset;
+        base_start_date DATE := CURRENT_DATE - workout_session_day_offset/2;
     BEGIN
         FOR workout_rec IN (SELECT id, customer_id FROM workout) LOOP
             FOR i IN 1..num_workout_sessions_per_workout LOOP
@@ -401,26 +401,27 @@ BEGIN
                 3 + (RANDOM() * 3)::INTEGER,
                 8 + (RANDOM() * 12)::INTEGER,
                 5 + (RANDOM() * 5)::INTEGER,
-                10 + (RANDOM() * 90)::INTEGER
+                20 + (RANDOM() * 80)::INTEGER
             );
         END LOOP;
     END LOOP;
     RAISE NOTICE 'Inserted % completed exercises per session', num_completed_exercises_per_session;
 
-    -- Insert progress photos
-    FOR customer_rec IN (SELECT id FROM customer) LOOP
-        FOR i IN 1..num_progress_photos_per_customer LOOP
-            INSERT INTO progress_photo (id, customer_id, photo_date, title, image_path)
-            VALUES (
-                uuid_generate_v4(),
-                customer_rec.id,
-                CURRENT_DATE - (i || ' weeks')::INTERVAL,
-                'Progress Photo ' || i,
-                '/images/customer_' || customer_rec.id || '_photo_' || i || '.jpg'
-            );
-        END LOOP;
-    END LOOP;
-    RAISE NOTICE 'Inserted % progress photos per customer', num_progress_photos_per_customer;
+    
+    -- -- Insert progress photos
+    -- FOR customer_rec IN (SELECT id FROM customer) LOOP
+    --     FOR i IN 1..num_progress_photos_per_customer LOOP
+    --         INSERT INTO progress_photo (id, customer_id, photo_date, title, image_path)
+    --         VALUES (
+    --             uuid_generate_v4(),
+    --             customer_rec.id,
+    --             CURRENT_DATE - (i || ' weeks')::INTERVAL,
+    --             'Progress Photo ' || i,
+    --             '/images/customer_' || customer_rec.id || '_photo_' || i || '.jpg'
+    --         );
+    --     END LOOP;
+    -- END LOOP;
+    -- RAISE NOTICE 'Inserted % progress photos per customer', num_progress_photos_per_customer;
 END $$;
 
 -- =============================

@@ -1,9 +1,10 @@
 package icesi.edu.co.fitscan.features.statistics.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
@@ -11,10 +12,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.ExerciseProgressViewModel
+import icesi.edu.co.fitscan.ui.theme.greenLess
+import icesi.edu.co.fitscan.ui.theme.greyStrong
+import icesi.edu.co.fitscan.ui.theme.greyMed
+import icesi.edu.co.fitscan.ui.theme.redDangerous
+import icesi.edu.co.fitscan.features.common.ui.components.FitScanHeader
+import icesi.edu.co.fitscan.features.common.ui.components.FitScanLineChart
+import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.foundation.background
+import icesi.edu.co.fitscan.features.common.ui.components.ExerciseSearchCard
+import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.TimeRange
+import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.factory.ExerciseProgressViewModelFactory
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,24 +36,13 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.foundation.shape.CircleShape
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.ExerciseProgressViewModel
-import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.TimeRange
-import icesi.edu.co.fitscan.ui.theme.greenLess
-import icesi.edu.co.fitscan.ui.theme.greyStrong
-import icesi.edu.co.fitscan.ui.theme.greyMed
-import icesi.edu.co.fitscan.ui.theme.redDangerous
+import androidx.compose.ui.tooling.preview.Preview
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanTextField
-import icesi.edu.co.fitscan.features.common.ui.components.ExerciseSearchCard
-import icesi.edu.co.fitscan.features.common.ui.components.FitScanHeader
-import icesi.edu.co.fitscan.features.common.ui.components.FitScanLineChart
-
 @Composable
 fun ExerciseProgressScreen(
-    viewModel: ExerciseProgressViewModel = viewModel(),
     navController: NavController = rememberNavController()
 ) {
+    val viewModel: ExerciseProgressViewModel = viewModel(factory = ExerciseProgressViewModelFactory())
     val selectedExercise by viewModel.selectedExercise.collectAsState()
     val timeRange by viewModel.timeRange.collectAsState()
     val chartData by viewModel.chartData.collectAsState()
@@ -56,7 +57,6 @@ fun ExerciseProgressScreen(
             try {
                 val parts = dateStr.split("T")[0].split("-")
                 if (parts.size == 3) {
-                    val year = parts[0].toInt()
                     val month = parts[1].toInt()
                     val day = parts[2].toInt()
                     val monthShort = when (month) {
@@ -156,7 +156,7 @@ fun ExerciseProgressScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    TimeRange.values().forEach { range ->
+                    TimeRange.entries.forEach { range ->
                         val selected = timeRange == range
                         Button(
                             onClick = { viewModel.setTimeRange(range) },
@@ -228,8 +228,8 @@ fun ExerciseProgressScreen(
     }
 }
 
-@Preview
 @Composable
-fun ExerciseProgressScreenPreview() {
-    ExerciseProgressScreen()
+@Preview
+fun ExerciseProgressScreenPreview1() {
+    ExerciseProgressScreen(navController = rememberNavController())
 }
