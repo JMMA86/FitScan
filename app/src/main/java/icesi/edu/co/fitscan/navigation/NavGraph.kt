@@ -15,10 +15,10 @@ import icesi.edu.co.fitscan.features.nutrition.ui.screens.NutritionPlanListScree
 import icesi.edu.co.fitscan.features.profile.ui.screens.ProfileScreen
 import icesi.edu.co.fitscan.features.settings.ui.screens.SettingsScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
+import icesi.edu.co.fitscan.features.statistics.ui.screens.StatisticsScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseProgressScreen
-import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseStatisticsScreen
+import icesi.edu.co.fitscan.features.statistics.ui.screens.ProgressPhotoScreen
 import icesi.edu.co.fitscan.features.workoutlist.ui.screens.WorkoutListScreen
-import icesi.edu.co.fitscan.features.statistics.ui.screens.VisualProgressScreen
 import icesi.edu.co.fitscan.ui.theme.greenLess
 
 @Composable
@@ -57,7 +57,7 @@ fun NavigationHost(navController: NavHostController) {
         }
 
         composable(Screen.Statistics.route) {
-            ExerciseStatisticsScreen(navController = navController)
+            StatisticsScreen(navController = navController)
         }
 
         composable(
@@ -120,7 +120,7 @@ fun NavigationHost(navController: NavHostController) {
         }
 
         composable(Screen.VisualProgress.route) {
-            VisualProgressScreen(navController = navController)
+            ProgressPhotoScreen(navController = navController)
         }
     }
 }

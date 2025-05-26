@@ -263,7 +263,7 @@ BEGIN
         INSERT INTO directus_users (id, email, password, first_name, last_name)
         VALUES (
             uuid_generate_v4(),
-            'user' || i || '@example.com', -- Ensure unique email
+            'user' || i || '@fitscan.com', -- Ensure unique email
             '$argon2id$v=19$m=65536,t=3,p=4$O09OkqGHl74ucu293lNxuw$OgTadbPObj9sc2EZFm0hK4ppzSCb7ro8WtAK3cOQLbg',
             'FirstName' || i,
             'LastName' || i
@@ -367,7 +367,7 @@ BEGIN
     RAISE NOTICE 'Inserted % workout exercises per workout', num_workout_exercises_per_workout;
     -- Insert workout sessions
     DECLARE
-        base_start_date DATE := CURRENT_DATE - workout_session_day_offset;
+        base_start_date DATE := CURRENT_DATE - workout_session_day_offset/2;
     BEGIN
         FOR workout_rec IN (SELECT id, customer_id FROM workout) LOOP
             FOR i IN 1..num_workout_sessions_per_workout LOOP
@@ -401,7 +401,7 @@ BEGIN
                 3 + (RANDOM() * 3)::INTEGER,
                 8 + (RANDOM() * 12)::INTEGER,
                 5 + (RANDOM() * 5)::INTEGER,
-                10 + (RANDOM() * 90)::INTEGER
+                20 + (RANDOM() * 80)::INTEGER
             );
         END LOOP;
     END LOOP;

@@ -2,7 +2,6 @@ package icesi.edu.co.fitscan.features.statistics.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,21 +28,21 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import icesi.edu.co.fitscan.R
-import icesi.edu.co.fitscan.features.auth.ui.screens.SectionTitle
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanHeader
 import icesi.edu.co.fitscan.features.common.ui.components.StatisticCard
 import icesi.edu.co.fitscan.features.common.ui.components.GoalCard
 import icesi.edu.co.fitscan.features.common.ui.components.StackedBarChart
-import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.ExerciseStatisticsViewModel
+import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.StatisticsViewModel
+import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.factory.StatisticsViewModelFactory
 import icesi.edu.co.fitscan.navigation.Screen
 import icesi.edu.co.fitscan.ui.theme.greyStrong
 import icesi.edu.co.fitscan.ui.theme.greenLess
 
 @Composable
-fun ExerciseStatisticsScreen(
-    viewModel: ExerciseStatisticsViewModel = viewModel(),
+fun StatisticsScreen(
     navController: NavController = rememberNavController()
 ) {
+    val viewModel: StatisticsViewModel = viewModel(factory = StatisticsViewModelFactory())
     val labels = viewModel.labels.collectAsState().value
     val isLoading = viewModel.isLoading.collectAsState().value
     val caloriesAreaData = viewModel.caloriesAreaData.collectAsState().value
@@ -73,7 +72,7 @@ fun ExerciseStatisticsScreen(
                 onClick = { navController.navigate(Screen.VisualProgress.route) }
             )
             Spacer(modifier = Modifier.height(12.dp))
-            // Progreso por ejercicio Card
+            // Exercise Progress Card
             StatisticCard(
                 title = "Progreso por ejercicio",
                 subtitle = "Visualiza tu avance en ejercicios específicos",
@@ -139,6 +138,6 @@ fun ExerciseStatisticsScreen(
 
 @Composable
 @Preview
-fun PreviewExerciseStatisticsScreen() {
-    ExerciseStatisticsScreen()
+fun StatisticsScreenPreview() {
+    StatisticsScreen(rememberNavController())
 }

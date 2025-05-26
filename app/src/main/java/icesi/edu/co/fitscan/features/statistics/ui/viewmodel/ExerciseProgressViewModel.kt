@@ -1,10 +1,10 @@
 package icesi.edu.co.fitscan.features.statistics.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import icesi.edu.co.fitscan.features.statistics.domain.service.ExerciseStatisticsService
-import icesi.edu.co.fitscan.features.statistics.data.remote.dto.ExerciseItem
+import icesi.edu.co.fitscan.domain.usecases.IFetchExerciseProgressUseCase
+import icesi.edu.co.fitscan.domain.usecases.IFetchAllExercisesUseCase
+import icesi.edu.co.fitscan.domain.model.ExerciseItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -12,8 +12,10 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class ExerciseProgressViewModel(
-    private val service: ExerciseStatisticsService = ExerciseStatisticsService()
+    private val fetchExerciseProgressUseCase: IFetchExerciseProgressUseCase,
+    private val fetchAllExercisesUseCase: IFetchAllExercisesUseCase
 ) : ViewModel() {
+
     private val _selectedExercise = MutableStateFlow<String?>(null)
     val selectedExercise: StateFlow<String?> = _selectedExercise
 
@@ -44,12 +46,21 @@ class ExerciseProgressViewModel(
 
     private fun fetchAvailableExercises() {
         viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
             try {
-                _availableExercises.value = service.fetchAllExercises().map { (name, id) ->
-                    ExerciseItem(id, name)
+                val result = fetchAllExercisesUseCase()
+                result.onSuccess { exercises ->
+                    _availableExercises.value = exercises
+                }.onFailure {
+                    _availableExercises.value = emptyList()
+                    _error.value = it.message
                 }
             } catch (e: Exception) {
                 _availableExercises.value = emptyList()
+                _error.value = e.message
+            } finally {
+                _isLoading.value = false
             }
         }
     }
@@ -59,8 +70,6 @@ class ExerciseProgressViewModel(
         val id = _availableExercises.value.find { it.name == exercise }?.id
         _exerciseId.value = id
         fetchProgress()
-        Log.i(">>>", "Selected exercise: ${exerciseId.value}")
-        Log.i(">>>", chartData.value.toString())
     }
 
     fun setTimeRange(range: TimeRange) {
@@ -71,17 +80,24 @@ class ExerciseProgressViewModel(
     private fun fetchProgress() {
         val exerciseId = _exerciseId.value ?: return
         val (fromDate, toDate) = getDateRange(_timeRange.value)
+
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
             try {
-                val result = service.fetchExerciseProgress(exerciseId, fromDate, toDate)
-                _chartData.value = result.map { it.second }
-                _dateLabels.value = result.map { it.first }
+                val result = fetchExerciseProgressUseCase(exerciseId, fromDate?:"", toDate?:"")
+                result.onSuccess { progressPoints ->
+                    _chartData.value = progressPoints.map { it.maxWeight }
+                    _dateLabels.value = progressPoints.map { it.dateLabel }
+                }.onFailure {
+                    _chartData.value = emptyList()
+                    _dateLabels.value = emptyList()
+                    _error.value = it.message
+                }
             } catch (e: Exception) {
-                _error.value = e.message
                 _chartData.value = emptyList()
                 _dateLabels.value = emptyList()
+                _error.value = e.message
             } finally {
                 _isLoading.value = false
             }
@@ -102,5 +118,9 @@ class ExerciseProgressViewModel(
 }
 
 enum class TimeRange {
-    LAST_WEEK, LAST_MONTH, LAST_3_MONTHS, LAST_6_MONTHS, LAST_12_MONTHS
+    LAST_WEEK,
+    LAST_MONTH,
+    LAST_3_MONTHS,
+    LAST_6_MONTHS,
+    LAST_12_MONTHS
 }

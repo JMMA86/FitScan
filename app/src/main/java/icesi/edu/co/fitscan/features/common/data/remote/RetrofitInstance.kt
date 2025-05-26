@@ -1,10 +1,10 @@
 package icesi.edu.co.fitscan.features.common.data.remote
 
-import icesi.edu.co.fitscan.features.statistics.data.remote.ExerciseStatisticsRemoteDataSource
 import okhttp3.Interceptor
 import icesi.edu.co.fitscan.features.auth.data.remote.AuthRepository
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import android.util.Log
+import icesi.edu.co.fitscan.features.statistics.data.remote.StatisticsRemoteDataSource
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -67,7 +67,7 @@ object RetrofitInstance {
         return retrofit.create(service)
     }
 
-    val statisticsRepository: ExerciseStatisticsRemoteDataSource by lazy {
-        retrofit.create(ExerciseStatisticsRemoteDataSource::class.java)
+    val statisticsRepository: StatisticsRemoteDataSource by lazy {
+        retrofit.create(StatisticsRemoteDataSource::class.java)
     }
 }

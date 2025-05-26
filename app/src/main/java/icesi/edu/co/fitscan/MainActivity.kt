@@ -20,9 +20,6 @@ import icesi.edu.co.fitscan.features.common.data.local.MultipartProvider
 import icesi.edu.co.fitscan.navigation.NavigationHost
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanNavBar
-import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseStatisticsScreen
-import icesi.edu.co.fitscan.features.statistics.ui.screens.VisualProgressScreen
-import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.VisualProgressViewModel
 import icesi.edu.co.fitscan.navigation.Screen
 import icesi.edu.co.fitscan.ui.theme.greenLess
 
