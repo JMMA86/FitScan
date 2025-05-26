@@ -295,7 +295,7 @@ fun PerformWorkoutScreenContent(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Button(
-                                onClick = { /* Previous logic */ },
+                                onClick = { viewModel.goToPreviousExercise() },
                                 shape = RectangleShape,
                                 modifier = Modifier
                                     .size(Dimensions.LargeIconSize)
@@ -311,7 +311,7 @@ fun PerformWorkoutScreenContent(
                             }
                             Spacer(modifier = Modifier.width(6.dp))
                             Button(
-                                onClick = { /* Pause logic */ },
+                                onClick = { viewModel.pauseExercise() },
                                 shape = RectangleShape,
                                 modifier = Modifier
                                     .size(Dimensions.LargeIconSize)
@@ -327,7 +327,7 @@ fun PerformWorkoutScreenContent(
                             }
                             Spacer(modifier = Modifier.width(6.dp))
                             Button(
-                                onClick = { viewModel.skipToNextExercise() },
+                                onClick = { viewModel.goToNextExercise() },
                                 shape = RectangleShape,
                                 modifier = Modifier
                                     .size(Dimensions.LargeIconSize)

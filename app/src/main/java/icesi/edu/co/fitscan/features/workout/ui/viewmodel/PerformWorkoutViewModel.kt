@@ -23,65 +23,41 @@ class PerformWorkoutViewModel(
     private val workoutUseCase: IManageWorkoutUseCase,
     private val workoutId: String
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow<PerformWorkoutUiState>(PerformWorkoutUiState.Idle)
     val uiState: StateFlow<PerformWorkoutUiState> get() = _uiState
-    var actualExerciseId: Int = 0
 
     private var _workoutState = WorkoutUiState()
+    private var exercises: List<RemainingExercise> = emptyList()
+    private var currentExerciseIndex: Int = 0
+    private var isPaused: Boolean = false
 
     fun startWorkout() {
         _uiState.value = PerformWorkoutUiState.Loading
         viewModelScope.launch {
-            val workoutId = UUID.fromString(workoutId)
-            val exercisesResponse = performWorkoutUseCase.getWorkoutExercises(workoutId)
-            val exercises = mutableListOf<RemainingExercise>()
-            for (item in exercisesResponse.getOrNull().orEmpty()) {
-                val exercise = exerciseUseCase.getExerciseById(item.exerciseId)
+            exercises = loadExercises()
+            val actualWorkout = loadWorkout(exercises)
+            val formattedTime = getCurrentTimeFormatted()
+            val (hours, minutes) = getWorkoutDuration(actualWorkout?.durationMinutes ?: 0)
 
-                exercises.add(
-                    RemainingExercise(
-                        title = exercise.name.toString(),
-                        sets = item.sets.toString(),
-                        reps = item.reps.toString()
-                    )
-                )
-            }
-            val firstWorkoutId = exercisesResponse.getOrNull()?.firstOrNull()?.workoutId
-            var actualWorkout =
-                firstWorkoutId?.let { workoutUseCase.getWorkoutById(it).getOrNull() }
-
-            val currentTime = LocalTime.now()
-            val formatter = DateTimeFormatter.ofPattern("HH:mm")
-            val formattedTime = currentTime.format(formatter)
-
-            val totalMinutes = actualWorkout?.durationMinutes ?: 0
-            val hours = totalMinutes / 60
-            val minutes = totalMinutes % 60
-
-            val currentExercise: CurrentExercise = (exercises.getOrNull(actualExerciseId)?.let {
-                CurrentExercise(
-                    it.title,
-                    formattedTime,
-                    it.sets,
-                    "Duración total: $hours h : $minutes m"
-                )
-            } ?: NextExercise()) as CurrentExercise
-
-            actualExerciseId++
-
-            val nextExercise = exercises.getOrNull(actualExerciseId)?.let {
-                NextExercise(it.title, it.sets.toInt(), it.reps.toInt())
-            } ?: NextExercise()
-
-            actualExerciseId++
+            currentExerciseIndex = 0
+            val currentExercise = createCurrentExercise(
+                exercises,
+                currentExerciseIndex,
+                formattedTime,
+                hours,
+                minutes
+            )
+            val nextExercise = createNextExercise(exercises, currentExerciseIndex + 1)
+            val remainingExercises = exercises.drop(1)
 
             _workoutState = _workoutState.copy(
-                title = actualWorkout?.name.toString(),
+                title = actualWorkout?.name.orEmpty(),
                 subtitle = actualWorkout?.type.toString(),
                 progress = "0/${exercises.size} ejercicios completados",
                 currentExercise = currentExercise,
                 nextExercise = nextExercise,
-                remainingExercises = exercises
+                remainingExercises = remainingExercises
             )
 
             _uiState.value = PerformWorkoutUiState.Success(_workoutState)
@@ -90,39 +66,132 @@ class PerformWorkoutViewModel(
 
     fun endSet() {
         viewModelScope.launch {
-            val current = _workoutState.currentExercise
-            val completed = current.series.split(" ")[0].toInt() + 1
-            val total = current.series.split(" ")[2]
-            val updatedSeries = "$completed de $total"
+            val updatedSeries = updateSeries(_workoutState.currentExercise.series)
             _workoutState = _workoutState.copy(
-                currentExercise = current.copy(series = updatedSeries),
+                currentExercise = _workoutState.currentExercise.copy(series = updatedSeries),
                 progress = updateProgress()
             )
             _uiState.value = PerformWorkoutUiState.Success(_workoutState)
         }
     }
 
-    fun skipToNextExercise() {
+    fun goToNextExercise() {
         viewModelScope.launch {
-            val updatedList = _workoutState.remainingExercises.drop(1)
-            val next = updatedList.getOrNull(0)?.let {
-                NextExercise(it.title, it.sets.toInt(), it.reps.toInt())
-            } ?: NextExercise()
-            _workoutState = _workoutState.copy(
-                nextExercise = next,
-                remainingExercises = updatedList
-            )
-            _uiState.value = PerformWorkoutUiState.Success(_workoutState)
+            if (currentExerciseIndex < exercises.size - 1) {
+                currentExerciseIndex++
+                updateCurrentAndNextExercises()
+            }
         }
+    }
+
+    fun goToPreviousExercise() {
+        viewModelScope.launch {
+            if (currentExerciseIndex > 0) {
+                currentExerciseIndex--
+                updateCurrentAndNextExercises()
+            }
+        }
+    }
+
+    fun pauseExercise() {
+        isPaused = !isPaused
+        // Add additional pause logic if needed (e.g., timers)
+        // Optionally update UI state to reflect pause
+    }
+
+    fun skipToNextExercise() {
+        goToNextExercise()
     }
 
     fun finishWorkout() {
         _uiState.value = PerformWorkoutUiState.Idle
     }
 
+    private suspend fun loadExercises(): List<RemainingExercise> {
+        val workoutUUID = UUID.fromString(workoutId)
+        val exercisesResponse = performWorkoutUseCase.getWorkoutExercises(workoutUUID)
+        return exercisesResponse.getOrNull().orEmpty().map { item ->
+            val exercise = exerciseUseCase.getExerciseById(item.exerciseId)
+            RemainingExercise(
+                title = exercise.name.toString(),
+                sets = item.sets.toString(),
+                reps = item.reps.toString()
+            )
+        }
+    }
+
+    private suspend fun loadWorkout(exercises: List<RemainingExercise>): icesi.edu.co.fitscan.domain.model.Workout? {
+        val firstWorkoutId = performWorkoutUseCase
+            .getWorkoutExercises(UUID.fromString(workoutId))
+            .getOrNull()
+            ?.firstOrNull()
+            ?.workoutId
+        return firstWorkoutId?.let { workoutUseCase.getWorkoutById(it).getOrNull() }
+    }
+
+    private fun getCurrentTimeFormatted(): String {
+        val currentTime = LocalTime.now()
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        return currentTime.format(formatter)
+    }
+
+    private fun getWorkoutDuration(totalMinutes: Int): Pair<Int, Int> {
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+        return Pair(hours, minutes)
+    }
+
+    private fun createCurrentExercise(
+        exercises: List<RemainingExercise>,
+        index: Int,
+        formattedTime: String,
+        hours: Int,
+        minutes: Int
+    ): CurrentExercise {
+        return exercises.getOrNull(index)?.let {
+            CurrentExercise(
+                it.title,
+                formattedTime,
+                it.sets,
+                "Duración total: $hours h : $minutes m"
+            )
+        } ?: CurrentExercise()
+    }
+
+    private fun createNextExercise(
+        exercises: List<RemainingExercise>,
+        index: Int
+    ): NextExercise {
+        return exercises.getOrNull(index)?.let {
+            NextExercise(it.title, it.sets.toInt(), it.reps.toInt())
+        } ?: NextExercise()
+    }
+
+    private fun updateSeries(series: String): String {
+        val parts = series.split(" ")
+        val completed = parts[0].toInt() + 1
+        val total = parts[2]
+        return "$completed de $total"
+    }
+
     private fun updateProgress(): String {
-        val completed = _workoutState.progress.split("/")[0].toInt() + 1
-        val total = _workoutState.progress.split("/")[1].split(" ")[0].toInt()
+        val progressParts = _workoutState.progress.split("/")
+        val completed = progressParts[0].toInt() + 1
+        val total = progressParts[1].split(" ")[0].toInt()
         return "$completed/$total ejercicios completados"
+    }
+
+    private fun updateCurrentAndNextExercises() {
+        val formattedTime = getCurrentTimeFormatted()
+        val current = createCurrentExercise(exercises, currentExerciseIndex, formattedTime, 0, 0)
+        val next = createNextExercise(exercises, currentExerciseIndex + 1)
+        val remaining = exercises.drop(currentExerciseIndex + 1)
+        _workoutState = _workoutState.copy(
+            currentExercise = current,
+            nextExercise = next,
+            remainingExercises = remaining,
+            progress = "${currentExerciseIndex}/${exercises.size} ejercicios completados"
+        )
+        _uiState.value = PerformWorkoutUiState.Success(_workoutState)
     }
 }
