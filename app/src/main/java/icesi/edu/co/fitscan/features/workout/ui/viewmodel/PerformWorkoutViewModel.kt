@@ -1,8 +1,8 @@
 package icesi.edu.co.fitscan.features.workout.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import icesi.edu.co.fitscan.domain.model.Workout
 import icesi.edu.co.fitscan.domain.usecases.IManageExercisesUseCase
 import icesi.edu.co.fitscan.domain.usecases.IManageWorkoutExercisesUseCase
 import icesi.edu.co.fitscan.domain.usecases.IManageWorkoutUseCase
@@ -33,16 +33,24 @@ class PerformWorkoutViewModel(
         viewModelScope.launch {
             val workoutId = UUID.fromString(workoutSessionId)
             val exercisesResponse = performWorkoutUseCase.getWorkoutExercises(workoutId)
-            var actualWorkout: Workout? = null
-            val exercises = exercisesResponse.getOrNull()?.map {
-                val exercise = exerciseUseCase.getExerciseById(it.exerciseId)
-                actualWorkout = workoutUseCase.getWorkoutById(it.workoutId).getOrNull()
-                RemainingExercise(
-                    title = exercise.name.toString(),
-                    sets = it.sets.toString(),
-                    reps = it.reps.toString()
+            val exercises = mutableListOf<RemainingExercise>()
+            for (item in exercisesResponse.getOrNull().orEmpty()) {
+                Log.e("PerformWorkoutViewModel", "Exercise ID: ${item.exerciseId}")
+                Log.e("TypeCheck", "exerciseId type: ${item.exerciseId::class.qualifiedName}")
+                Log.e("TypeCheck", "exerciseId javaClass: ${item.exerciseId.javaClass.name}")
+                val exercise = exerciseUseCase.getExerciseById(item.exerciseId)
+
+                exercises.add(
+                    RemainingExercise(
+                        title = exercise.name.toString(),
+                        sets = item.sets.toString(),
+                        reps = item.reps.toString()
+                    )
                 )
-            } ?: emptyList()
+            }
+            val firstWorkoutId = exercisesResponse.getOrNull()?.firstOrNull()?.workoutId
+            var actualWorkout =
+                firstWorkoutId?.let { workoutUseCase.getWorkoutById(it).getOrNull() }
 
             val currentExercise: CurrentExercise = (exercises.getOrNull(actualExerciseId)?.let {
                 CurrentExercise(

@@ -53,7 +53,7 @@ import icesi.edu.co.fitscan.ui.theme.redDangerous
 @Composable
 fun PerformWorkoutScreen(
     modifier: Modifier = Modifier,
-    workoutSessionId: String = "000b70cd-9af8-428d-b3ad-a8a8aa0c66cf",
+    workoutSessionId: String = "b48b68ba-1863-4ca7-87f7-5b32a5f4414e",
 ) {
     val viewModel: PerformWorkoutViewModel = viewModel(
         factory = PerformWorkoutViewModelFactory(workoutSessionId)

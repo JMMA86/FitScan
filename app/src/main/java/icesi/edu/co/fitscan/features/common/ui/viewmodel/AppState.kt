@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 object AppState {
     val showHeader = MutableStateFlow(true)
+    var isLoggedIn: Boolean = false
     var token: String? = null
     var customerId: String? = null
 

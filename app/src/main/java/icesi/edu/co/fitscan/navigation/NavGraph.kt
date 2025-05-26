@@ -9,18 +9,17 @@ import androidx.navigation.navArgument
 import icesi.edu.co.fitscan.features.auth.ui.screens.LoginScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
+import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import icesi.edu.co.fitscan.features.home.ui.screens.DashboardScreen
 import icesi.edu.co.fitscan.features.notifications.ui.screens.NotificationsScreen
 import icesi.edu.co.fitscan.features.nutrition.ui.screens.NutritionPlanListScreen
 import icesi.edu.co.fitscan.features.profile.ui.screens.ProfileScreen
 import icesi.edu.co.fitscan.features.settings.ui.screens.SettingsScreen
-import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseProgressScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseStatisticsScreen
-import icesi.edu.co.fitscan.features.workoutlist.ui.screens.WorkoutListScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.PerformWorkoutScreen
-import icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutListScreen
+import icesi.edu.co.fitscan.features.workoutlist.ui.screens.WorkoutListScreen
 import icesi.edu.co.fitscan.ui.theme.greenLess
 
 @Composable
@@ -49,13 +48,13 @@ fun NavigationHost(
 
         composable(Screen.Workouts.route) {
             WorkoutListScreen(
-                onNavigateToCreate = { navController.navigate(Screen.CreateWorkout.route) },
+                onNavigateToCreate = { navController.navigate(Screen.PerformWorkout.route) },
                 onNavigateToPerform = { workoutId ->
                     // Por definir
                 }
             )
         }
-        
+
         composable(Screen.Meal.route) {
             NutritionPlanListScreen(/* Pasa parámetros si necesita */)
         }
@@ -79,7 +78,7 @@ fun NavigationHost(
                 greenLess = greenLess,
                 onLoginSuccess = {
                     // Navigate to Home (Dashboard) and clear the history up to Login
-                    navController.navigate("${Screen.PerformWorkout.route}/${0}") {
+                    navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                         launchSingleTop = true
                     }
@@ -125,9 +124,14 @@ fun NavigationHost(
         }
 
         composable(Screen.PerformWorkout.route) { backStackEntry ->
-            //val workoutSessionId = backStackEntry.arguments?.getString("workoutSessionId")
-            val workoutSessionId = "000b70cd-9af8-428d-b3ad-a8a8aa0c66cf"
-            PerformWorkoutScreen(workoutSessionId = workoutSessionId)
+            if (AppState.isLoggedIn) {
+                //val workoutSessionId = backStackEntry.arguments?.getString("workoutSessionId")
+                val workoutSessionId = "b48b68ba-1863-4ca7-87f7-5b32a5f4414e"
+                PerformWorkoutScreen(workoutSessionId = workoutSessionId)
+            } else {
+                // Redirect to login if not authenticated
+                navController.navigate(Screen.Login.route)
+            }
         }
     }
 }
