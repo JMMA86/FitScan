@@ -20,6 +20,7 @@ sealed class Screen(val route: String, val title: String, val icon: Int) {
 
     data object CreateWorkout : Screen("create_workout", "Crear Rutina", R.drawable.ic_home)
     data object PerformWorkout :
-        Screen("perform_workout/{workoutSessionId}", "Realizar Rutina", R.drawable.ic_home)
+        Screen("perform_workout/{workoutId}", "Realizar Rutina", R.drawable.ic_home)
+
     data object VisualProgress : Screen("visual_progress", "Progreso Visual", R.drawable.ic_fitness)
 }

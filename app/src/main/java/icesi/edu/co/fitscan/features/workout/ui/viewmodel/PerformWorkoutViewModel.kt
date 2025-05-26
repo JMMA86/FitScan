@@ -178,9 +178,14 @@ class PerformWorkoutViewModel(
 
     private fun updateSeries(series: String): String {
         val parts = series.split(" ")
-        val completed = parts[0].toInt() + 1
-        val total = parts[2]
-        return "$completed de $total"
+        return if (parts.size >= 3) {
+            val completed = parts[0].toInt() + 1
+            val total = parts[2]
+            "$completed de $total"
+        } else {
+            val completed = series.toIntOrNull()?.plus(1) ?: 1
+            "$completed"
+        }
     }
 
     private fun updateProgress(): String {

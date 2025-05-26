@@ -15,10 +15,9 @@ import icesi.edu.co.fitscan.features.notifications.ui.screens.NotificationsScree
 import icesi.edu.co.fitscan.features.nutrition.ui.screens.NutritionPlanListScreen
 import icesi.edu.co.fitscan.features.profile.ui.screens.ProfileScreen
 import icesi.edu.co.fitscan.features.settings.ui.screens.SettingsScreen
-import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
-import icesi.edu.co.fitscan.features.statistics.ui.screens.StatisticsScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseProgressScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ProgressPhotoScreen
+import icesi.edu.co.fitscan.features.statistics.ui.screens.StatisticsScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.ExerciseDetailScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.PerformWorkoutScreen
@@ -52,7 +51,7 @@ fun NavigationHost(
 
         composable(Screen.Workouts.route) {
             WorkoutListScreen(
-                onNavigateToCreate = { navController.navigate(Screen.PerformWorkout.route) },
+                onNavigateToCreate = { navController.navigate(Screen.CreateWorkout.route) },
                 onNavigateToPerform = { workoutId ->
                     navController.navigate("workout_detail/$workoutId")
                 }
@@ -127,10 +126,12 @@ fun NavigationHost(
             CreateWorkoutScreen()
         }
 
-        composable(Screen.PerformWorkout.route) { backStackEntry ->
-            //val workoutSessionId = backStackEntry.arguments?.getString("workoutSessionId")
-            val workoutSessionId = "b48b68ba-1863-4ca7-87f7-5b32a5f4414e"
-            PerformWorkoutScreen(workoutId = workoutSessionId)
+        composable(
+            route = Screen.PerformWorkout.route,
+            arguments = listOf(navArgument("workoutId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val workoutId = backStackEntry.arguments?.getString("workoutId")
+            PerformWorkoutScreen(workoutId = workoutId.toString())
         }
 
         composable(
@@ -145,6 +146,9 @@ fun NavigationHost(
                 workoutId = workoutId,
                 onExerciseClick = { workoutId, workoutExerciseId ->
                     navController.navigate("exercise_detail/$workoutId/$workoutExerciseId")
+                },
+                onStartWorkout = {
+                    workoutId?.let { navController.navigate("perform_workout/$it") }
                 }
             )
         }

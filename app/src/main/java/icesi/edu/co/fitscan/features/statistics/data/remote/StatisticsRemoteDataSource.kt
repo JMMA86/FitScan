@@ -1,21 +1,22 @@
 package icesi.edu.co.fitscan.features.statistics.data.remote
 
-import icesi.edu.co.fitscan.features.statistics.data.dto.ProgressPhotoResponseDto
-import icesi.edu.co.fitscan.features.statistics.data.dto.WorkoutSessionResponseDto
+import icesi.edu.co.fitscan.features.statistics.data.dto.CaloriesStatsResponseDto
+import icesi.edu.co.fitscan.features.statistics.data.dto.CompletedExerciseProgressDto
 import icesi.edu.co.fitscan.features.statistics.data.dto.CompletedExerciseProgressResponseDto
 import icesi.edu.co.fitscan.features.statistics.data.dto.ExerciseListResponseDto
+import icesi.edu.co.fitscan.features.statistics.data.dto.FileUpdateRequest
 import icesi.edu.co.fitscan.features.statistics.data.dto.FileUploadResponse
 import icesi.edu.co.fitscan.features.statistics.data.dto.ProgressPhotoCreateRequest
-import icesi.edu.co.fitscan.features.statistics.data.dto.FileUpdateRequest
-import icesi.edu.co.fitscan.features.statistics.data.dto.CaloriesStatsResponseDto
+import icesi.edu.co.fitscan.features.statistics.data.dto.ProgressPhotoResponseDto
 import icesi.edu.co.fitscan.features.statistics.data.dto.WeightMovedStatsResponseDto
+import icesi.edu.co.fitscan.features.statistics.data.dto.WorkoutSessionResponseDto
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
-import retrofit2.http.POST
 import retrofit2.http.PATCH
+import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -61,7 +62,7 @@ interface StatisticsRemoteDataSource {
         @Body body: FileUpdateRequest
     ): Response<Unit>
 
-        @GET("/items/workout_session")
+    @GET("/items/workout_session")
     suspend fun getCaloriesStats(
         @Query("filter[customer_id][_eq]") customerId: String
     ): CaloriesStatsResponseDto
@@ -71,4 +72,9 @@ interface StatisticsRemoteDataSource {
         @Query("filter[workout_session_id][_in]") sessionIds: String,
         @Query("fields") fields: String = "workout_session_id.*,*"
     ): WeightMovedStatsResponseDto
+
+    @POST("/items/completed_exercise")
+    suspend fun createCompletedExercise(
+        @Body completedExercise: CompletedExerciseProgressDto
+    ): Response<CompletedExerciseProgressDto>
 }

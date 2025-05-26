@@ -2,18 +2,38 @@ package icesi.edu.co.fitscan.features.workout.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons // Importante para Icons.Filled.NombreIcono
-import androidx.compose.material.icons.filled.ArrowBack // Específico si se usa directamente
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Edit // Específico si se usa directamente
-import androidx.compose.material.icons.filled.LocalFireDepartment
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,25 +43,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource // For drawable resources
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import icesi.edu.co.fitscan.R // Import your R file for drawables
-import icesi.edu.co.fitscan.features.workout.ui.model.UiWorkoutExercise
+import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.WorkoutDetailState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.WorkoutDetailViewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.WorkoutDetailViewModelFactory
-import icesi.edu.co.fitscan.ui.theme.* // Import all from your theme package
+import icesi.edu.co.fitscan.ui.theme.FitScanTheme
+import icesi.edu.co.fitscan.ui.theme.greenLess
+import icesi.edu.co.fitscan.ui.theme.greyMed
+import icesi.edu.co.fitscan.ui.theme.greyStrong
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutDetailScreen(
     workoutId: String? = null, // Ahora es nullable
     onNavigateBack: () -> Unit = {},
-    onStartWorkout: () -> Unit = {},
+    onStartWorkout: () -> Unit = {
+    },
     onEditWorkout: () -> Unit = {},
     onExerciseClick: (String, String) -> Unit = { _, _ -> } // Ahora recibe workoutId y workoutExerciseId
 ) {
@@ -92,15 +115,18 @@ fun WorkoutDetailScreen(
                     CircularProgressIndicator(color = accentColor)
                 }
             }
+
             is WorkoutDetailState.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text((state as WorkoutDetailState.Error).message, color = Color.Red)
                 }
             }
+
             is WorkoutDetailState.Success -> {
                 val workout = (state as WorkoutDetailState.Success).workout
-                val exercises = (state as WorkoutDetailState.Success).exercises // Now UiWorkoutExercise
-                val workoutName = workout.name ?: "-"
+                val exercises =
+                    (state as WorkoutDetailState.Success).exercises // Now UiWorkoutExercise
+                val workoutName = workout.name
                 val workoutDuration = "${workout.durationMinutes ?: "-"} min"
                 val workoutDifficulty = workout.difficulty ?: "-"
                 val workoutTags = listOfNotNull(workout.type, "${exercises.size} ejercicios")
@@ -126,7 +152,9 @@ fun WorkoutDetailScreen(
                             text = workoutName,
                             style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                             color = primaryTextColor,
-                            modifier = Modifier.weight(1f).padding(end = 8.dp) // Give title space
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp) // Give title space
                         )
                         IconButton(
                             onClick = onEditWorkout,
@@ -149,8 +177,17 @@ fun WorkoutDetailScreen(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        InfoItem(icon = Icons.Filled.Schedule, text = workoutDuration, color = secondaryTextColor)
-                        InfoItem(icon = Icons.Filled.LocalFireDepartment, text = workoutDifficulty, color = secondaryTextColor)
+                        // TODO : Use actual icons for duration and difficulty
+                        InfoItem(
+                            icon = Icons.Filled.Edit,
+                            text = workoutDuration,
+                            color = secondaryTextColor
+                        )
+                        InfoItem(
+                            icon = Icons.Filled.Build,
+                            text = workoutDifficulty,
+                            color = secondaryTextColor
+                        )
                     }
 
                     // Workout Tags
@@ -159,7 +196,11 @@ fun WorkoutDetailScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         workoutTags.forEach { tag ->
-                            TagChip(text = tag.toString(), backgroundColor = cardBackgroundColor, textColor = accentColor)
+                            TagChip(
+                                text = tag.toString(),
+                                backgroundColor = cardBackgroundColor,
+                                textColor = accentColor
+                            )
                         }
                     }
 
@@ -285,7 +326,7 @@ private fun ExerciseRow(
                 )
             }
             Icon(
-                imageVector = Icons.Filled.ChevronRight,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Ver detalle",
                 tint = accentColor,
                 modifier = Modifier.size(28.dp)
