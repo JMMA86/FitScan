@@ -1,6 +1,5 @@
 package icesi.edu.co.fitscan.features.workout.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import icesi.edu.co.fitscan.domain.usecases.IManageExercisesUseCase
@@ -35,9 +34,6 @@ class PerformWorkoutViewModel(
             val exercisesResponse = performWorkoutUseCase.getWorkoutExercises(workoutId)
             val exercises = mutableListOf<RemainingExercise>()
             for (item in exercisesResponse.getOrNull().orEmpty()) {
-                Log.e("PerformWorkoutViewModel", "Exercise ID: ${item.exerciseId}")
-                Log.e("TypeCheck", "exerciseId type: ${item.exerciseId::class.qualifiedName}")
-                Log.e("TypeCheck", "exerciseId javaClass: ${item.exerciseId.javaClass.name}")
                 val exercise = exerciseUseCase.getExerciseById(item.exerciseId)
 
                 exercises.add(

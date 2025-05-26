@@ -1,8 +1,8 @@
 package icesi.edu.co.fitscan.features.workout.data.repositories
 
+import android.util.Log
 import icesi.edu.co.fitscan.domain.model.WorkoutExercise
 import icesi.edu.co.fitscan.domain.repositories.IWorkoutExerciseRepository
-import android.util.Log
 import icesi.edu.co.fitscan.features.workout.data.dataSources.IWorkoutExerciseDataSource
 import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutExerciseDto
 import icesi.edu.co.fitscan.features.workout.data.mapper.WorkoutExerciseMapper
@@ -18,7 +18,7 @@ class WorkoutExerciseRepositoryImpl(
             val response = datasource.getExercisesByWorkoutId(workoutId.toString())
             if (response.isSuccessful) {
                 val workoutExercises =
-                    response.body()?.data?.data?.map { dto: WorkoutExerciseDto -> mapper.toDomain(dto) }
+                    response.body()?.data?.map { dto: WorkoutExerciseDto -> mapper.toDomain(dto) }
                         ?: emptyList()
                 Result.success(workoutExercises)
             } else {
@@ -147,7 +147,10 @@ class WorkoutExerciseRepositoryImpl(
         }
     }
 
-    override suspend fun getWorkoutExerciseById(workoutId: UUID, id: UUID): Result<WorkoutExercise> {
+    override suspend fun getWorkoutExerciseById(
+        workoutId: UUID,
+        id: UUID
+    ): Result<WorkoutExercise> {
         return try {
             val result = getWorkoutExercises(workoutId)
             val lista = result.getOrNull()
