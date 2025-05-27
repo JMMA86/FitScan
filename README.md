@@ -14,6 +14,7 @@
 La aplicación ofrece planes de entrenamiento personalizados, seguimiento de métricas de salud como peso e IMC, y la posibilidad de registrar el progreso semanal para mantener la motivación alta.
 
 Nuestros objetivos principales son:
+
 - Ofrecer entrenamientos adaptados al nivel de cada usuario, especialmente principiantes.
 - Brindar una experiencia de uso sencilla y amigable para personas sin experiencia previa en fitness.
 - Permitir el seguimiento fácil de métricas de progreso.
@@ -24,8 +25,11 @@ FitScan está pensado para ser el primer paso seguro y accesible para cualquier 
 
 ## Demo de autenticación
 
-Puedes ver una demostración del flujo de autenticación de usuarios en el siguiente enlace:  
+Puedes ver una demostración del flujo del sprint 1 de autenticación de usuarios en el siguiente enlace:  
 👉 **[Video de autenticación](https://youtube.com/shorts/ox61H1Qyyjo?feature=share)**
+
+Puedes ver las funcionalidades de workout y estadisticas implementadas para el sprint 2 en el siguiente enlace:
+ 👉 **[Video de funcionalidades](https://youtu.be/iRs79wpJSSQ)**
 
 ## Roles y Permisos
 
