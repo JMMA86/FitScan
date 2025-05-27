@@ -1,9 +1,29 @@
 {
-  "installed": {
-    "client_id": "182529135872-nt1ojnc3kemg77rgjvimqptlkgka6tbv.apps.googleusercontent.com",
-    "project_id": "fitscan-458204",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs"
-  }
+  "project_info": {
+    "project_number": "1030526899505",
+    "project_id": "push-notifications-8d089",
+    "storage_bucket": "push-notifications-8d089.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1030526899505:android:96d74ddcb0379610b20c10",
+        "android_client_info": {
+          "package_name": "icesi.edu.co.fitscan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBl3QTgoqJTaX9IVpHQ3G1YmFozjjHTAcs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
 }

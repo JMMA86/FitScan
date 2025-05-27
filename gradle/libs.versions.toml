@@ -17,6 +17,8 @@ material = "1.8.0"
 navigationCompose = "2.8.9"
 vico = "2.1.2"
 media3CommonKtx = "1.7.1"
+googleGmsGoogleServices = "4.4.2"
+firebaseMessaging = "24.1.1"
 
 [libraries]
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
@@ -62,9 +64,11 @@ vico-multiplatform-m3 = { group = "com.patrykandpatrick.vico", name = "multiplat
 # For the Android view system.
 vico-views = { group = "com.patrykandpatrick.vico", name = "views", version.ref = "vico" }
 androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
 
