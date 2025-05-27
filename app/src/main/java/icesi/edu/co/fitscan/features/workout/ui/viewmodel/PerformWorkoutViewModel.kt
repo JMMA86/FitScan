@@ -23,6 +23,10 @@ import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
+//TODO: Refactor this ViewModel to use a more modular approach, separating concerns and improving testability.
+//TODO: Add error handling and loading states for better user experience.
+//TODO: Implement a more robust timer mechanism that can handle edge cases like app backgrounding or interruptions.
+//TODO: manage the problem with rps, reps and weight, not used correctly
 class PerformWorkoutViewModel(
     private val performWorkoutUseCase: IManageWorkoutExercisesUseCase,
     private val exerciseUseCase: IManageExercisesUseCase,
@@ -44,6 +48,7 @@ class PerformWorkoutViewModel(
     // Timer state
     private val _exerciseSeconds = MutableStateFlow(0)
     private var timerJob: Job? = null
+    private var currentExerciseStartTime: String = ""
 
     // To track completed exercises during the workout
     private val completedExercises = mutableListOf<CompletedExercise>()
@@ -57,9 +62,13 @@ class PerformWorkoutViewModel(
             sessionStartTime = getCurrentTimeFormatted()
             exercises = loadExercises()
             val actualWorkout = loadWorkout()
-            val formattedTime = getCurrentTimeFormatted()
+
+            val currentTime = java.time.LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("HH:mm")
+            val formattedTime = currentTime.format(formatter)
 
             currentExerciseIndex = 0
+            currentExerciseStartTime = getCurrentTimeHumanReadable()
             _exerciseSeconds.value = 0
             startTimer()
 
@@ -75,7 +84,7 @@ class PerformWorkoutViewModel(
             _workoutState = _workoutState.copy(
                 title = actualWorkout?.name.orEmpty(),
                 subtitle = actualWorkout?.type.toString(),
-                progress = "0/${exercises.size} ejercicios completados",
+                progress = "1/${exercises.size} ejercicios completados",
                 currentExercise = currentExercise,
                 nextExercise = nextExercise,
                 remainingExercises = remainingExercises
@@ -114,6 +123,7 @@ class PerformWorkoutViewModel(
                     lastCompletedExerciseIndex = currentExerciseIndex
                 }
                 currentExerciseIndex++
+                currentExerciseStartTime = getCurrentTimeHumanReadable()
                 _exerciseSeconds.value = 0
                 startTimer()
                 updateCurrentAndNextExercises()
@@ -125,6 +135,7 @@ class PerformWorkoutViewModel(
         viewModelScope.launch {
             if (currentExerciseIndex > 0) {
                 currentExerciseIndex--
+                currentExerciseStartTime = getCurrentTimeHumanReadable()
                 _exerciseSeconds.value = 0
                 startTimer()
                 updateCurrentAndNextExercises()
@@ -202,6 +213,12 @@ class PerformWorkoutViewModel(
         return currentTime.format(formatter)
     }
 
+    private fun getCurrentTimeHumanReadable(): String {
+        val currentTime = java.time.LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        return currentTime.format(formatter)
+    }
+
     private fun createCurrentExercise(
         exercises: List<RemainingExercise>,
         index: Int,
@@ -248,11 +265,10 @@ class PerformWorkoutViewModel(
     }
 
     private fun updateCurrentAndNextExercises() {
-        val formattedTime = getCurrentTimeFormatted()
         val current = createCurrentExercise(
             exercises,
             currentExerciseIndex,
-            formattedTime,
+            currentExerciseStartTime,
             _exerciseSeconds.value
         )
         val next = createNextExercise(exercises, currentExerciseIndex + 1)

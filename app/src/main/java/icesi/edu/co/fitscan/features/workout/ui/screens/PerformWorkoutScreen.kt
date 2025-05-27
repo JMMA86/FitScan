@@ -52,6 +52,7 @@ import icesi.edu.co.fitscan.ui.theme.redDangerous
 fun PerformWorkoutScreen(
     modifier: Modifier = Modifier,
     workoutId: String = "b48b68ba-1863-4ca7-87f7-5b32a5f4414e",
+    onFinishWorkout: () -> Unit
 ) {
     val viewModel: PerformWorkoutViewModel = viewModel(
         factory = PerformWorkoutViewModelFactory(workoutId)
@@ -70,7 +71,10 @@ fun PerformWorkoutScreen(
         uiState = uiState,
         onEndSet = { viewModel.endSet() },
         onSkipToNextExercise = { viewModel.skipToNextExercise() },
-        onFinishWorkout = { viewModel.finishWorkout() }
+        onFinishWorkout = {
+            viewModel.finishWorkout()
+            onFinishWorkout()
+        }
     )
 }
 
@@ -372,7 +376,7 @@ fun PerformWorkoutScreenContent(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Button(
-                            onClick = { viewModel.finishWorkout() },
+                            onClick = { onFinishWorkout() },
                             colors = ButtonDefaults.outlinedButtonColors(contentColor = redDangerous),
                             border = BorderStroke(2.dp, redDangerous)
                         ) {

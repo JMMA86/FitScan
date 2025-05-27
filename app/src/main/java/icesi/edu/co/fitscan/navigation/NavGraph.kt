@@ -131,7 +131,15 @@ fun NavigationHost(
             arguments = listOf(navArgument("workoutId") { type = NavType.StringType })
         ) { backStackEntry ->
             val workoutId = backStackEntry.arguments?.getString("workoutId")
-            PerformWorkoutScreen(workoutId = workoutId.toString())
+            PerformWorkoutScreen(
+                workoutId = workoutId.toString(),
+                onFinishWorkout = {
+                    navController.navigate("home") {
+                        popUpTo("home") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(
