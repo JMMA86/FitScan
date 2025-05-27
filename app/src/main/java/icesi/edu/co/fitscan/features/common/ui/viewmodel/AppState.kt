@@ -4,9 +4,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 object AppState {
     val showHeader = MutableStateFlow(true)
+    var isLoggedIn: Boolean = false
     var token: String? = null
-        private set
-        
     var customerId: String? = null
 
     fun setHeaderVisible(newValue: Boolean) {

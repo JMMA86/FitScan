@@ -9,7 +9,7 @@ data class WorkoutDto(
     val customer_id: String,
     val name: String,
     val type: String,
-    val durationMinutes: Int?,
+    val duration_minutes: Int?,
     val difficulty: String?,
     val dateCreated: String
 )

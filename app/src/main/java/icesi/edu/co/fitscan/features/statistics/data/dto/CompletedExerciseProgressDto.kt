@@ -1,5 +1,7 @@
 package icesi.edu.co.fitscan.features.statistics.data.dto
 
+import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutSessionDto
+
 data class CompletedExerciseProgressDto(
     val id: String?,
     val workout_session_id: WorkoutSessionDto?,

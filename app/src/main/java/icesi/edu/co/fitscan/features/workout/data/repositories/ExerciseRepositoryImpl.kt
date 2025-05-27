@@ -18,7 +18,12 @@ class ExerciseRepositoryImpl(
             if (response.isSuccessful) {
                 val responseBody = response.body()
                 val exerciseDto = responseBody?.data ?: emptyList()
-                val exercises = exerciseDto.map { dto -> mapper.toDomain(dto) }
+                android.util.Log.d("ExerciseRepositoryImpl", "[getAllExercises] DTOs: $exerciseDto")
+                val exercises = exerciseDto.map { dto ->
+                    android.util.Log.d("ExerciseRepositoryImpl", "[getAllExercises] Mapping dto: $dto")
+                    mapper.toDomain(dto)
+                }
+                android.util.Log.d("ExerciseRepositoryImpl", "[getAllExercises] Exercises: $exercises")
                 Result.success(exercises)
             } else {
                 Result.failure(Exception("Error getting exercises: ${response.code()}"))
@@ -32,7 +37,13 @@ class ExerciseRepositoryImpl(
         return try {
             val response = datasource.getExerciseById(id.toString())
             if (response.isSuccessful) {
-                val exercise = response.body()?.let { dto: ExerciseDto -> mapper.toDomain(dto) }
+                val responseBody = response.body()
+                val dto = responseBody?.data
+                android.util.Log.d("ExerciseRepositoryImpl", "[getExerciseById] DTO: $dto")
+                val exercise = dto?.let { d ->
+                    mapper.toDomain(d)
+                }
+                android.util.Log.d("ExerciseRepositoryImpl", "[getExerciseById] Exercise: $exercise")
                 if (exercise != null) {
                     Result.success(exercise)
                 } else {

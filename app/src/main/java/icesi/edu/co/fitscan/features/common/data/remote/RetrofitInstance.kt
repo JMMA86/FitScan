@@ -1,10 +1,10 @@
 package icesi.edu.co.fitscan.features.common.data.remote
 
-import okhttp3.Interceptor
+import android.util.Log
 import icesi.edu.co.fitscan.features.auth.data.remote.AuthRepository
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
-import android.util.Log
 import icesi.edu.co.fitscan.features.statistics.data.remote.StatisticsRemoteDataSource
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -12,6 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
+    // Cambia esta URL por la de tu servidor (ip local o dominio)
     private const val BASE_URL = "https://fitscan.onrender.com"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
@@ -62,7 +63,7 @@ object RetrofitInstance {
     val authRepository: AuthRepository by lazy {
         retrofit.create(AuthRepository::class.java)
     }
-    
+
     fun <T> create(service: Class<T>): T {
         return retrofit.create(service)
     }

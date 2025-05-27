@@ -10,9 +10,8 @@ import icesi.edu.co.fitscan.features.auth.data.remote.request.CustomerRelationat
 import icesi.edu.co.fitscan.features.auth.data.remote.request.LoginRequest
 import icesi.edu.co.fitscan.features.auth.data.remote.request.User
 import icesi.edu.co.fitscan.features.auth.data.remote.response.BodyMeasureData
-import icesi.edu.co.fitscan.features.auth.data.remote.response.BodyMeasureResponseData
-import icesi.edu.co.fitscan.features.auth.data.remote.response.LoginResponseData
 import icesi.edu.co.fitscan.features.auth.data.remote.response.CustomerData
+import icesi.edu.co.fitscan.features.auth.data.remote.response.LoginResponseData
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -40,19 +39,26 @@ class AuthServiceImpl(
                             putString("AUTH_TOKEN", response.body()?.data?.access_token)
                             apply()
                         }
+                        AppState.setAuthToken(response.body()?.data?.access_token.toString())
                         Log.d(
                             "AuthServiceImpl",
                             "Token saved: ${response.body()?.data?.access_token}"
                         )
 
-                        val userResponse = authRepository.getCurrentUser("Bearer ${response.body()?.data?.access_token}")
+                        val userResponse =
+                            authRepository.getCurrentUser("Bearer ${response.body()?.data?.access_token}")
 
                         if (userResponse.isSuccessful && userResponse.body()?.data != null) {
                             val userId = userResponse.body()?.data?.id
-                            val customerResponse = authRepository.getCustomerByUserId("Bearer ${response.body()?.data?.access_token}", userId.toString())
+                            val customerResponse = authRepository.getCustomerByUserId(
+                                "Bearer ${response.body()?.data?.access_token}",
+                                userId.toString()
+                            )
 
                             if (customerResponse.isSuccessful && customerResponse.body()?.data != null && customerResponse.body()?.data?.isNotEmpty() == true) {
                                 AppState.customerId = customerResponse.body()?.data?.get(0)?.id
+                                AppState.isLoggedIn = true
+                                Log.d(">>>AuthServiceImpl", "Customer ID: ${AppState.customerId}")
                             }
                         }
                     }
@@ -123,6 +129,7 @@ class AuthServiceImpl(
                 )
 
                 AppState.customerId = response.body()?.data?.id
+                Log.e("AuthServiceImpl register customer", "Customer ID: ${AppState.customerId}")
 
                 if (response.isSuccessful) {
                     Result.success(Unit)
@@ -188,7 +195,8 @@ class AuthServiceImpl(
                 if (application == null) {
                     return@withContext Result.failure(Exception("Application context not available"))
                 }
-                val sharedPref = application.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+                val sharedPref =
+                    application.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                 val token = sharedPref.getString("AUTH_TOKEN", null)
                     ?: return@withContext Result.failure(Exception("User not authenticated"))
                 val response = authRepository.getBodyMeasureById("Bearer $token", id)
@@ -212,7 +220,8 @@ class AuthServiceImpl(
                 if (application == null) {
                     return@withContext Result.failure(Exception("Application context not available"))
                 }
-                val sharedPref = application.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+                val sharedPref =
+                    application.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                 val token = sharedPref.getString("AUTH_TOKEN", null)
                     ?: return@withContext Result.failure(Exception("User not authenticated"))
                 val response = authRepository.getCustomerByUserId("Bearer $token", userId)
@@ -236,7 +245,8 @@ class AuthServiceImpl(
                 if (application == null) {
                     return@withContext Result.failure(Exception("Application context not available"))
                 }
-                val sharedPref = application.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+                val sharedPref =
+                    application.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                 val token = sharedPref.getString("AUTH_TOKEN", null)
                     ?: return@withContext Result.failure(Exception("User not authenticated"))
                 val response = authRepository.getCustomerByCustomerId("Bearer $token", customerId)

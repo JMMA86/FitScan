@@ -10,5 +10,6 @@ interface IWorkoutExerciseRepository {
     suspend fun updateWorkoutExercise(workoutId: UUID, exerciseId: UUID, workoutExercise: WorkoutExercise): Result<WorkoutExercise>
     suspend fun markExerciseAsCompleted(workoutId: UUID, exerciseId: UUID): Result<WorkoutExercise>
     suspend fun reorderWorkoutExercises(workoutId: UUID, exerciseOrder: List<String>): Result<List<WorkoutExercise>>
+    suspend fun getWorkoutExerciseById(workoutId: UUID, id: UUID): Result<WorkoutExercise>
 }
 

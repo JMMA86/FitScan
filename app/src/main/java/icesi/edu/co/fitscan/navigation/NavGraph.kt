@@ -1,5 +1,6 @@
 package icesi.edu.co.fitscan.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -14,15 +15,20 @@ import icesi.edu.co.fitscan.features.notifications.ui.screens.NotificationsScree
 import icesi.edu.co.fitscan.features.nutrition.ui.screens.NutritionPlanListScreen
 import icesi.edu.co.fitscan.features.profile.ui.screens.ProfileScreen
 import icesi.edu.co.fitscan.features.settings.ui.screens.SettingsScreen
-import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
-import icesi.edu.co.fitscan.features.statistics.ui.screens.StatisticsScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseProgressScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ProgressPhotoScreen
+import icesi.edu.co.fitscan.features.statistics.ui.screens.StatisticsScreen
+import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
+import icesi.edu.co.fitscan.features.workout.ui.screens.ExerciseDetailScreen
+import icesi.edu.co.fitscan.features.workout.ui.screens.PerformWorkoutScreen
+import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.ExerciseDetailViewModelFactory
 import icesi.edu.co.fitscan.features.workoutlist.ui.screens.WorkoutListScreen
 import icesi.edu.co.fitscan.ui.theme.greenLess
 
 @Composable
-fun NavigationHost(navController: NavHostController) {
+fun NavigationHost(
+    navController: NavHostController
+) {
     NavHost(
         navController = navController,
         startDestination = Screen.Login.route
@@ -47,11 +53,11 @@ fun NavigationHost(navController: NavHostController) {
             WorkoutListScreen(
                 onNavigateToCreate = { navController.navigate(Screen.CreateWorkout.route) },
                 onNavigateToPerform = { workoutId ->
-                    // Por definir
+                    navController.navigate("workout_detail/$workoutId")
                 }
             )
         }
-        
+
         composable(Screen.Meal.route) {
             NutritionPlanListScreen(/* Pasa parámetros si necesita */)
         }
@@ -74,6 +80,7 @@ fun NavigationHost(navController: NavHostController) {
             LoginScreen(
                 greenLess = greenLess,
                 onLoginSuccess = {
+                    // Navigate to Home (Dashboard) and clear the history up to Login
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                         launchSingleTop = true
@@ -117,6 +124,58 @@ fun NavigationHost(navController: NavHostController) {
 
         composable(Screen.CreateWorkout.route) {
             CreateWorkoutScreen()
+        }
+
+        composable(
+            route = Screen.PerformWorkout.route,
+            arguments = listOf(navArgument("workoutId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val workoutId = backStackEntry.arguments?.getString("workoutId")
+            PerformWorkoutScreen(
+                workoutId = workoutId.toString(),
+                onFinishWorkout = {
+                    navController.navigate("home") {
+                        popUpTo("home") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable(
+            route = "workout_detail/{workoutId}",
+            arguments = listOf(
+                navArgument("workoutId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val workoutId = backStackEntry.arguments?.getString("workoutId")
+            Log.d("NavGraph", "Navegando a workout_detail con workoutId: $workoutId")
+            icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutDetailScreen(
+                workoutId = workoutId,
+                onExerciseClick = { workoutId, workoutExerciseId ->
+                    navController.navigate("exercise_detail/$workoutId/$workoutExerciseId")
+                },
+                onStartWorkout = {
+                    workoutId?.let { navController.navigate("perform_workout/$it") }
+                }
+            )
+        }
+
+        composable(
+            route = "exercise_detail/{workoutId}/{workoutExerciseId}",
+            arguments = listOf(
+                navArgument("workoutId") { type = NavType.StringType },
+                navArgument("workoutExerciseId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val workoutId = backStackEntry.arguments?.getString("workoutId")
+            val workoutExerciseId = backStackEntry.arguments?.getString("workoutExerciseId")
+            ExerciseDetailScreen(
+                workoutExerciseId = workoutExerciseId,
+                workoutId = workoutId,
+                onNavigateBack = { navController.popBackStack() },
+                viewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = ExerciseDetailViewModelFactory())
+            )
         }
 
         composable(Screen.VisualProgress.route) {

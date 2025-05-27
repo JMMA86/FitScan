@@ -22,6 +22,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.workout.ui.model.PerformWorkoutUiState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.PerformWorkoutViewModel
+import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.PerformWorkoutViewModelFactory
 import icesi.edu.co.fitscan.ui.theme.Dimensions
 import icesi.edu.co.fitscan.ui.theme.backgroundGrey
 import icesi.edu.co.fitscan.ui.theme.greenLess
@@ -49,26 +51,118 @@ import icesi.edu.co.fitscan.ui.theme.redDangerous
 @Composable
 fun PerformWorkoutScreen(
     modifier: Modifier = Modifier,
-    viewModel: PerformWorkoutViewModel = viewModel()
+    workoutId: String = "b48b68ba-1863-4ca7-87f7-5b32a5f4414e",
+    onFinishWorkout: () -> Unit
 ) {
+    val viewModel: PerformWorkoutViewModel = viewModel(
+        factory = PerformWorkoutViewModelFactory(workoutId)
+    )
+
+    // Call startWorkout only once when the screen is shown
+    LaunchedEffect(workoutId) {
+        viewModel.startWorkout()
+    }
+
     val uiState by viewModel.uiState.collectAsState()
 
+    PerformWorkoutScreenContent(
+        modifier = modifier,
+        viewModel = viewModel,
+        uiState = uiState,
+        onEndSet = { viewModel.endSet() },
+        onSkipToNextExercise = { viewModel.skipToNextExercise() },
+        onFinishWorkout = {
+            viewModel.finishWorkout()
+            onFinishWorkout()
+        }
+    )
+}
+
+@Composable
+fun PerformWorkoutListComponent(
+    title: String = "NA",
+    sets: String = "NA",
+    reps: String = "NA",
+    onClick: () -> Unit = {}
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(Dimensions.MediumCornerRadius))
+            .border(
+                width = 2.dp,
+                color = greyMed,
+                shape = RoundedCornerShape(Dimensions.MediumCornerRadius)
+            )
+            .padding(Dimensions.MediumPadding),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = title,
+                color = Color.White,
+                fontSize = Dimensions.LargeTextSize,
+            )
+            Text(
+                text = "$sets sets ~ $reps reps",
+                color = greenLess,
+                fontSize = Dimensions.SmallTextSize,
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Button(
+            onClick = onClick,
+            shape = RectangleShape,
+            contentPadding = PaddingValues(0.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = greyMed),
+            modifier = Modifier
+                .size(Dimensions.LargeIconSize)
+                .clip(RoundedCornerShape(Dimensions.SmallCornerRadius))
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.chevron_right),
+                contentDescription = "Mostrar ejercicio",
+                tint = greenLess,
+                modifier = Modifier
+                    .size(Dimensions.LargeIconSize)
+            )
+        }
+    }
+}
+
+@Composable
+fun PerformWorkoutScreenContent(
+    modifier: Modifier,
+    viewModel: PerformWorkoutViewModel,
+    uiState: PerformWorkoutUiState,
+    onEndSet: () -> Unit = {},
+    onSkipToNextExercise: () -> Unit = {},
+    onFinishWorkout: () -> Unit = {}
+) {
     when (uiState) {
         is PerformWorkoutUiState.Idle -> {
             // Optionally show nothing or a placeholder
         }
+
         is PerformWorkoutUiState.Loading -> {
             // Show a loading indicator
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Text("Loading...")
             }
         }
+
         is PerformWorkoutUiState.Error -> {
             val message = (uiState as PerformWorkoutUiState.Error).message
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Text("Error: $message", color = Color.Red)
             }
         }
+
         is PerformWorkoutUiState.Success -> {
             val data = (uiState as PerformWorkoutUiState.Success).data
 
@@ -184,17 +278,19 @@ fun PerformWorkoutScreen(
                         }
 
                         // Workout controls
-                        Spacer(modifier = Modifier.height(Dimensions.smallestPadding))
-                        Button(
-                            onClick = { viewModel.endSet() },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = greenLess),
-                        ) {
-                            Text(
-                                text = "Terminar set",
-                                fontSize = Dimensions.MediumTextSize
-                            )
-                        }
+                        // This is going to be added in the next sprint as this is not
+                        // specified enough
+//                        Spacer(modifier = Modifier.height(Dimensions.smallestPadding))
+//                        Button(
+//                            onClick = { viewModel.endSet() },
+//                            modifier = Modifier.fillMaxWidth(),
+//                            colors = ButtonDefaults.buttonColors(containerColor = greenLess),
+//                        ) {
+//                            Text(
+//                                text = "Terminar set",
+//                                fontSize = Dimensions.MediumTextSize
+//                            )
+//                        }
                         Spacer(modifier = Modifier.height(Dimensions.smallestPadding))
 
                         Row(
@@ -202,7 +298,7 @@ fun PerformWorkoutScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Button(
-                                onClick = { /* Previous logic */ },
+                                onClick = { viewModel.goToPreviousExercise() },
                                 shape = RectangleShape,
                                 modifier = Modifier
                                     .size(Dimensions.LargeIconSize)
@@ -218,7 +314,7 @@ fun PerformWorkoutScreen(
                             }
                             Spacer(modifier = Modifier.width(6.dp))
                             Button(
-                                onClick = { /* Pause logic */ },
+                                onClick = { viewModel.pauseExercise() },
                                 shape = RectangleShape,
                                 modifier = Modifier
                                     .size(Dimensions.LargeIconSize)
@@ -234,7 +330,7 @@ fun PerformWorkoutScreen(
                             }
                             Spacer(modifier = Modifier.width(6.dp))
                             Button(
-                                onClick = { viewModel.skipToNextExercise() },
+                                onClick = { viewModel.goToNextExercise() },
                                 shape = RectangleShape,
                                 modifier = Modifier
                                     .size(Dimensions.LargeIconSize)
@@ -266,7 +362,8 @@ fun PerformWorkoutScreen(
                         PerformWorkoutListComponent(
                             title = exercise.title,
                             sets = exercise.sets,
-                            reps = exercise.reps
+                            reps = exercise.reps,
+                            onClick = { /* TODO: Show exercise details or navigate */ }
                         )
                     }
                     Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
@@ -274,9 +371,12 @@ fun PerformWorkoutScreen(
 
                 // Finish workout button
                 item {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
                         Button(
-                            onClick = { viewModel.finishWorkout() },
+                            onClick = { onFinishWorkout() },
                             colors = ButtonDefaults.outlinedButtonColors(contentColor = redDangerous),
                             border = BorderStroke(2.dp, redDangerous)
                         ) {
@@ -293,62 +393,8 @@ fun PerformWorkoutScreen(
     }
 }
 
-@Composable
-fun PerformWorkoutListComponent(title: String = "NA", sets: String = "NA", reps: String = "NA") {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(Dimensions.MediumCornerRadius))
-            .border(
-                width = 2.dp,
-                color = greyMed,
-                shape = RoundedCornerShape(Dimensions.MediumCornerRadius)
-            )
-            .padding(Dimensions.MediumPadding),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            modifier = Modifier,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = title,
-                color = Color.White,
-                fontSize = Dimensions.LargeTextSize,
-            )
-            Text(
-                text = "$sets sets ~ $reps reps",
-                color = greenLess,
-                fontSize = Dimensions.SmallTextSize,
-            )
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Button(
-            onClick = {},
-            shape = RectangleShape,
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = greyMed),
-            modifier = Modifier
-                .size(Dimensions.LargeIconSize)
-                .clip(RoundedCornerShape(Dimensions.SmallCornerRadius))
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.chevron_right),
-                contentDescription = "Motrar ejercicio",
-                tint = greenLess,
-                modifier = Modifier
-                    .size(Dimensions.LargeIconSize)
-            )
-        }
-    }
-}
-
 @Preview
 @Composable
 fun PerformWorkoutScreenPreview() {
-    PerformWorkoutScreen()
 
-    //PerformWorkoutListComponent()
 }

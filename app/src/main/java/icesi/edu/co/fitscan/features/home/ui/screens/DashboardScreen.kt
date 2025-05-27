@@ -205,10 +205,14 @@ fun DashboardScreen(
                         ) {
                             items(recentActivities) { activity ->
                                 RecentActivityCard(
+                                    id = activity.id,
                                     title = activity.title,
                                     time = activity.time,
                                     level = activity.level,
-                                    exercises = activity.exercises
+                                    exercises = activity.exercises,
+                                    onClick = { workoutId ->
+                                        navController.navigate("workout_detail/$workoutId")
+                                    }
                                 )
                             }
                         }

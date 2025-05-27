@@ -1,9 +1,16 @@
 package icesi.edu.co.fitscan.features.workout.data.dataSources
 
+import icesi.edu.co.fitscan.features.workout.data.dto.ApiResponseDTO
 import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutDto
 import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutsResponse
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 @JvmSuppressWildcards
 interface IWorkoutDataSource {
@@ -18,7 +25,7 @@ interface IWorkoutDataSource {
     @GET("$BASE_PATH/workout/{id}")
     suspend fun getWorkoutById(
         @Path("id") id: String
-    ): Response<WorkoutDto>
+    ): Response<ApiResponseDTO<WorkoutDto>>
 
     @POST("$BASE_PATH/workout")
     suspend fun createWorkout(
