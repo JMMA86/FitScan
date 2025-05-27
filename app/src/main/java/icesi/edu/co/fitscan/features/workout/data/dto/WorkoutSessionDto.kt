@@ -1,7 +1,7 @@
-package icesi.edu.co.fitscan.features.statistics.data.dto
+package icesi.edu.co.fitscan.features.workout.data.dto
 
 data class WorkoutSessionDto(
-    val id: String,
+    val id: String?,
     val customer_id: String,
     val workout_id: String,
     val start_time: String,

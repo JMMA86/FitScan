@@ -17,6 +17,8 @@ data class NextExercise(
 
 // Represents the remaining exercises
 data class RemainingExercise(
+    //TODO: add id to the other exercises types
+    val id: String,
     val title: String,
     val sets: String,
     val reps: String
@@ -30,6 +32,6 @@ data class WorkoutUiState(
     val currentExercise: CurrentExercise = CurrentExercise(),
     val nextExercise: NextExercise = NextExercise(),
     val remainingExercises: List<RemainingExercise> = List(6) { index ->
-        RemainingExercise("Ejercicio $index", "3", "10")
+        RemainingExercise(id = "null", title = "Ejercicio $index", sets = "3", reps = "10")
     }
 )

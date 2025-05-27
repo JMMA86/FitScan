@@ -1,7 +1,8 @@
 package icesi.edu.co.fitscan.domain.model
 
 data class WorkoutSession(
-    val id: String,
+    // Enserio cristian? No UUIDs?
+    val id: String?,
     val customerId: String,
     val workoutId: String,
     val startTime: String,

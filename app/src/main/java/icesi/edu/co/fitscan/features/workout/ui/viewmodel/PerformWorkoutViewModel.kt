@@ -2,9 +2,14 @@ package icesi.edu.co.fitscan.features.workout.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import icesi.edu.co.fitscan.domain.model.CompletedExercise
+import icesi.edu.co.fitscan.domain.model.WorkoutSession
+import icesi.edu.co.fitscan.domain.usecases.IManageCompleteExerciseUseCase
 import icesi.edu.co.fitscan.domain.usecases.IManageExercisesUseCase
 import icesi.edu.co.fitscan.domain.usecases.IManageWorkoutExercisesUseCase
+import icesi.edu.co.fitscan.domain.usecases.IManageWorkoutSessionUseCase
 import icesi.edu.co.fitscan.domain.usecases.IManageWorkoutUseCase
+import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import icesi.edu.co.fitscan.features.workout.ui.model.CurrentExercise
 import icesi.edu.co.fitscan.features.workout.ui.model.NextExercise
 import icesi.edu.co.fitscan.features.workout.ui.model.PerformWorkoutUiState
@@ -15,7 +20,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
@@ -23,12 +27,15 @@ class PerformWorkoutViewModel(
     private val performWorkoutUseCase: IManageWorkoutExercisesUseCase,
     private val exerciseUseCase: IManageExercisesUseCase,
     private val workoutUseCase: IManageWorkoutUseCase,
-    private val workoutId: String
+    private val workoutSessionUseCase: IManageWorkoutSessionUseCase,
+    private val completedExerciseUseCase: IManageCompleteExerciseUseCase,
+    private val workoutId: String,
 ) : ViewModel() {
-
+    // StateFlow to manage the UI state of the workout session
     private val _uiState = MutableStateFlow<PerformWorkoutUiState>(PerformWorkoutUiState.Idle)
     val uiState: StateFlow<PerformWorkoutUiState> get() = _uiState
 
+    // StateFlow to manage the workout details
     private var _workoutState = WorkoutUiState()
     private var exercises: List<RemainingExercise> = emptyList()
     private var currentExerciseIndex: Int = 0
@@ -38,9 +45,16 @@ class PerformWorkoutViewModel(
     private val _exerciseSeconds = MutableStateFlow(0)
     private var timerJob: Job? = null
 
+    // To track completed exercises during the workout
+    private val completedExercises = mutableListOf<CompletedExercise>()
+    private var sessionStartTime: String = ""
+    private var sessionEndTime: String = ""
+    private var lastCompletedExerciseIndex = -1
+
     fun startWorkout() {
         _uiState.value = PerformWorkoutUiState.Loading
         viewModelScope.launch {
+            sessionStartTime = getCurrentTimeFormatted()
             exercises = loadExercises()
             val actualWorkout = loadWorkout()
             val formattedTime = getCurrentTimeFormatted()
@@ -85,6 +99,20 @@ class PerformWorkoutViewModel(
     fun goToNextExercise() {
         viewModelScope.launch {
             if (currentExerciseIndex < exercises.size - 1) {
+                if (currentExerciseIndex > lastCompletedExerciseIndex) {
+                    val exercise = exercises[currentExerciseIndex]
+                    val completed = CompletedExercise(
+                        id = null,
+                        workoutSessionId = null,
+                        exerciseId = exercise.id,
+                        sets = exercise.sets.toIntOrNull(),
+                        reps = exercise.reps.toIntOrNull(),
+                        rpe = null,
+                        weightKg = null
+                    )
+                    completedExercises.add(completed)
+                    lastCompletedExerciseIndex = currentExerciseIndex
+                }
                 currentExerciseIndex++
                 _exerciseSeconds.value = 0
                 startTimer()
@@ -118,6 +146,29 @@ class PerformWorkoutViewModel(
     }
 
     fun finishWorkout() {
+        sessionEndTime = getCurrentTimeFormatted()
+        viewModelScope.launch {
+            val session = WorkoutSession(
+                id = null,
+                customerId = AppState.customerId.toString(),
+                workoutId = workoutId,
+                startTime = sessionStartTime,
+                endTime = sessionEndTime,
+                caloriesBurned = 0,
+                distanceKm = null,
+                averageHeartRate = 0
+            )
+
+            val result = workoutSessionUseCase.addWorkoutSession(
+                workoutId = workoutId,
+                session = session
+            )
+            result.onSuccess { sessionId ->
+                completedExerciseUseCase.addCompletedExercises(
+                    completedExercises.map { it.copy(workoutSessionId = sessionId) }
+                )
+            }
+        }
         timerJob?.cancel()
         _uiState.value = PerformWorkoutUiState.Idle
     }
@@ -128,6 +179,7 @@ class PerformWorkoutViewModel(
         return exercisesResponse.getOrNull().orEmpty().map { item ->
             val exercise = exerciseUseCase.getExerciseById(item.exerciseId)
             RemainingExercise(
+                id = item.exerciseId.toString(),
                 title = exercise.name.toString(),
                 sets = item.sets.toString(),
                 reps = item.reps.toString()
@@ -145,8 +197,8 @@ class PerformWorkoutViewModel(
     }
 
     private fun getCurrentTimeFormatted(): String {
-        val currentTime = LocalTime.now()
-        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        val currentTime = java.time.LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
         return currentTime.format(formatter)
     }
 
@@ -229,5 +281,9 @@ class PerformWorkoutViewModel(
         val min = seconds / 60
         val sec = seconds % 60
         return "%02d:%02d".format(min, sec)
+    }
+
+    fun recordCompletedExercise(exercise: CompletedExercise) {
+        completedExercises.add(exercise)
     }
 }

@@ -9,7 +9,7 @@ import icesi.edu.co.fitscan.features.statistics.data.dto.FileUploadResponse
 import icesi.edu.co.fitscan.features.statistics.data.dto.ProgressPhotoCreateRequest
 import icesi.edu.co.fitscan.features.statistics.data.dto.ProgressPhotoResponseDto
 import icesi.edu.co.fitscan.features.statistics.data.dto.WeightMovedStatsResponseDto
-import icesi.edu.co.fitscan.features.statistics.data.dto.WorkoutSessionResponseDto
+import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutSessionResponseDto
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
