@@ -18,4 +18,14 @@ class IOpenAiRepositoryImpl(
                 ?: throw Exception("No se pudo obtener una respuesta de la IA")
         }
     }
+    
+    override suspend fun getVisionChatCompletion(prompt: String, imageBase64: String): Result<String> {
+        val result = remoteDataSource.getVisionChatCompletions(prompt, imageBase64)
+        
+        return result.map { response ->
+            // Extract text from response
+            response.choices?.firstOrNull()?.message?.content 
+                ?: throw Exception("No se pudo obtener una respuesta de la IA")
+        }
+    }
 }

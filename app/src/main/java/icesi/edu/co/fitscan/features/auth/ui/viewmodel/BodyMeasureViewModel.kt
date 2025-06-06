@@ -1,13 +1,18 @@
 package icesi.edu.co.fitscan.features.auth.ui.viewmodel
 
 import android.app.Application
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import icesi.edu.co.fitscan.domain.model.EstimatedBodyMeasurements
+import icesi.edu.co.fitscan.domain.usecases.IEstimateBodyMeasurementsUseCase
 import icesi.edu.co.fitscan.features.auth.data.remote.request.BodyMeasure
 import icesi.edu.co.fitscan.features.auth.domain.service.AuthServiceImpl
 import icesi.edu.co.fitscan.features.auth.ui.model.BodyMeasureUiState
 import icesi.edu.co.fitscan.features.common.data.remote.RetrofitInstance
+import icesi.edu.co.fitscan.features.openai.data.repositories.IOpenAiRepositoryImpl
+import icesi.edu.co.fitscan.features.openai.data.usecases.EstimateBodyMeasurementsUseCaseImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,9 +24,20 @@ import java.io.IOException
 
 class BodyMeasurementViewModel(application: Application) : AndroidViewModel(application) {
     private val authService = AuthServiceImpl(RetrofitInstance.authRepository, application)
+    
+    // AI estimation dependencies
+    private val openAiRepository = IOpenAiRepositoryImpl(application)
+    private val estimateBodyMeasurementsUseCase = EstimateBodyMeasurementsUseCaseImpl(openAiRepository)
 
     private val _uiState = MutableStateFlow<BodyMeasureUiState>(BodyMeasureUiState.Idle)
     val uiState: StateFlow<BodyMeasureUiState> = _uiState.asStateFlow()
+    
+    // State for AI estimation
+    private val _isEstimating = MutableStateFlow(false)
+    val isEstimating: StateFlow<Boolean> = _isEstimating.asStateFlow()
+    
+    private val _estimatedMeasurements = MutableStateFlow<EstimatedBodyMeasurements?>(null)
+    val estimatedMeasurements: StateFlow<EstimatedBodyMeasurements?> = _estimatedMeasurements.asStateFlow()
 
     fun saveMeasurements(
         height: Double,
@@ -116,5 +132,61 @@ class BodyMeasurementViewModel(application: Application) : AndroidViewModel(appl
                 }
             )
         }
+    }
+      fun estimateMeasurementsFromImage(
+        imageUri: Uri,
+        height: Double,
+        weight: Double,
+        existingMeasurements: Map<String, Double>
+    ) {
+        if (_isEstimating.value) return
+        
+        _isEstimating.value = true
+        _estimatedMeasurements.value = null  // Clear previous estimates
+        
+        viewModelScope.launch {
+            try {
+                val result = estimateBodyMeasurementsUseCase(
+                    context = getApplication(),
+                    imageUri = imageUri,
+                    height = height,
+                    weight = weight,
+                    existingMeasurements = existingMeasurements
+                )
+                
+                result.fold(
+                    onSuccess = { estimatedMeasurements ->
+                        _estimatedMeasurements.value = estimatedMeasurements
+                        Log.d("BodyMeasurementVM", "AI estimation successful: $estimatedMeasurements")
+                        // Clear any previous error state
+                        if (_uiState.value is BodyMeasureUiState.Error) {
+                            _uiState.update { BodyMeasureUiState.Idle }
+                        }
+                    },
+                    onFailure = { exception ->
+                        Log.e("BodyMeasurementVM", "AI estimation failed: ${exception.message}")
+                        val errorMessage = exception.message ?: "Error desconocido en estimación AI"
+                        _uiState.update { BodyMeasureUiState.Error(errorMessage) }
+                        
+                        // Auto-clear error after 5 seconds
+                        launch {
+                            kotlinx.coroutines.delay(5000)
+                            if (_uiState.value is BodyMeasureUiState.Error) {
+                                _uiState.update { BodyMeasureUiState.Idle }
+                            }
+                        }
+                    }
+                )
+            } catch (e: Exception) {
+                Log.e("BodyMeasurementVM", "Unexpected error in AI estimation: ${e.message}")
+                _uiState.update { BodyMeasureUiState.Error("Error inesperado: ${e.message}") }
+            } finally {
+                _isEstimating.value = false
+            }
+        }
+    }
+    
+    fun clearEstimatedMeasurements() {
+        _estimatedMeasurements.value = null
     }
 }

@@ -1,5 +1,12 @@
 package icesi.edu.co.fitscan.features.auth.ui.screens
 
+import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +21,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -21,6 +30,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -31,9 +42,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -52,6 +65,7 @@ fun PersonalDataScreen(
     bodyMeasurementViewModel: BodyMeasurementViewModel = viewModel(),
     onMeasurementsComplete: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     var height by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
 
@@ -74,16 +88,64 @@ fun PersonalDataScreen(
     var expandedGoal by remember { mutableStateOf(false) }
 
     val uiState by bodyMeasurementViewModel.uiState.collectAsState()
+    val isEstimating by bodyMeasurementViewModel.isEstimating.collectAsState()
+    val estimatedMeasurements by bodyMeasurementViewModel.estimatedMeasurements.collectAsState()    // Check camera availability for emulator compatibility
+    val isCameraAvailable = remember {
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+    }
 
-    LaunchedEffect(uiState) {
-        when (uiState) {
+    // Camera launcher for taking photos with emulator support
+    val takePictureLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        if (bitmap != null) {
+            try {
+                val tempUri = saveBitmapToTempFile(context, bitmap)
+                tempUri?.let { uri ->
+                    val existingMeasurements = mapOf(
+                        "arms" to (arms.toDoubleOrNull() ?: 0.0),
+                        "chest" to (chest.toDoubleOrNull() ?: 0.0),
+                        "waist" to (waist.toDoubleOrNull() ?: 0.0),
+                        "hips" to (hips.toDoubleOrNull() ?: 0.0),
+                        "thighs" to (thighs.toDoubleOrNull() ?: 0.0),
+                        "calves" to (calves.toDoubleOrNull() ?: 0.0)
+                    )
+                    
+                    bodyMeasurementViewModel.estimateMeasurementsFromImage(
+                        imageUri = uri,
+                        height = height.toDoubleOrNull() ?: 0.0,
+                        weight = weight.toDoubleOrNull() ?: 0.0,
+                        existingMeasurements = existingMeasurements
+                    )
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error procesando imagen: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(context, "No se pudo capturar la imagen", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Update fields when AI estimation completes
+    LaunchedEffect(estimatedMeasurements) {
+        estimatedMeasurements?.let { measurements ->
+            measurements.arms_cm?.let { if (arms.isEmpty()) arms = it.toString() }
+            measurements.chest_cm?.let { if (chest.isEmpty()) chest = it.toString() }
+            measurements.waist_cm?.let { if (waist.isEmpty()) waist = it.toString() }
+            measurements.hips_cm?.let { if (hips.isEmpty()) hips = it.toString() }
+            measurements.thighs_cm?.let { if (thighs.isEmpty()) thighs = it.toString() }
+            measurements.calves_cm?.let { if (calves.isEmpty()) calves = it.toString() }        }
+    }
+      LaunchedEffect(uiState) {
+        val currentState = uiState
+        when (currentState) {
             is BodyMeasureUiState.Success -> {
                 onMeasurementsComplete()
                 bodyMeasurementViewModel.resetState()
             }
 
             is BodyMeasureUiState.Error -> {
-                // Show error message
+                Toast.makeText(context, currentState.message, Toast.LENGTH_LONG).show()
             }
 
             else -> {}
@@ -167,8 +229,7 @@ fun PersonalDataScreen(
                     Column(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        FitInput(
+                    ) {                        FitInput(
                             "Pecho",
                             "cm",
                             chest,
@@ -191,6 +252,78 @@ fun PersonalDataScreen(
                             { calves = it },
                             Modifier.fillMaxWidth(),
                             greenLess
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(12.dp))                // AI Body Measurements Scan Button
+                OutlinedButton(
+                    onClick = {
+                        when {
+                            !isCameraAvailable -> {
+                                Toast.makeText(context, "Cámara no disponible en este dispositivo", Toast.LENGTH_SHORT).show()
+                            }
+                            height.isEmpty() || weight.isEmpty() -> {
+                                Toast.makeText(context, "Complete altura y peso primero", Toast.LENGTH_SHORT).show()
+                            }
+                            else -> {
+                                try {
+                                    takePictureLauncher.launch(null)
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, "Error al acceder a la cámara: ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = isCameraAvailable && height.isNotEmpty() && weight.isNotEmpty() && !isEstimating,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = if (isCameraAvailable) greenLess else Color.Gray
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    if (isEstimating) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            color = greenLess
+                        )
+                        Spacer(Modifier.padding(4.dp))
+                        Text("Analizando...")
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.CameraAlt,
+                            contentDescription = "Camera",
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(Modifier.padding(4.dp))
+                        Text(if (isCameraAvailable) "Escanear Medidas Corporales" else "Cámara no disponible")
+                    }
+                }
+
+                // Status messages
+                when {
+                    !isCameraAvailable -> {
+                        Text(
+                            text = "Función de cámara no disponible en este dispositivo",
+                            color = Color.Red.copy(alpha = 0.8f),
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                    height.isEmpty() || weight.isEmpty() -> {
+                        Text(
+                            text = "Complete altura y peso para usar el escáner AI",
+                            color = Color.White.copy(alpha = 0.7f),
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                    else -> {
+                        Text(
+                            text = "Tome una foto para estimar medidas corporales automáticamente",
+                            color = Color.White.copy(alpha = 0.7f),
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 4.dp)
                         )
                     }
                 }
@@ -366,6 +499,24 @@ fun FitDropdown(
                 )
             }
         }
+    }
+}
+
+// Helper function to save bitmap to temporary file
+private fun saveBitmapToTempFile(context: android.content.Context, bitmap: android.graphics.Bitmap): Uri? {
+    return try {
+        val file = java.io.File(context.cacheDir, "temp_body_photo_${System.currentTimeMillis()}.jpg")
+        val outputStream = java.io.FileOutputStream(file)
+        bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, outputStream)
+        outputStream.flush()
+        outputStream.close()
+        androidx.core.content.FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            file
+        )
+    } catch (e: Exception) {
+        null
     }
 }
 
