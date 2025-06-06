@@ -12,3 +12,5 @@ local.properties
 .vscode
 
 app/src/main/res/raw/openai.properties
+
+.env
