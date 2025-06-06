@@ -14,6 +14,7 @@
 La aplicación ofrece planes de entrenamiento personalizados, seguimiento de métricas de salud como peso e IMC, y la posibilidad de registrar el progreso semanal para mantener la motivación alta.
 
 Nuestros objetivos principales son:
+
 - Ofrecer entrenamientos adaptados al nivel de cada usuario, especialmente principiantes.
 - Brindar una experiencia de uso sencilla y amigable para personas sin experiencia previa en fitness.
 - Permitir el seguimiento fácil de métricas de progreso.
@@ -24,8 +25,32 @@ FitScan está pensado para ser el primer paso seguro y accesible para cualquier 
 
 ## Demo de autenticación
 
-Puedes ver una demostración del flujo de autenticación de usuarios en el siguiente enlace:  
+Puedes ver una demostración del flujo del sprint 1 de autenticación de usuarios en el siguiente enlace:  
 👉 **[Video de autenticación](https://youtube.com/shorts/ox61H1Qyyjo?feature=share)**
+
+Puedes ver las funcionalidades de workout y estadisticas implementadas para el sprint 2 en el siguiente enlace:
+ 👉 **[Video de funcionalidades](https://youtu.be/iRs79wpJSSQ)**
+
+## Caracteristicas añadidas este sprint
+
+Aquí un resumen de lo que se ha implementado en las pantallas de workout, statistics y home:
+
+- 🏋️‍♂️ **Workout:**
+  - Pantalla para realizar rutinas (`PerformWorkoutScreen`): muestra ejercicio actual, siguiente, lista de ejercicios restantes, control de sets, temporizador y navegación entre ejercicios.
+  - Pantalla de detalle de rutina (`WorkoutDetailScreen`): muestra información de la rutina y permite iniciar el entrenamiento.
+  - Pantalla para crear rutinas (`CreateWorkoutScreen`): permite crear nuevas rutinas personalizadas.
+  - Pantalla de detalle de ejercicio (`ExerciseDetailScreen`): muestra información detallada de cada ejercicio.
+
+- 📊 **Statistics:**
+  - Pantalla de estadísticas generales (`StatisticsScreen`): visualización de progreso, ejercicios completados y métricas relevantes.
+  - Pantalla de progreso por ejercicio (`ExerciseProgressScreen`): muestra el avance específico en cada ejercicio.
+  - Pantalla de progreso visual (`ProgressPhotoScreen`): permite ver y registrar fotos de progreso físico.
+
+- 🏠 **Home (Dashboard):**
+  - Pantalla principal (`DashboardScreen`): acceso rápido a rutinas, estadísticas, perfil y otras funcionalidades.
+  - Resumen del estado actual del usuario y accesos directos a las acciones principales.
+
+¡Estas funcionalidades mejoran la experiencia del usuario y facilitan el seguimiento y gestión de su entrenamiento! 🚀
 
 ## Roles y Permisos
 
