@@ -20,7 +20,7 @@ ENV SECRET=guarrosguarrosguarros \
 EXPOSE 8055
 
 # Inicializar las tablas de Directus si la base de datos está vacía
-# RUN npx directus bootstrap
+RUN npx directus bootstrap
 
 # Iniciar Directus
 CMD ["npx", "directus", "start"]
