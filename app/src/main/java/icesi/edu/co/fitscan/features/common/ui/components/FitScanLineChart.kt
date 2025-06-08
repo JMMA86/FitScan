@@ -5,17 +5,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import icesi.edu.co.fitscan.ui.theme.greenLess
-import icesi.edu.co.fitscan.ui.theme.greyStrong
+import icesi.edu.co.fitscan.ui.theme.chartPrimary
 
 @Composable
 fun FitScanLineChart(
@@ -26,14 +27,20 @@ fun FitScanLineChart(
     if (data.isEmpty() || labels.isEmpty()) {
         Text(
                 text = "No hay datos para mostrar",
-                color = Color.White
+                color = MaterialTheme.colorScheme.onBackground
         )
         return
     }
+    
+    // Extract colors outside Canvas context
+    val chartPrimaryColor = MaterialTheme.colorScheme.chartPrimary
+    val onBackgroundColor = MaterialTheme.colorScheme.onBackground
+    val backgroundColorArgb = MaterialTheme.colorScheme.onBackground.toArgb()
+    
     Box(
             modifier = modifier
                     .fillMaxSize()
-                    .background(greyStrong),
+                    .background(MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -50,18 +57,19 @@ fun FitScanLineChart(
             val xStep = if (pointCount > 1) chartWidth / (pointCount - 1) else 0f
             val yTickCount = 5
             val yTickStep = valueRange / (yTickCount - 1)
-
+            
             // Draw Y axis and ticks
             drawLine(
-                    color = greenLess,
+                    color = chartPrimaryColor,
                     start = Offset(xStart, yStart),
                     end = Offset(xStart, yEnd),
                     strokeWidth = 3f
             )
+            
             for (i in 0 until yTickCount) {
                 val y = yEnd - i * chartHeight / (yTickCount - 1)
                 drawLine(
-                        color = greenLess,
+                        color = chartPrimaryColor,
                         start = Offset(xStart - 8f, y),
                         end = Offset(xStart, y),
                         strokeWidth = 2f
@@ -69,28 +77,27 @@ fun FitScanLineChart(
                 drawContext.canvas.nativeCanvas.apply {
                     drawText(
                             String.format("%.0f", minValue + i * yTickStep),
-                            xStart - 12.dp.toPx(),
-                            y + 5.dp.toPx(),
-                            android.graphics.Paint().apply {
-                        color = android.graphics.Color.WHITE
+                            xStart - 12.dp.toPx(),                            y + 5.dp.toPx(),                    android.graphics.Paint().apply {
+                        color = backgroundColorArgb
                         textSize = 28f
                         textAlign = android.graphics.Paint.Align.RIGHT
                     }
                     )
                 }
             }
-
+            
             // Draw X axis and ticks
             drawLine(
-                    color = greenLess,
+                    color = chartPrimaryColor,
                     start = Offset(xStart, yEnd),
                     end = Offset(xEnd, yEnd),
                     strokeWidth = 3f
             )
+            
             for (i in data.indices) {
                 val x = xStart + i * xStep
                 drawLine(
-                        color = greenLess,
+                        color = chartPrimaryColor,
                         start = Offset(x, yEnd),
                         end = Offset(x, yEnd + 8f),
                         strokeWidth = 2f
@@ -101,10 +108,8 @@ fun FitScanLineChart(
                     rotate(-45f, x, yEnd + 24.dp.toPx())
                     drawText(
                             labels.getOrNull(i) ?: "",
-                            x,
-                            yEnd + 24.dp.toPx(),
-                            android.graphics.Paint().apply {
-                        color = android.graphics.Color.WHITE
+                            x,                            yEnd + 24.dp.toPx(),                    android.graphics.Paint().apply {
+                        color = backgroundColorArgb
                         textSize = 28f
                         textAlign = android.graphics.Paint.Align.CENTER
                     }
@@ -128,28 +133,25 @@ fun FitScanLineChart(
                     lineTo(points.last().x, yEnd)
                     close()
                 }
+                
                 drawPath(
-                        path = areaPath,
-                        brush = Brush.verticalGradient(
-                                listOf(greenLess.copy(alpha = 0.4f), greenLess.copy(alpha = 0.1f), Color.Transparent)
-                        )
-                )
+                        path = areaPath,                        brush = Brush.verticalGradient(
+                                listOf(chartPrimaryColor.copy(alpha = 0.4f), chartPrimaryColor.copy(alpha = 0.1f), Color.Transparent)
+                        ))
             }
-
-            // Draw the line
+              // Draw the line
             for (i in 0 until points.size - 1) {
                 drawLine(
-                        color = greenLess,
+                        color = chartPrimaryColor,
                         start = points[i],
                         end = points[i + 1],
                         strokeWidth = 5f,
                         cap = StrokeCap.Round
                 )
-            }
-            // Draw points
+            }            // Draw points
             for (pt in points) {
                 drawCircle(
-                        color = greenLess,
+                        color = chartPrimaryColor,
                         radius = 10f,
                         center = pt
                 )

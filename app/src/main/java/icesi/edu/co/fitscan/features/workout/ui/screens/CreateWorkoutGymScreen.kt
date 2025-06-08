@@ -31,7 +31,6 @@ import icesi.edu.co.fitscan.features.workout.ui.components.ExerciseList
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.CreateWorkoutGymViewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.CreateWorkoutGymViewModelFactory
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
-import icesi.edu.co.fitscan.ui.theme.greyStrong
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -235,11 +234,10 @@ fun CreateWorkoutGymScreen() {
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
+    Box(modifier = Modifier.fillMaxSize()) {        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(greyStrong)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(top = 16.dp)
         ) {
             FitScanTextField(
@@ -259,11 +257,10 @@ fun CreateWorkoutGymScreen() {
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 placeholder = "Buscar ejercicios...",
-                leadingIcon = {
-                    Icon(
+                leadingIcon = {                    Icon(
                         painter = painterResource(id = R.drawable.ic_search),
                         contentDescription = null,
-                        tint = Color.Gray
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -294,12 +291,11 @@ fun CreateWorkoutGymScreen() {
                             .fillMaxSize()
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
-                    ) {
-                        Text(
+                    ) {                        Text(
                             text = if (searchQuery.isNotEmpty())
                                 "Ningún ejercicio coincide con el criterio de búsqueda"
                             else "No hay más ejercicios disponibles",
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
@@ -371,10 +367,9 @@ fun CreateWorkoutGymScreen() {
                             .fillMaxSize()
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
-                    ) {
-                        Text(
+                    ) {                        Text(
                             text = "No se ha agregado ningún ejercicio",
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }

@@ -21,9 +21,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.DpOffset
-
-import icesi.edu.co.fitscan.ui.theme.greenLess
-import icesi.edu.co.fitscan.ui.theme.greyMed
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun FitScanTextSelector(
@@ -36,11 +34,10 @@ fun FitScanTextSelector(
     val expanded = remember { mutableStateOf(false) }
     val selectorSize = remember { mutableStateOf(IntSize.Zero) }
     val density = LocalDensity.current
-    Box(modifier = modifier) {
-        Row(
+    Box(modifier = modifier) {        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(greyMed, RoundedCornerShape(10.dp))
+                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(10.dp))
                 .clickable { expanded.value = true }
                 .padding(horizontal = 16.dp, vertical = 14.dp)
                 .onGloballyPositioned { coordinates ->
@@ -49,7 +46,7 @@ fun FitScanTextSelector(
         ) {
             Text(
                 text = if (value.isNotEmpty()) value else placeholder,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -57,7 +54,7 @@ fun FitScanTextSelector(
             expanded = expanded.value,
             onDismissRequest = { expanded.value = false },
             modifier = Modifier
-                .background(Color(0xFF23272A))
+                .background(MaterialTheme.colorScheme.surface)
                 .width(with(density) { selectorSize.value.width.toDp() }),
             offset = DpOffset(x = 0.dp, y = with(density) { selectorSize.value.height.toDp() })
         ) {
@@ -70,10 +67,10 @@ fun FitScanTextSelector(
                     text = {
                         Text(
                             text = option,
-                            color = greenLess
+                            color = MaterialTheme.colorScheme.primary
                         )
                     },
-                    modifier = Modifier.background(Color(0xFF23272A))
+                    modifier = Modifier.background(MaterialTheme.colorScheme.surface)
                 )
             }
         }

@@ -24,6 +24,7 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -61,7 +62,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(
-    greenLess: Color,
+    greenLess: Color = MaterialTheme.colorScheme.primary,
     registerViewModel: RegisterViewModel = viewModel(),
     onRegisterSuccess: () -> Unit = {}
 ) {

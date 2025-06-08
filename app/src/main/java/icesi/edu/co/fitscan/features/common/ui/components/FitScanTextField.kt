@@ -1,6 +1,7 @@
 package icesi.edu.co.fitscan.features.common.ui.components
 
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -8,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import icesi.edu.co.fitscan.ui.theme.greyMed
 
 @Composable
 fun FitScanTextField(
@@ -17,22 +17,21 @@ fun FitScanTextField(
     placeholder: String,
     leadingIcon: @Composable (() -> Unit)? = null,
     modifier: Modifier
-) {
-    OutlinedTextField(
+) {    OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        placeholder = { Text(placeholder, color = Color.Gray) },
+        placeholder = { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant) },
         leadingIcon = leadingIcon,
         colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = greyMed,
-            focusedContainerColor = greyMed,
-            cursorColor = Color.White,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            cursorColor = MaterialTheme.colorScheme.onSurface,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
-            focusedTextColor = Color.White,
-            unfocusedTextColor = Color.White
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
         ),
-        textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
+        textStyle = androidx.compose.ui.text.TextStyle(color = MaterialTheme.colorScheme.onSurface),
         modifier = modifier,
         shape = RoundedCornerShape(10.dp)
     )

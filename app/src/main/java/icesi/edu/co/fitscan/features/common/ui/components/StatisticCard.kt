@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,8 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import icesi.edu.co.fitscan.ui.theme.greyMed
-import icesi.edu.co.fitscan.ui.theme.greenLess
+import icesi.edu.co.fitscan.ui.theme.cardBackground
 
 @Composable
 fun StatisticCard(
@@ -26,11 +26,11 @@ fun StatisticCard(
     subtitle: String,
     iconRes: Int,
     iconBackground: Color = Color.Unspecified,
-    iconColor: Color = Color.White,
+    iconColor: Color = MaterialTheme.colorScheme.onSurface,
     onClick: () -> Unit = {},
 ) {
     Surface(
-        color = greyMed,
+        color = MaterialTheme.colorScheme.cardBackground,
         shape = RoundedCornerShape(18.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -42,30 +42,43 @@ fun StatisticCard(
         ) {
             Box(
                 modifier = Modifier
-                    .background(iconBackground, shape = RoundedCornerShape(50))
+                    .background(
+                        color = if (iconBackground != Color.Unspecified) iconBackground 
+                               else MaterialTheme.colorScheme.primaryContainer,
+                        shape = RoundedCornerShape(50)
+                    )
                     .padding(10.dp)
             ) {
                 Icon(
                     painter = painterResource(id = iconRes),
                     contentDescription = null,
-                    tint = iconColor,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(28.dp)
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                Text(subtitle, color = Color.White, fontSize = 14.sp)
+                Text(
+                    text = title, 
+                    color = MaterialTheme.colorScheme.onSurface, 
+                    fontWeight = FontWeight.Bold, 
+                    fontSize = 20.sp
+                )
+                Text(
+                    text = subtitle, 
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, 
+                    fontSize = 14.sp
+                )
             }
             Box(
                 modifier = Modifier
-                    .background(greenLess, shape = RoundedCornerShape(50))
+                    .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(50))
                     .padding(8.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
                     contentDescription = null,
-                    tint = greyMed,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(20.dp)
                 )
             }

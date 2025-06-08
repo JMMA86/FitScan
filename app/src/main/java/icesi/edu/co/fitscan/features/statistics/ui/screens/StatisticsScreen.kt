@@ -13,12 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,8 +35,8 @@ import icesi.edu.co.fitscan.features.common.ui.components.StackedBarChart
 import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.StatisticsViewModel
 import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.factory.StatisticsViewModelFactory
 import icesi.edu.co.fitscan.navigation.Screen
-import icesi.edu.co.fitscan.ui.theme.greyStrong
-import icesi.edu.co.fitscan.ui.theme.greenLess
+import icesi.edu.co.fitscan.ui.theme.chartPrimary
+import icesi.edu.co.fitscan.ui.theme.iconTint
 
 @Composable
 fun StatisticsScreen(
@@ -53,13 +53,13 @@ fun StatisticsScreen(
     Column {
         FitScanHeader(
             title = "Estadísticas de Ejercicio",
-            showBackIcon = false,
-            navController = navController
+            showBackIcon = false,            navController = navController
         )
+        
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(greyStrong)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 8.dp, vertical = 16.dp)
         ) {
@@ -84,7 +84,7 @@ fun StatisticsScreen(
             // Hours Worked Chart Section
             Text(
                 text = "Horas trabajadas vs La última semana",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 modifier = Modifier.fillMaxWidth(),
@@ -98,7 +98,7 @@ fun StatisticsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (isLoading) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 } else {
                     StackedBarChart(
                         currentWeek = currentWeek,
@@ -119,15 +119,15 @@ fun StatisticsScreen(
                 GoalCard(
                     title = "Calorías",
                     areaData = caloriesAreaData,
-                    color = greenLess,
-                    barColor = greenLess,
+                    color = MaterialTheme.colorScheme.chartPrimary,
+                    barColor = MaterialTheme.colorScheme.chartPrimary,
                     modifier = Modifier.weight(1f).heightIn(min = 140.dp, max = 220.dp)
                 )
                 GoalCard(
                     title = "Peso Movido",
                     areaData = weightAreaData,
-                    color = Color.White,
-                    barColor = Color.White,
+                    color = MaterialTheme.colorScheme.iconTint,
+                    barColor = MaterialTheme.colorScheme.iconTint,
                     modifier = Modifier.weight(1f).heightIn(min = 140.dp, max = 220.dp)
                 )
             }

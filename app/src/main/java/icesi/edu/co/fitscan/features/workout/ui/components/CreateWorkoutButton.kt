@@ -6,6 +6,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,8 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import icesi.edu.co.fitscan.ui.theme.greenLess
-import icesi.edu.co.fitscan.ui.theme.greyStrong
 
 @Composable
 fun CreateWorkoutButton(
@@ -24,24 +23,22 @@ fun CreateWorkoutButton(
     enabled: Boolean = true,
     isLoading: Boolean = false
 ) {
-    Button(
-        onClick = { if (!isLoading && enabled) onClick() },
+    Button(        onClick = { if (!isLoading && enabled) onClick() },
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = greenLess,
-            contentColor = Color.White,
-            disabledContainerColor = greyStrong,
-            disabledContentColor = Color.Gray
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
         ),
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
-    ) {
-        if (isLoading) {
+    ) {        if (isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.size(24.dp),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 strokeWidth = 2.dp
             )
         } else {

@@ -3,25 +3,22 @@ package icesi.edu.co.fitscan.features.profile.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanNavBar
-import icesi.edu.co.fitscan.ui.theme.greyStrong
 
 @Composable
 fun ProfileScreen(navController: NavController) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
+    Box(modifier = Modifier.fillMaxSize()) {        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(greyStrong)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             // Header
             Row(
@@ -32,16 +29,16 @@ fun ProfileScreen(navController: NavController) {
             ) {
                 IconButton(onClick = { navController.navigateUp() }) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Regresar",
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Text(
                     text = "Perfil",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
@@ -55,7 +52,7 @@ fun ProfileScreen(navController: NavController) {
                 // Aquí irá el contenido del perfil
                 Text(
                     text = "Información del perfil",
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
 

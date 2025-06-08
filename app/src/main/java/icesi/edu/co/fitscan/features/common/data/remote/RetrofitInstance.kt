@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
     // Cambia esta URL por la de tu servidor (ip local o dominio)
-    private const val BASE_URL = "http://10.0.2.2:8055" // "https://fitscan.onrender.com"
+    private const val BASE_URL = "https://fitscan.onrender.com" // "http://10.0.2.2:8055" // Para emulador
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

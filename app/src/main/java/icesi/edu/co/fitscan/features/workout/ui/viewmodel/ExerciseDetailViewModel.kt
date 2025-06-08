@@ -20,22 +20,17 @@ sealed class ExerciseDetailState {
 class ExerciseDetailViewModel(
     private val exerciseRepository: IExerciseRepository,
     private val workoutExerciseRepository: IWorkoutExerciseRepository
-) : ViewModel() {
-    private val _state = MutableStateFlow<ExerciseDetailState>(ExerciseDetailState.Loading)
+) : ViewModel() {    private val _state = MutableStateFlow<ExerciseDetailState>(ExerciseDetailState.Loading)
     val state: StateFlow<ExerciseDetailState> = _state
 
     fun loadExerciseDetail(workoutId: UUID, workoutExerciseId: UUID) {
         viewModelScope.launch {
             Log.d("ExerciseDetailVM", "Cargando detalle para workoutId=$workoutId, workoutExerciseId=$workoutExerciseId")
             _state.value = ExerciseDetailState.Loading
+            
             val result = workoutExerciseRepository.getWorkoutExerciseById(workoutId, workoutExerciseId)
             result.onSuccess { workoutExercise ->
                 Log.d("ExerciseDetailVM", "WorkoutExercise encontrado: $workoutExercise")
-                if (workoutExercise.exerciseId == null) {
-                    Log.e("ExerciseDetailVM", "El campo exerciseId es null en WorkoutExercise: $workoutExercise")
-                    _state.value = ExerciseDetailState.Error("El campo exerciseId es null en la relación. Id relación: $workoutExerciseId")
-                    return@onSuccess
-                }
                 val exerciseResult = exerciseRepository.getExerciseById(workoutExercise.exerciseId)
                 if (exerciseResult.isSuccess) {
                     val exercise = exerciseResult.getOrNull()

@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import icesi.edu.co.fitscan.ui.theme.greySuperLight
 
 @Composable
 fun MetricCard(value: String, label: String) {
@@ -22,12 +21,12 @@ fun MetricCard(value: String, label: String) {
         Text(
             text = value,
             style = MaterialTheme.typography.headlineMedium,
-            color = Color.White
+            color = MaterialTheme.colorScheme.onBackground
         )
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
-            color = greySuperLight,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
     }

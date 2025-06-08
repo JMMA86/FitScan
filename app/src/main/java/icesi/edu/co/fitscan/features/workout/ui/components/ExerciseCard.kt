@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,8 +31,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import icesi.edu.co.fitscan.R
-import icesi.edu.co.fitscan.ui.theme.greenLess
-import icesi.edu.co.fitscan.ui.theme.greyMed
 
 @Composable
 fun ExerciseCard(
@@ -43,18 +42,17 @@ fun ExerciseCard(
     onRemove: () -> Unit,
     onAdd: () -> Unit,
     showAddButton: Boolean,
-) {
-    Row(
+) {    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(greyMed, shape = RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(12.dp))
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = name,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.weight(1f)
         )
@@ -64,12 +62,11 @@ fun ExerciseCard(
             var repsText by remember(reps) { mutableStateOf(reps.toString()) }
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("SETS", color = Color.Gray, fontSize = 12.sp)
+                Text("SETS", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                 Box(
                     modifier = Modifier.width(40.dp),
                     contentAlignment = Alignment.Center
-                ) {
-                    BasicTextField(
+                ) {                    BasicTextField(
                         value = setsText,
                         onValueChange = {
                             if (it.isEmpty()) {
@@ -83,7 +80,7 @@ fun ExerciseCard(
                             }
                         },
                         textStyle = TextStyle(
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
                             textAlign = TextAlign.Center
@@ -96,12 +93,11 @@ fun ExerciseCard(
             Spacer(modifier = Modifier.width(12.dp))
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("REPS", color = Color.Gray, fontSize = 12.sp)
+                Text("REPS", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                 Box(
                     modifier = Modifier.width(40.dp),
                     contentAlignment = Alignment.Center
-                ) {
-                    BasicTextField(
+                ) {                    BasicTextField(
                         value = repsText,
                         onValueChange = {
                             if (it.isEmpty()) {
@@ -115,7 +111,7 @@ fun ExerciseCard(
                             }
                         },
                         textStyle = TextStyle(
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
                             textAlign = TextAlign.Center
@@ -133,11 +129,10 @@ fun ExerciseCard(
                     modifier = Modifier
                         .size(30.dp)
                         .background(Color.Transparent)
-                ) {
-                    Icon(
+                ) {                    Icon(
                         painter = painterResource(id = R.drawable.ic_add),
                         contentDescription = "Añadir",
-                        tint = greenLess
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             } else {
@@ -150,7 +145,7 @@ fun ExerciseCard(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_remove),
                         contentDescription = "Eliminar",
-                        tint = Color.Red
+                        tint = MaterialTheme.colorScheme.error
                     )
                 }
             }

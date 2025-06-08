@@ -21,8 +21,6 @@ import icesi.edu.co.fitscan.features.common.ui.components.RecentActivityCard
 import icesi.edu.co.fitscan.features.workoutlist.ui.model.WorkoutListUiState
 import icesi.edu.co.fitscan.features.workoutlist.ui.viewmodel.WorkoutListViewModel
 import icesi.edu.co.fitscan.features.workoutlist.ui.viewmodel.factory.WorkoutListViewModelFactory
-import icesi.edu.co.fitscan.ui.theme.greenLess
-import icesi.edu.co.fitscan.ui.theme.greyStrong
 
 @Composable
 fun WorkoutListScreen(
@@ -36,11 +34,11 @@ fun WorkoutListScreen(
     LaunchedEffect(searchQuery) {
         viewModel.onSearchQueryChanged(searchQuery)
     }
-
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(greyStrong)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
         // Header
@@ -51,20 +49,21 @@ fun WorkoutListScreen(
         ) {
             Text(
                 text = "Entrenamientos",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
+            
             IconButton(
                 onClick = onNavigateToCreate,
                 colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = greenLess
+                    containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Crear rutina",
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -73,25 +72,24 @@ fun WorkoutListScreen(
 
         // Search bar
         OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
+            value = searchQuery,            onValueChange = { searchQuery = it },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Buscar rutinas...", color = Color.Gray) },
+            placeholder = { Text("Buscar rutinas...", color = MaterialTheme.colorScheme.onSurfaceVariant) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Buscar",
-                    tint = Color.Gray
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             },
             colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
-                focusedBorderColor = Color.White,
-                unfocusedBorderColor = Color.Gray,
-                focusedPlaceholderColor = Color.Gray,
-                unfocusedPlaceholderColor = Color.Gray,
-                cursorColor = Color.White
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                cursorColor = MaterialTheme.colorScheme.primary
             )
         )
 
@@ -104,7 +102,7 @@ fun WorkoutListScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = Color.White)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             }
             is WorkoutListUiState.Success -> {
@@ -113,10 +111,9 @@ fun WorkoutListScreen(
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
-                    ) {
-                        Text(
+                    ) {                        Text(
                             text = "No hay rutinas disponibles",
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 } else {
@@ -151,7 +148,7 @@ fun WorkoutListScreen(
                 ) {
                     Text(
                         text = (uiState as WorkoutListUiState.Error).message,
-                        color = Color.Red
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
             }
@@ -159,10 +156,9 @@ fun WorkoutListScreen(
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
-                ) {
-                    Text(
+                ) {                    Text(
                         text = "No hay entrenamientos disponibles",
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }

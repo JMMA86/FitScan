@@ -8,7 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -25,8 +25,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.ExerciseDetailState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.ExerciseDetailViewModel
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
-import icesi.edu.co.fitscan.ui.theme.greenLess
-import icesi.edu.co.fitscan.ui.theme.greyStrong
 import androidx.compose.ui.graphics.Brush
 import java.util.*
 
@@ -43,16 +41,15 @@ fun ExerciseDetailScreen(
     LaunchedEffect(workoutExerciseId, workoutId) {
         if (!workoutExerciseId.isNullOrBlank() && !workoutId.isNullOrBlank()) {
             // Corregido: el id que se pasa debe ser el id de WorkoutExercise, y el workoutId el de la rutina
-            viewModel.loadExerciseDetail(UUID.fromString(workoutId), UUID.fromString(workoutExerciseId))
-        }
+            viewModel.loadExerciseDetail(UUID.fromString(workoutId), UUID.fromString(workoutExerciseId))        }
     }
-
-    val screenBackgroundColor = greyStrong
-    val primaryTextColor = Color.White
-    val secondaryTextColor = Color.LightGray
-    val accentColor = greenLess
+    
+    val screenBackgroundColor = MaterialTheme.colorScheme.background
+    val primaryTextColor = MaterialTheme.colorScheme.onBackground
+    val secondaryTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val accentColor = MaterialTheme.colorScheme.primary
     val gradientBrush = Brush.horizontalGradient(
-        colors = listOf(Color(0xFF43EA7A), Color(0xFF1B8D3A))
+        colors = listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary)
     )
 
     Scaffold(
@@ -60,15 +57,13 @@ fun ExerciseDetailScreen(
             TopAppBar(
                 title = { Text("Detalle del ejercicio", color = primaryTextColor) },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                    IconButton(onClick = onNavigateBack) {                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
                             tint = primaryTextColor
                         )
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
+                },                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = screenBackgroundColor,
                     titleContentColor = primaryTextColor,
                     navigationIconContentColor = primaryTextColor
@@ -82,10 +77,9 @@ fun ExerciseDetailScreen(
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = accentColor)
                 }
-            }
-            is ExerciseDetailState.Error -> {
+            }            is ExerciseDetailState.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text((state as ExerciseDetailState.Error).message, color = Color.Red)
+                    Text((state as ExerciseDetailState.Error).message, color = MaterialTheme.colorScheme.error)
                 }
             }
             is ExerciseDetailState.Success -> {

@@ -25,8 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import icesi.edu.co.fitscan.ui.theme.greyLight
-import icesi.edu.co.fitscan.ui.theme.greyMed
+import androidx.compose.material3.MaterialTheme
 
 
 @Composable
@@ -38,7 +37,7 @@ fun currentRoute(navController: NavController): String? {
 @Composable
 fun FitScanNavBar(navController: NavController) {
     BottomNavigation(
-        backgroundColor = greyMed,
+        backgroundColor = MaterialTheme.colorScheme.surface,
         modifier = Modifier
             .fillMaxWidth()
             .navigationBarsPadding()
@@ -65,8 +64,7 @@ fun FitScanNavBar(navController: NavController) {
                 icon = {
                     val isSelected = currentRoute == screen.route
 
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Box(
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {                        Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
                                 .width(70.dp)
@@ -74,7 +72,7 @@ fun FitScanNavBar(navController: NavController) {
                                     if (isSelected) {
                                         Modifier
                                             .background(
-                                                color = greyLight,
+                                                color = MaterialTheme.colorScheme.primary,
                                                 shape = RoundedCornerShape(30.dp)
                                             )
                                             .padding(8.dp)
@@ -82,25 +80,23 @@ fun FitScanNavBar(navController: NavController) {
                                         Modifier.padding(8.dp)
                                     }
                                 )
-                        ) {
-                        Icon(
+                        ) {                        Icon(
                                 painter = painterResource(id = screen.icon),
                                 contentDescription = screen.title,
                                 modifier = Modifier.size(24.dp),
-                                tint = Color.White
+                                tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                             )
                         }
 
                         Text(
                             text = screen.title,
                             fontSize = 12.sp,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Bold
                         )
                     }
-                },
-                selectedContentColor = Color.White,
-                unselectedContentColor = Color.White,
+                },                selectedContentColor = MaterialTheme.colorScheme.onSurface,
+                unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                 alwaysShowLabel = true
             )
         }

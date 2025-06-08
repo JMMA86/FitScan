@@ -24,9 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import icesi.edu.co.fitscan.R
-import icesi.edu.co.fitscan.ui.theme.dashboardCardBackground
-import icesi.edu.co.fitscan.ui.theme.dashboardGreen
-import icesi.edu.co.fitscan.ui.theme.greySuperLight
+import icesi.edu.co.fitscan.ui.theme.cardBackground
 
 @Composable
 fun RecentActivityCard(
@@ -36,10 +34,9 @@ fun RecentActivityCard(
     level: String,
     exercises: String,
     onClick: (String) -> Unit // Callback para el click
-) {
-    Card(
+) {    Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.DarkGray.copy(alpha = 0.8f)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.cardBackground),
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
@@ -56,31 +53,28 @@ fun RecentActivityCard(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(start = 10.dp)
-            ) {
-                Icon(
+            ) {                Icon(
                     painter = painterResource(id = R.drawable.ic_fitness),
                     contentDescription = "Tipo de ejercicio",
-                    tint = dashboardGreen,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .size(25.dp)
                 )
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                Column {
-                    Text(
+                Column {                    Text(
                         text = title,
                         style = MaterialTheme.typography.titleLarge,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
+                    Row(verticalAlignment = Alignment.CenterVertically) {                        Icon(
                             painter = painterResource(R.drawable.ic_time),
                             contentDescription = "Duración",
-                            tint = greySuperLight,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(18.dp)
                         )
 
@@ -89,7 +83,7 @@ fun RecentActivityCard(
                         Text(
                             text = time,
                             style = MaterialTheme.typography.bodyLarge,
-                            color = greySuperLight
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
                         Spacer(modifier = Modifier.width(10.dp))
@@ -97,27 +91,26 @@ fun RecentActivityCard(
                         Icon(
                             painter = painterResource(R.drawable.ic_fire),
                             contentDescription = "Nivel",
-                            tint = greySuperLight,
-                            modifier = Modifier.size(16.dp)
-                        )
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(16.dp)                        )
 
                         Spacer(modifier = Modifier.width(8.dp))
 
                         Text(
                             text = level,
                             style = MaterialTheme.typography.bodyLarge,
-                            color = greySuperLight
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
                         Spacer(modifier = Modifier.width(10.dp))
 
                         Surface(
                             shape = RoundedCornerShape(50),
-                            color = dashboardCardBackground
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                         ) {
                             Text(
                                 text = exercises,
-                                color = dashboardGreen,
+                                color = MaterialTheme.colorScheme.primary,
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                             )

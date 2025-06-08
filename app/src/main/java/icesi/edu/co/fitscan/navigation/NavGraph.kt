@@ -1,6 +1,8 @@
 package icesi.edu.co.fitscan.navigation
 
 import android.util.Log
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -23,7 +25,6 @@ import icesi.edu.co.fitscan.features.workout.ui.screens.ExerciseDetailScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.PerformWorkoutScreen
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.ExerciseDetailViewModelFactory
 import icesi.edu.co.fitscan.features.workoutlist.ui.screens.WorkoutListScreen
-import icesi.edu.co.fitscan.ui.theme.greenLess
 
 @Composable
 fun NavigationHost(
@@ -31,7 +32,31 @@ fun NavigationHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = Screen.Login.route,
+        enterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { fullWidth -> fullWidth },
+                animationSpec = tween(300)
+            )
+        },
+        exitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { fullWidth -> -fullWidth },
+                animationSpec = tween(300)
+            )
+        },
+        popEnterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { fullWidth -> -fullWidth },
+                animationSpec = tween(300)
+            )
+        },
+        popExitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { fullWidth -> fullWidth },
+                animationSpec = tween(300)
+            )
+        }
     ) {
         composable(Screen.Home.route) {
             DashboardScreen(navController = navController)
@@ -74,11 +99,9 @@ fun NavigationHost(
                     defaultValue = ""
                     nullable = true
                 }
-            )
-        ) { backStackEntry ->
+            )        ) { backStackEntry ->
             val message = backStackEntry.arguments?.getString("message")
             LoginScreen(
-                greenLess = greenLess,
                 onLoginSuccess = {
                     // Navigate to Home (Dashboard) and clear the history up to Login
                     navController.navigate(Screen.Home.route) {
@@ -97,7 +120,6 @@ fun NavigationHost(
 
         composable(Screen.Registration.route) {
             RegisterScreen(
-                greenLess = greenLess,
                 onRegisterSuccess = {
                     navController.navigate(Screen.BodyMeasurements.route) {
                         popUpTo(Screen.Registration.route) { inclusive = true }
@@ -108,7 +130,6 @@ fun NavigationHost(
 
         composable(Screen.BodyMeasurements.route) {
             PersonalDataScreen(
-                greenLess = greenLess,
                 onMeasurementsComplete = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }

@@ -53,9 +53,6 @@ import icesi.edu.co.fitscan.features.workout.ui.viewmodel.WorkoutDetailState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.WorkoutDetailViewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.WorkoutDetailViewModelFactory
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
-import icesi.edu.co.fitscan.ui.theme.greenLess
-import icesi.edu.co.fitscan.ui.theme.greyMed
-import icesi.edu.co.fitscan.ui.theme.greyStrong
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,14 +74,12 @@ fun WorkoutDetailScreen(
         } else {
             viewModel.loadWorkout(workoutId)
         }
-    }
-
-    // Colores del tema
-    val screenBackgroundColor = greyStrong
-    val primaryTextColor = Color.White
-    val secondaryTextColor = Color.LightGray
-    val accentColor = greenLess
-    val cardBackgroundColor = greyMed // For exercise item cards
+    }    // Colores del tema
+    val screenBackgroundColor = MaterialTheme.colorScheme.background
+    val primaryTextColor = MaterialTheme.colorScheme.onBackground
+    val secondaryTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val accentColor = MaterialTheme.colorScheme.primary
+    val cardBackgroundColor = MaterialTheme.colorScheme.surfaceVariant // For exercise item cards
 
     Scaffold(
         topBar = {
@@ -117,7 +112,7 @@ fun WorkoutDetailScreen(
 
             is WorkoutDetailState.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text((state as WorkoutDetailState.Error).message, color = Color.Red)
+                    Text((state as WorkoutDetailState.Error).message, color = MaterialTheme.colorScheme.error)
                 }
             }
 
@@ -193,12 +188,11 @@ fun WorkoutDetailScreen(
                     Row(
                         modifier = Modifier.padding(vertical = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        workoutTags.forEach { tag ->
+                    ) {                        workoutTags.forEach { tag ->
                             TagChip(
                                 text = tag.toString(),
-                                backgroundColor = cardBackgroundColor,
-                                textColor = accentColor
+                                backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                textColor = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -235,13 +229,13 @@ fun WorkoutDetailScreen(
                         Icon(
                             painter = painterResource(id = R.drawable.ic_fitness), // Your dumbbell icon
                             contentDescription = null, // Decorative
-                            tint = primaryTextColor, // Icon color on button
+                            tint = MaterialTheme.colorScheme.onPrimary, // Icon color on button
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "Empezar entrenamiento",
-                            color = primaryTextColor, // Text color on button
+                            color = MaterialTheme.colorScheme.onPrimary, // Text color on button
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
@@ -292,9 +286,9 @@ private fun ExerciseRow(
     reps: Int,
     onClick: () -> Unit,
     cardBackgroundColor: Color,
-    primaryTextColor: Color = Color.White,
-    secondaryTextColor: Color = Color.LightGray,
-    accentColor: Color = greenLess
+    primaryTextColor: Color = MaterialTheme.colorScheme.onSurface,
+    secondaryTextColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    accentColor: Color = MaterialTheme.colorScheme.primary
 ) {
     Surface(
         modifier = Modifier
@@ -334,7 +328,7 @@ private fun ExerciseRow(
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF101414) // Use greyStrong hex for preview bg
+@Preview(showBackground = true)
 @Composable
 fun WorkoutDetailScreenPreview() {
     FitScanTheme {

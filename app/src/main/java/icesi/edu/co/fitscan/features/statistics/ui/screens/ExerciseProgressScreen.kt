@@ -9,16 +9,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.ExerciseProgressViewModel
-import icesi.edu.co.fitscan.ui.theme.greenLess
-import icesi.edu.co.fitscan.ui.theme.greyStrong
-import icesi.edu.co.fitscan.ui.theme.greyMed
-import icesi.edu.co.fitscan.ui.theme.redDangerous
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanHeader
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanLineChart
 import androidx.compose.runtime.*
@@ -38,6 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.tooling.preview.Preview
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanTextField
+import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 @Composable
 fun ExerciseProgressScreen(
     navController: NavController = rememberNavController()
@@ -72,13 +68,13 @@ fun ExerciseProgressScreen(
 
     Column {
         FitScanHeader(
-            title = "Progreso por ejercicio",
-            navController = navController
+            title = "Progreso por ejercicio",            navController = navController
         )
+        
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(greyStrong)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
@@ -105,6 +101,7 @@ fun ExerciseProgressScreen(
                 }
                 if (isSearching) {
                     Spacer(modifier= Modifier.width(20.dp))
+                    
                     IconButton(
                         onClick = {
                             isSearching = false
@@ -113,12 +110,12 @@ fun ExerciseProgressScreen(
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
                             .size(36.dp)
-                            .background(greyMed, shape = CircleShape)
+                            .background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Cancelar búsqueda",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -130,15 +127,14 @@ fun ExerciseProgressScreen(
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier
                         .fillMaxSize()
-                        .heightIn(max = 300.dp)
-                        .background(
+                        .heightIn(max = 300.dp)                        .background(
                             brush = Brush.verticalGradient(
-                                listOf(greyMed, greyStrong)
+                                listOf(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.surface)
                             ),
                             shape = RoundedCornerShape(10.dp),
                         )
                 ) {
-                    LazyColumn (modifier=Modifier.background(greyStrong)) {
+                    LazyColumn (modifier=Modifier.background(MaterialTheme.colorScheme.surface)) {
                         items(filteredExercises) { exercise ->
                             ExerciseSearchCard(
                                 name = exercise.name,
@@ -158,11 +154,12 @@ fun ExerciseProgressScreen(
                 ) {
                     TimeRange.entries.forEach { range ->
                         val selected = timeRange == range
+                        
                         Button(
                             onClick = { viewModel.setTimeRange(range) },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (selected) greenLess else greyMed,
-                                contentColor = Color.White
+                                containerColor = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                                contentColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                             ),
                             modifier = Modifier.weight(1f).padding(horizontal = 1.dp)
                         ) {
@@ -189,11 +186,10 @@ fun ExerciseProgressScreen(
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        if (!selectedExercise.isNullOrBlank()) {
+                    ) {                        if (!selectedExercise.isNullOrBlank()) {
                             Text(
                                 text = selectedExercise ?: "",
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
@@ -201,12 +197,12 @@ fun ExerciseProgressScreen(
                         }
                         when {
                             isLoading -> {
-                                CircularProgressIndicator(color = greenLess)
+                                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                             }
                             error != null -> {
                                 Text(
                                     text = error ?: "Error",
-                                    color = redDangerous,
+                                    color = MaterialTheme.colorScheme.error,
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
@@ -216,7 +212,7 @@ fun ExerciseProgressScreen(
                             else -> {
                                 Text(
                                     text = "No hay datos para mostrar",
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
