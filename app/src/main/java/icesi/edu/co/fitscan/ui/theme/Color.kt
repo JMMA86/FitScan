@@ -6,7 +6,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.MaterialTheme
 
 // Base colors that work for both themes
-val Green50 = Color(0xFF4CAF50)
+
+val Green50 = Color(0xFFF7FDF7)
+val Green100 = Color(0xFFDDEADD)
+val Green200 = Color(0xFFA5D6A7)
+val Green300 = Color(0xFF4CAF50)
 val Green400 = Color(0xFF66BB6A)
 val Green700 = Color(0xFF388E3C)
 val Green900 = Color(0xFF1B5E20)
@@ -34,12 +38,12 @@ val DarkCard = Color(0xFF284048)
 val DarkButton = Color(0xFF3F4946)
 
 // Light theme specific colors
-val LightBackground = Color(0xFFFFFBFE)
-val LightSurface = Color(0xFFFFFFFF)
-val LightSurfaceVariant = Color(0xFFF7F2FA)
-val LightCard = Color(0xFFF5F5F5)
+val LightBackground = Green50
+val LightSurface = Green50
+val LightSurfaceVariant = Green100
+val LightCard = Green300
 
-// Deprecated - keeping for compatibility during migration
+// Dirty colors 
 @Deprecated("Use MaterialTheme.colorScheme instead")
 val greyStrong = DarkBackground
 @Deprecated("Use MaterialTheme.colorScheme instead")
@@ -51,7 +55,7 @@ val greyLight = DarkCard
 @Deprecated("Use MaterialTheme.colorScheme instead")
 val greySuperLight = Grey400
 @Deprecated("Use MaterialTheme.colorScheme instead")
-val greenLess = Green50
+val greenLess = Green300
 @Deprecated("Use MaterialTheme.colorScheme instead")
 val backgroundGrey = DarkBackground
 @Deprecated("Use MaterialTheme.colorScheme instead")
@@ -71,7 +75,7 @@ val ColorScheme.buttonBackground: Color
     get() = primaryContainer
 
 val ColorScheme.success: Color
-    get() = Green50
+    get() = Green300
 
 val ColorScheme.warning: Color
     get() = Color(0xFFFF9800)
@@ -80,10 +84,10 @@ val ColorScheme.chartPrimary: Color
     get() = primary
 
 val ColorScheme.chartSecondary: Color
-    get() = Color(0xFF8B8B45)
+    get() = Color(0xFF81C784) // Light green for secondary chart data
 
 val ColorScheme.chartTertiary: Color
-    get() = Color(0xFFADD8E6)
+    get() = Color(0xFF4CAF50) // Primary green for main chart data
 
 val ColorScheme.progressTrack: Color
     get() = outline

@@ -57,10 +57,12 @@ import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.auth.ui.model.RegisterUiState
 import icesi.edu.co.fitscan.features.auth.ui.viewmodel.RegisterViewModel
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
+import icesi.edu.co.fitscan.ui.theme.greenLess
 import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(
+    greenLess: Color = MaterialTheme.colorScheme.primary,
     registerViewModel: RegisterViewModel = viewModel(),
     onRegisterSuccess: () -> Unit = {}
 ) {
@@ -125,26 +127,28 @@ fun RegisterScreen(
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
-                ) {                    Image(
+                ) {
+                    Image(
                         painter = painterResource(id = R.drawable.ic_fitscan),
                         contentDescription = "Logo",
                         modifier = Modifier.size(64.dp)
                     )
-                    
+
                     Text(
                         text = "FitScan",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = Color.White
                     )
 
                     Text(
                         text = "Inicia tu transformación física hoy",
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onPrimary,                        modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
+                        color = Color.White,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
                     )
                 }
-                
+
                 // Register content
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -158,16 +162,15 @@ fun RegisterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.primary,
-                            focusedLabelColor = MaterialTheme.colorScheme.primary,
-                            unfocusedLabelColor = MaterialTheme.colorScheme.primary,
-                            focusedTextColor = MaterialTheme.colorScheme.onPrimary,                            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary
+                            focusedBorderColor = greenLess,
+                            unfocusedBorderColor = greenLess,
+                            focusedLabelColor = greenLess,
+                            unfocusedLabelColor = greenLess,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
                         )
                     )
-                    
                     Spacer(modifier = Modifier.height(12.dp))
-                    
                     OutlinedTextField(
                         value = age,
                         onValueChange = {
@@ -182,12 +185,12 @@ fun RegisterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.primary,
-                            focusedLabelColor = MaterialTheme.colorScheme.primary,
-                            unfocusedLabelColor = MaterialTheme.colorScheme.primary,
-                            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary
+                            focusedBorderColor = greenLess,
+                            unfocusedBorderColor = greenLess,
+                            focusedLabelColor = greenLess,
+                            unfocusedLabelColor = greenLess,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
                         )
                     )
                     Spacer(modifier = Modifier.height(12.dp))
@@ -199,12 +202,12 @@ fun RegisterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.primary,
-                            focusedLabelColor = MaterialTheme.colorScheme.primary,
-                            unfocusedLabelColor = MaterialTheme.colorScheme.primary,
-                            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary
+                            focusedBorderColor = greenLess,
+                            unfocusedBorderColor = greenLess,
+                            focusedLabelColor = greenLess,
+                            unfocusedLabelColor = greenLess,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
                         )
                     )
                     Spacer(modifier = Modifier.height(12.dp))
@@ -220,33 +223,34 @@ fun RegisterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.primary,
-                            focusedLabelColor = MaterialTheme.colorScheme.primary,
-                            unfocusedLabelColor = MaterialTheme.colorScheme.primary,
-                            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary
-                        )                    )
+                            focusedBorderColor = greenLess,
+                            unfocusedBorderColor = greenLess,
+                            focusedLabelColor = greenLess,
+                            unfocusedLabelColor = greenLess,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
+                        )
+                    )
                     Spacer(modifier = Modifier.height(12.dp))
-                    
+
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        label = { Text("Contraseña", color = MaterialTheme.colorScheme.onPrimary) },
+                        label = { Text("Contraseña", color = Color.White) },
                         singleLine = true,
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(), // [cite: 26]
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.primary,
-                            focusedLabelColor = MaterialTheme.colorScheme.primary,
-                            unfocusedLabelColor = MaterialTheme.colorScheme.primary,
-                            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                            cursorColor = MaterialTheme.colorScheme.primary,
-                            focusedTrailingIconColor = MaterialTheme.colorScheme.onPrimary,
-                            unfocusedTrailingIconColor = MaterialTheme.colorScheme.onPrimary
+                            focusedBorderColor = greenLess,
+                            unfocusedBorderColor = greenLess,
+                            focusedLabelColor = greenLess,
+                            unfocusedLabelColor = greenLess,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            cursorColor = greenLess,
+                            focusedTrailingIconColor = Color.White,
+                            unfocusedTrailingIconColor = Color.White
                         ),
                         trailingIcon = { // [cite: 29]
                             IconButton(onClick = { passwordVisible = !passwordVisible }) {
@@ -257,9 +261,10 @@ fun RegisterScreen(
                             }
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        enabled = uiState != RegisterUiState.Loading                    )
+                        enabled = uiState != RegisterUiState.Loading
+                    )
                     Spacer(modifier = Modifier.height(12.dp))
-                    
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
@@ -268,13 +273,13 @@ fun RegisterScreen(
                             checked = termsAccepted,
                             onCheckedChange = { termsAccepted = it },
                             colors = CheckboxDefaults.colors(
-                                checkedColor = MaterialTheme.colorScheme.primary,
-                                uncheckedColor = MaterialTheme.colorScheme.onPrimary
+                                checkedColor = greenLess,
+                                uncheckedColor = Color.White
                             )
                         )
                         Text(
                             text = "Acepto los",
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = Color.White,
                             fontSize = 14.sp
                         )
                         TextButton(
@@ -284,7 +289,7 @@ fun RegisterScreen(
                         ) {
                             Text(
                                 text = "Términos y condiciones",
-                                color = MaterialTheme.colorScheme.primary,
+                                color = greenLess,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -296,7 +301,8 @@ fun RegisterScreen(
                     modifier = Modifier
                         .padding(bottom = 40.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
-                ) {                    Button(
+                ) {
+                    Button(
                         onClick = {
                             registerViewModel.register(
                                 email,
@@ -307,7 +313,7 @@ fun RegisterScreen(
                                 termsAccepted
                             )
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        colors = ButtonDefaults.buttonColors(containerColor = greenLess),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -317,10 +323,10 @@ fun RegisterScreen(
                         if (uiState == RegisterUiState.Loading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimary
+                                color = Color.White
                             )
                         } else {
-                            Text(text = "Registrarme", color = MaterialTheme.colorScheme.onPrimary)
+                            Text(text = "Registrarme", color = Color.White)
                         }
                     }
                 }
@@ -333,6 +339,6 @@ fun RegisterScreen(
 @Composable
 fun RegisterScreenPreview() {
     FitScanTheme {
-        RegisterScreen()
+        RegisterScreen(greenLess)
     }
 }

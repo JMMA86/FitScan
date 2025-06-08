@@ -188,12 +188,11 @@ fun WorkoutDetailScreen(
                     Row(
                         modifier = Modifier.padding(vertical = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        workoutTags.forEach { tag ->
+                    ) {                        workoutTags.forEach { tag ->
                             TagChip(
                                 text = tag.toString(),
-                                backgroundColor = cardBackgroundColor,
-                                textColor = accentColor
+                                backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                textColor = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -230,13 +229,13 @@ fun WorkoutDetailScreen(
                         Icon(
                             painter = painterResource(id = R.drawable.ic_fitness), // Your dumbbell icon
                             contentDescription = null, // Decorative
-                            tint = primaryTextColor, // Icon color on button
+                            tint = MaterialTheme.colorScheme.onPrimary, // Icon color on button
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "Empezar entrenamiento",
-                            color = primaryTextColor, // Text color on button
+                            color = MaterialTheme.colorScheme.onPrimary, // Text color on button
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )

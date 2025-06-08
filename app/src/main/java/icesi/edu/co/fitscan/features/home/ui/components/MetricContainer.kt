@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,7 +16,7 @@ import androidx.compose.ui.unit.dp
 fun MetricContainer(metrics: Triple<String, String, String>) {
     Surface(
         shape = RoundedCornerShape(16.dp),
-        color = Color.DarkGray.copy(alpha = 0.8f),
+        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)

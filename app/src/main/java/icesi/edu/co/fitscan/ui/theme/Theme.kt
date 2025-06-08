@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Green50,
+    primary = Green300,
     onPrimary = Grey900,
     primaryContainer = Green700,
     onPrimaryContainer = Color.White,
@@ -25,7 +25,7 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = Green700,
     onTertiary = Color.White,
     tertiaryContainer = Green900,
-    onTertiaryContainer = Green50,
+    onTertiaryContainer = Green300,
     
     error = Red400,
     onError = Grey900,
@@ -51,17 +51,17 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = Green700,
     onPrimary = Color.White,
-    primaryContainer = Green50,
+    primaryContainer = Green300,
     onPrimaryContainer = Green900,
     
     secondary = Green700,
     onSecondary = Color.White,
-    secondaryContainer = Green50,
+    secondaryContainer = Green300,
     onSecondaryContainer = Green900,
     
     tertiary = Green900,
     onTertiary = Color.White,
-    tertiaryContainer = Green50,
+    tertiaryContainer = Green300,
     onTertiaryContainer = Green900,
     
     error = Red700,
@@ -82,7 +82,7 @@ private val LightColorScheme = lightColorScheme(
     
     inverseSurface = Grey800,
     inverseOnSurface = Grey100,
-    inversePrimary = Green50
+    inversePrimary = Green300
 )
 
 @Composable

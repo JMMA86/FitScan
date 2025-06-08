@@ -80,12 +80,11 @@ fun FitScanNavBar(navController: NavController) {
                                         Modifier.padding(8.dp)
                                     }
                                 )
-                        ) {
-                        Icon(
+                        ) {                        Icon(
                                 painter = painterResource(id = screen.icon),
                                 contentDescription = screen.title,
                                 modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onSurface
+                                tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                             )
                         }
 

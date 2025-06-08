@@ -52,7 +52,7 @@ fun StatisticCard(
                 Icon(
                     painter = painterResource(id = iconRes),
                     contentDescription = null,
-                    tint = iconColor,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(28.dp)
                 )
             }

@@ -158,7 +158,7 @@ fun ExerciseProgressScreen(
                         Button(
                             onClick = { viewModel.setTimeRange(range) },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+                                containerColor = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                                 contentColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                             ),
                             modifier = Modifier.weight(1f).padding(horizontal = 1.dp)

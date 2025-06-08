@@ -92,8 +92,7 @@ fun RecentActivityCard(
                             painter = painterResource(R.drawable.ic_fire),
                             contentDescription = "Nivel",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(16.dp)
-                        )
+                            modifier = Modifier.size(16.dp)                        )
 
                         Spacer(modifier = Modifier.width(8.dp))
 
@@ -107,7 +106,7 @@ fun RecentActivityCard(
 
                         Surface(
                             shape = RoundedCornerShape(50),
-                            color = MaterialTheme.colorScheme.surfaceVariant
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                         ) {
                             Text(
                                 text = exercises,
