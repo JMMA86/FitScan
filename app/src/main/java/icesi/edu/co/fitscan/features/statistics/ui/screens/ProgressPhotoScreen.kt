@@ -596,6 +596,7 @@ fun ProgressPhotoScreen(
                                     TextButton(
                                         onClick = {
                                             viewModel.updateProgressPhotoTitle(photo.id, editingPhotoTitle)
+                                            selectedPhoto = photo.copy(title = editingPhotoTitle)
                                             editingOverlayTitle = false
                                         }
                                     ) {
