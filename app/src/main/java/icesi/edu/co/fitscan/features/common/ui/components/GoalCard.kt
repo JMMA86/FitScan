@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,7 +18,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
-import icesi.edu.co.fitscan.ui.theme.greyMed
+import icesi.edu.co.fitscan.ui.theme.cardBackground
 
 @Composable
 fun GoalCard(
@@ -28,7 +29,7 @@ fun GoalCard(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        color = greyMed,
+        color = MaterialTheme.colorScheme.cardBackground,
         shape = RoundedCornerShape(18.dp),
         modifier = modifier.height(140.dp)
     ) {
@@ -36,8 +37,17 @@ fun GoalCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Text("Progreso", color = Color.White, fontSize = 14.sp)
+            Text(
+                text = title, 
+                color = MaterialTheme.colorScheme.onSurface, 
+                fontWeight = FontWeight.Bold, 
+                fontSize = 18.sp
+            )
+            Text(
+                text = "Progreso", 
+                color = MaterialTheme.colorScheme.onSurfaceVariant, 
+                fontSize = 14.sp
+            )
             Spacer(modifier = Modifier.height(8.dp))
             AreaChart(
                 data = areaData,

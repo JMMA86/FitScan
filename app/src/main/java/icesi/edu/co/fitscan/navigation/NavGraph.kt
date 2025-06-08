@@ -23,7 +23,6 @@ import icesi.edu.co.fitscan.features.workout.ui.screens.ExerciseDetailScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.PerformWorkoutScreen
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.ExerciseDetailViewModelFactory
 import icesi.edu.co.fitscan.features.workoutlist.ui.screens.WorkoutListScreen
-import icesi.edu.co.fitscan.ui.theme.greenLess
 
 @Composable
 fun NavigationHost(
@@ -74,11 +73,9 @@ fun NavigationHost(
                     defaultValue = ""
                     nullable = true
                 }
-            )
-        ) { backStackEntry ->
+            )        ) { backStackEntry ->
             val message = backStackEntry.arguments?.getString("message")
             LoginScreen(
-                greenLess = greenLess,
                 onLoginSuccess = {
                     // Navigate to Home (Dashboard) and clear the history up to Login
                     navController.navigate(Screen.Home.route) {
@@ -97,7 +94,6 @@ fun NavigationHost(
 
         composable(Screen.Registration.route) {
             RegisterScreen(
-                greenLess = greenLess,
                 onRegisterSuccess = {
                     navController.navigate(Screen.BodyMeasurements.route) {
                         popUpTo(Screen.Registration.route) { inclusive = true }
@@ -108,7 +104,6 @@ fun NavigationHost(
 
         composable(Screen.BodyMeasurements.route) {
             PersonalDataScreen(
-                greenLess = greenLess,
                 onMeasurementsComplete = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }

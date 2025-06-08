@@ -53,9 +53,6 @@ import icesi.edu.co.fitscan.features.workout.ui.viewmodel.WorkoutDetailState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.WorkoutDetailViewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.WorkoutDetailViewModelFactory
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
-import icesi.edu.co.fitscan.ui.theme.greenLess
-import icesi.edu.co.fitscan.ui.theme.greyMed
-import icesi.edu.co.fitscan.ui.theme.greyStrong
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,14 +74,12 @@ fun WorkoutDetailScreen(
         } else {
             viewModel.loadWorkout(workoutId)
         }
-    }
-
-    // Colores del tema
-    val screenBackgroundColor = greyStrong
-    val primaryTextColor = Color.White
-    val secondaryTextColor = Color.LightGray
-    val accentColor = greenLess
-    val cardBackgroundColor = greyMed // For exercise item cards
+    }    // Colores del tema
+    val screenBackgroundColor = MaterialTheme.colorScheme.background
+    val primaryTextColor = MaterialTheme.colorScheme.onBackground
+    val secondaryTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val accentColor = MaterialTheme.colorScheme.primary
+    val cardBackgroundColor = MaterialTheme.colorScheme.surfaceVariant // For exercise item cards
 
     Scaffold(
         topBar = {
@@ -117,7 +112,7 @@ fun WorkoutDetailScreen(
 
             is WorkoutDetailState.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text((state as WorkoutDetailState.Error).message, color = Color.Red)
+                    Text((state as WorkoutDetailState.Error).message, color = MaterialTheme.colorScheme.error)
                 }
             }
 
@@ -292,9 +287,9 @@ private fun ExerciseRow(
     reps: Int,
     onClick: () -> Unit,
     cardBackgroundColor: Color,
-    primaryTextColor: Color = Color.White,
-    secondaryTextColor: Color = Color.LightGray,
-    accentColor: Color = greenLess
+    primaryTextColor: Color = MaterialTheme.colorScheme.onSurface,
+    secondaryTextColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    accentColor: Color = MaterialTheme.colorScheme.primary
 ) {
     Surface(
         modifier = Modifier
@@ -334,7 +329,7 @@ private fun ExerciseRow(
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF101414) // Use greyStrong hex for preview bg
+@Preview(showBackground = true)
 @Composable
 fun WorkoutDetailScreenPreview() {
     FitScanTheme {

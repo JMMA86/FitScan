@@ -3,16 +3,18 @@ package icesi.edu.co.fitscan.features.common.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import java.time.LocalDate
 import androidx.compose.foundation.layout.BoxWithConstraints
+import icesi.edu.co.fitscan.ui.theme.chartSecondary
+import icesi.edu.co.fitscan.ui.theme.chartTertiary
 
 @Composable
 fun StackedBarChart(
@@ -35,7 +37,7 @@ fun StackedBarChart(
         val maxBarHeight = barHeightPx.dp
         val today = LocalDate.now()
         val dayLabels = (6 downTo 0).map { offset ->
-            today.minusDays(offset.toLong()).dayOfWeek.name.take(3).capitalize()
+            today.minusDays(offset.toLong()).dayOfWeek.name.take(3).replaceFirstChar { it.uppercase() }
         }
         Row(
             modifier = Modifier.fillMaxSize(),
@@ -55,7 +57,7 @@ fun StackedBarChart(
                             modifier = Modifier
                                 .height(((lastWeek.getOrNull(i) ?: 0f) / maxVal * maxBarHeight.value).dp)
                                 .width(barWidth)
-                                .background(Color(0xFF8B8B45), shape = RoundedCornerShape(4.dp))
+                                .background(MaterialTheme.colorScheme.chartSecondary, shape = RoundedCornerShape(4.dp))
                         )
                         Spacer(modifier = Modifier.width(2.dp))
                         // Current week bar (right)
@@ -63,11 +65,11 @@ fun StackedBarChart(
                             modifier = Modifier
                                 .height(((currentWeek.getOrNull(i) ?: 0f) / maxVal * maxBarHeight.value).dp)
                                 .width(barWidth)
-                                .background(Color(0xFFADD8E6), shape = RoundedCornerShape(4.dp))
+                                .background(MaterialTheme.colorScheme.chartTertiary, shape = RoundedCornerShape(4.dp))
                         )
                     }
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(dayLabels.getOrNull(i) ?: "", color = Color.White, fontSize = 12.sp)
+                    Text(dayLabels.getOrNull(i) ?: "", color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp)
                 }
                 if (i < barCount - 1) Spacer(modifier = Modifier.width(barSpace))
             }

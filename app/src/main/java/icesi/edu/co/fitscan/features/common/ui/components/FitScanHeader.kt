@@ -7,13 +7,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
-import icesi.edu.co.fitscan.ui.theme.greyStrong
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,34 +23,21 @@ fun FitScanHeader(
     navController: NavController
 ) {
     TopAppBar(
-        title = { Text(text = title, color = Color.White) },
+        title = { Text(text = title, color = MaterialTheme.colorScheme.onSurface) },
         navigationIcon = {
             if(showBackIcon) IconButton (
                 onClick = { navController.popBackStack() } ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             } else Box {}
+        },        actions = {
+            // Future: Add action buttons here if needed
         },
-        actions = {
-            /*
-            Button(
-                onClick = { navController.navigate(Screen.Login.route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = greenLess)
-            ) {
-                /* Text("Iniciar Sesión", color = Color.White) */
-            }
-             */
-        },
-        colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
-            containerColor = greyStrong
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         modifier = Modifier.fillMaxWidth()
     )

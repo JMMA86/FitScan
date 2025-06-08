@@ -27,8 +27,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
-    // Asumiendo que greenLess viene de tu Theme o lo defines aquí
-    greenLess: Color = MaterialTheme.colorScheme.primary, // Ejemplo, ajusta según tu Theme
     loginViewModel: LoginViewModel = viewModel(), // Inyecta el ViewModel
     onLoginSuccess: () -> Unit, // Callback para navegar en éxito (a Dashboard)
     onNavigateToRegister: () -> Unit, // Callback para ir a registro
@@ -95,8 +93,7 @@ fun LoginScreen(
                     modifier = Modifier.weight(1f), // Ocupa espacio flexible
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
-                ) {
-                    Image(
+                ) {                    Image(
                         painter = painterResource(id = R.drawable.ic_fitscan), // [cite: 5]
                         contentDescription = "Logo",
                         modifier = Modifier.size(64.dp)
@@ -105,12 +102,12 @@ fun LoginScreen(
                         text = "FitScan",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                     Text(
                         text = "Inicia tu transformación física hoy",
                         fontSize = 14.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
                     )
                 }
@@ -153,26 +150,24 @@ fun LoginScreen(
 //                        HorizontalDivider(modifier = Modifier.weight(1f), color = greenLess)
 //                    }
 //
-//                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Email input [cite: 18]
+//                    Spacer(modifier = Modifier.height(16.dp))                    // Email input [cite: 18]
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
-                        label = { Text("Correo electrónico", color = Color.White) },
+                        label = { Text("Correo electrónico", color = MaterialTheme.colorScheme.onPrimary) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = greenLess,
-                            unfocusedBorderColor = greenLess,
-                            focusedLabelColor = greenLess,
-                            unfocusedLabelColor = greenLess,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            cursorColor = greenLess,
-                            focusedLeadingIconColor = Color.White,
-                            unfocusedLeadingIconColor = Color.White
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                            unfocusedLabelColor = MaterialTheme.colorScheme.primary,
+                            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                            cursorColor = MaterialTheme.colorScheme.primary,
+                            focusedLeadingIconColor = MaterialTheme.colorScheme.onPrimary,
+                            unfocusedLeadingIconColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         trailingIcon = {
                             Icon(
@@ -185,25 +180,25 @@ fun LoginScreen(
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
-
+                    
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        label = { Text("Contraseña", color = Color.White) },
+                        label = { Text("Contraseña", color = MaterialTheme.colorScheme.onPrimary) },
                         singleLine = true,
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(), // [cite: 26]
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = greenLess,
-                            unfocusedBorderColor = greenLess,
-                            focusedLabelColor = greenLess,
-                            unfocusedLabelColor = greenLess,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            cursorColor = greenLess,
-                            focusedTrailingIconColor = Color.White,
-                            unfocusedTrailingIconColor = Color.White
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                            unfocusedLabelColor = MaterialTheme.colorScheme.primary,
+                            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                            cursorColor = MaterialTheme.colorScheme.primary,
+                            focusedTrailingIconColor = MaterialTheme.colorScheme.onPrimary,
+                            unfocusedTrailingIconColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         trailingIcon = { // [cite: 29]
                             IconButton(onClick = { passwordVisible = !passwordVisible }) {
@@ -215,16 +210,15 @@ fun LoginScreen(
                             }
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        enabled = uiState != LoginUiState.Loading
-                    )
+                        enabled = uiState != LoginUiState.Loading                    )
 
                     Spacer(modifier = Modifier.height(20.dp))
-
+                    
                     Button(
                         onClick = {
                             loginViewModel.login(email, password)
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = greenLess),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -234,19 +228,18 @@ fun LoginScreen(
                         if (uiState == LoginUiState.Loading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(24.dp),
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                         } else {
-                            Text(text = "Iniciar sesión", color = Color.White)
-                        }
-                    }
+                            Text(text = "Iniciar sesión", color = MaterialTheme.colorScheme.onPrimary)
+                        }                    }
 
                     Spacer(modifier = Modifier.height(12.dp))
-
+                    
                     TextButton(onClick = onNavigateToForgotPassword) {
                         Text(
                             text = "¿Olvidaste tu contraseña?",
-                            color = greenLess,
+                            color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp
                         )
@@ -257,14 +250,14 @@ fun LoginScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "¿No tienes una cuenta?",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 14.sp
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         TextButton(onClick = onNavigateToRegister) {
                             Text(
                                 text = "Regístrate",
-                                color = greenLess,
+                                color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp
                             )

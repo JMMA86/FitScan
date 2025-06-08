@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.common.ui.components.ToggleOption
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
-import icesi.edu.co.fitscan.ui.theme.greyStrong
 
 @Composable
 fun WorkoutTypeSelector(
@@ -73,11 +73,10 @@ fun CreateWorkoutScreen() {
 
     val scrollState = rememberScrollState()
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
+    Box(modifier = Modifier.fillMaxSize()) {        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(greyStrong)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
@@ -89,7 +88,7 @@ fun CreateWorkoutScreen() {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_back),
                     contentDescription = "Regresar",
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .clickable { /* Acción regresar */ }
                         .size(24.dp)
@@ -97,7 +96,7 @@ fun CreateWorkoutScreen() {
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = "Crear Entrenamiento",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Normal
                 )

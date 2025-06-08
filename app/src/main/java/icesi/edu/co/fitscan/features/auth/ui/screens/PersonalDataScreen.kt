@@ -44,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -61,7 +62,6 @@ import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 
 @Composable
 fun PersonalDataScreen(
-    greenLess: Color,
     bodyMeasurementViewModel: BodyMeasurementViewModel = viewModel(),
     onMeasurementsComplete: () -> Unit = {}
 ) {
@@ -134,7 +134,8 @@ fun PersonalDataScreen(
             measurements.waist_cm?.let { if (waist.isEmpty()) waist = it.toString() }
             measurements.hips_cm?.let { if (hips.isEmpty()) hips = it.toString() }
             measurements.thighs_cm?.let { if (thighs.isEmpty()) thighs = it.toString() }
-            measurements.calves_cm?.let { if (calves.isEmpty()) calves = it.toString() }        }
+            measurements.calves_cm?.let { if (calves.isEmpty()) calves = it.toString() }
+        }
     }
       LaunchedEffect(uiState) {
         val currentState = uiState
@@ -166,10 +167,9 @@ fun PersonalDataScreen(
                 .padding(24.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text(
+        ) {            Text(
                 text = "Datos Personales",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold,
                 fontSize = 22.sp,
                 modifier = Modifier.padding(top = 40.dp, bottom = 6.dp)
@@ -178,16 +178,14 @@ fun PersonalDataScreen(
             // Basic Information content
             Column {
                 SectionTitle("Información Básica")
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    FitInput(
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {                    FitInput(
                         "Altura",
                         "cm",
                         height,
                         { height = it },
-                        Modifier.weight(1f),
-                        greenLess
+                        Modifier.weight(1f)
                     )
-                    FitInput("Peso", "kg", weight, { weight = it }, Modifier.weight(1f), greenLess)
+                    FitInput("Peso", "kg", weight, { weight = it }, Modifier.weight(1f))
                 }
 
                 Spacer(Modifier.height(18.dp))
@@ -200,30 +198,26 @@ fun PersonalDataScreen(
                     Column(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        FitInput(
+                    ) {                        FitInput(
                             "Brazos",
                             "cm",
                             arms,
                             { arms = it },
-                            Modifier.fillMaxWidth(),
-                            greenLess
+                            Modifier.fillMaxWidth()
                         )
                         FitInput(
                             "Cintura",
                             "cm",
                             waist,
                             { waist = it },
-                            Modifier.fillMaxWidth(),
-                            greenLess
+                            Modifier.fillMaxWidth()
                         )
                         FitInput(
                             "Muslos",
                             "cm",
                             thighs,
                             { thighs = it },
-                            Modifier.fillMaxWidth(),
-                            greenLess
+                            Modifier.fillMaxWidth()
                         )
                     }
                     Column(
@@ -234,24 +228,21 @@ fun PersonalDataScreen(
                             "cm",
                             chest,
                             { chest = it },
-                            Modifier.fillMaxWidth(),
-                            greenLess
+                            Modifier.fillMaxWidth()
                         )
                         FitInput(
                             "Caderas",
                             "cm",
                             hips,
                             { hips = it },
-                            Modifier.fillMaxWidth(),
-                            greenLess
+                            Modifier.fillMaxWidth()
                         )
                         FitInput(
                             "Pantorrilla",
                             "cm",
                             calves,
                             { calves = it },
-                            Modifier.fillMaxWidth(),
-                            greenLess
+                            Modifier.fillMaxWidth()
                         )
                     }
                 }
@@ -275,17 +266,15 @@ fun PersonalDataScreen(
                             }
                         }
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = isCameraAvailable && height.isNotEmpty() && weight.isNotEmpty() && !isEstimating,
+                    modifier = Modifier.fillMaxWidth(),                    enabled = isCameraAvailable && height.isNotEmpty() && weight.isNotEmpty() && !isEstimating,
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = if (isCameraAvailable) greenLess else Color.Gray
+                        contentColor = if (isCameraAvailable) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                     ),
                     shape = RoundedCornerShape(8.dp)
-                ) {
-                    if (isEstimating) {
+                ) {                    if (isEstimating) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(16.dp),
-                            color = greenLess
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Spacer(Modifier.padding(4.dp))
                         Text("Analizando...")
@@ -302,42 +291,41 @@ fun PersonalDataScreen(
 
                 // Status messages
                 when {
-                    !isCameraAvailable -> {
-                        Text(
+                    !isCameraAvailable -> {                        Text(
                             text = "Función de cámara no disponible en este dispositivo",
-                            color = Color.Red.copy(alpha = 0.8f),
+                            color = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
                             fontSize = 12.sp,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     }
-                    height.isEmpty() || weight.isEmpty() -> {
-                        Text(
+                    height.isEmpty() || weight.isEmpty() -> {                        Text(
                             text = "Complete altura y peso para usar el escáner AI",
-                            color = Color.White.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                             fontSize = 12.sp,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     }
-                    else -> {
-                        Text(
+                    else -> {                        Text(
                             text = "Tome una foto para estimar medidas corporales automáticamente",
-                            color = Color.White.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                             fontSize = 12.sp,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     }
                 }
-
+                
                 Spacer(Modifier.height(18.dp))
 
                 SectionTitle("Información de salud")
+                
                 Text(
                     text = "Alergias",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
+                
                 OutlinedTextField(
                     value = allergies,
                     onValueChange = { allergies = it },
@@ -345,27 +333,28 @@ fun PersonalDataScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = greenLess,
-                        unfocusedBorderColor = greenLess,
-                        focusedPlaceholderColor = greenLess,
-                        unfocusedPlaceholderColor = greenLess,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.primary,
                     )
                 )
-
+                
                 Spacer(Modifier.height(18.dp))
 
                 SectionTitle("Perfil de entrenamiento")
+                
                 FitDropdown("Nivel de entrenamiento", trainingLevels, trainingLevel, {
                     trainingLevel = it
                     expandedLevel = false
-                }, expandedLevel, { expandedLevel = it }, greenLess)
+                }, expandedLevel, { expandedLevel = it })
 
                 Spacer(Modifier.height(18.dp))
 
                 FitDropdown("Objetivo principal", mainGoals, mainGoal, {
                     mainGoal = it
                     expandedGoal = false
-                }, expandedGoal, { expandedGoal = it }, greenLess)
+                }, expandedGoal, { expandedGoal = it })
             }
 
             Spacer(Modifier.height(20.dp))
@@ -386,17 +375,16 @@ fun PersonalDataScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 40.dp)
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = greenLess),
+                    .height(50.dp),                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 if (uiState is BodyMeasureUiState.Loading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 } else {
-                    Text("Completar perfil", color = Color.White)
+                    Text("Completar perfil", color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
         }
@@ -407,7 +395,7 @@ fun PersonalDataScreen(
 fun SectionTitle(text: String) {
     Text(
         text = text,
-        color = Color.White,
+        color = MaterialTheme.colorScheme.onBackground,
         fontWeight = FontWeight.Bold,
         fontSize = 18.sp,
         modifier = Modifier.padding(vertical = 8.dp)
@@ -420,13 +408,11 @@ fun FitInput(
     placeholder: String,
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier,
-    greenLess: Color
+    modifier: Modifier
 ) {
-    Column(modifier = modifier) {
-        Text(
+    Column(modifier = modifier) {        Text(
             text = title,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.SemiBold,
             fontSize = 14.sp,
             modifier = Modifier.padding(bottom = 4.dp)
@@ -439,12 +425,11 @@ fun FitInput(
             placeholder = { Text(placeholder) },
             singleLine = true,
             shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = greenLess,
-                unfocusedBorderColor = greenLess,
-                focusedPlaceholderColor = greenLess,
-                unfocusedPlaceholderColor = greenLess,
+            modifier = Modifier.fillMaxWidth(),            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                focusedPlaceholderColor = MaterialTheme.colorScheme.primary,
+                unfocusedPlaceholderColor = MaterialTheme.colorScheme.primary,
             )
         )
     }
@@ -458,8 +443,7 @@ fun FitDropdown(
     selectedOption: String,
     onSelect: (String) -> Unit,
     expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit,
-    greenLess: Color
+    onExpandedChange: (Boolean) -> Unit
 ) {
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -473,16 +457,13 @@ fun FitDropdown(
             label = { Text(label) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            modifier = Modifier
-                .menuAnchor()
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp),
+            },            modifier = Modifier
+                .fillMaxWidth(),shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = greenLess,
-                unfocusedBorderColor = greenLess,
-                focusedLabelColor = greenLess,
-                unfocusedLabelColor = greenLess,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                unfocusedLabelColor = MaterialTheme.colorScheme.primary,
             )
         )
 

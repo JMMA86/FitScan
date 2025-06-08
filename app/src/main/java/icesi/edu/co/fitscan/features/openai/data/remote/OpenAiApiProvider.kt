@@ -26,9 +26,7 @@ object OpenAiApiProvider {
             .writeTimeout(60, TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)  // Enable retry for network issues
             .build()
-            
-        val gson = GsonBuilder()
-            .setLenient()
+              val gson = GsonBuilder()
             .create()
             
         return Retrofit.Builder()

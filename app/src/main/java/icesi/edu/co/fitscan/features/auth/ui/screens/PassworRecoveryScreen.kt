@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun PasswordRecoveryScreen(
-    greenLess: Color = MaterialTheme.colorScheme.primary,
     viewModel: PasswordRecoveryViewModel = viewModel(),
     onBackClick: () -> Unit,
     onCodeSent: () -> Unit
@@ -83,47 +82,48 @@ fun PasswordRecoveryScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_fitscan),
-                        contentDescription = "Logo",
+                        painter = painterResource(id = R.drawable.ic_fitscan),                        contentDescription = "Logo",
                         modifier = Modifier.size(64.dp)
                     )
+                    
                     Text(
                         text = "FitScan",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
+                    
                     Spacer(modifier = Modifier.height(16.dp))
+                    
                     Text(
                         text = "Recupera tu contraseña",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
-                        text = "Ingresa tu correo electrónico para recibir el código de verificación",
-                        fontSize = 14.sp,
-                        color = Color.White,
+                        text = "Ingresa tu correo electrónico para recibir el código de verificación",                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
                     )
-
+                    
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
-                        label = { Text("Correo electrónico", color = Color.White) },
+                        label = { Text("Correo electrónico", color = MaterialTheme.colorScheme.onBackground) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = greenLess,
-                            unfocusedBorderColor = greenLess,
-                            focusedLabelColor = greenLess,
-                            unfocusedLabelColor = greenLess,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            cursorColor = greenLess,
-                            focusedLeadingIconColor = Color.White,
-                            unfocusedLeadingIconColor = Color.White
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                            unfocusedLabelColor = MaterialTheme.colorScheme.primary,
+                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            cursorColor = MaterialTheme.colorScheme.primary,
+                            focusedLeadingIconColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedLeadingIconColor = MaterialTheme.colorScheme.onBackground
                         ),
                         leadingIcon = {
                             Icon(
@@ -138,10 +138,9 @@ fun PasswordRecoveryScreen(
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Button(
+                ) {                    Button(
                         onClick = { viewModel.sendRecoveryCode(email) },
-                        colors = ButtonDefaults.buttonColors(containerColor = greenLess),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -151,22 +150,21 @@ fun PasswordRecoveryScreen(
                         if (uiState is PasswordRecoveryViewModel.PasswordRecoveryUiState.Loading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(24.dp),
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                         } else {
                             Text(
                                 text = "Enviar código",
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
-                        }
-                    }
+                        }                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
-
+                    
                     TextButton(onClick = onBackClick) {
                         Text(
                             text = "Volver al inicio de sesión",
-                            color = greenLess,
+                            color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp
                         )

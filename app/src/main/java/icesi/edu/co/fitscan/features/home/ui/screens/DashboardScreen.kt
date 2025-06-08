@@ -34,8 +34,6 @@ import icesi.edu.co.fitscan.features.home.ui.components.MetricContainer
 import icesi.edu.co.fitscan.features.common.ui.components.RecentActivityCard
 import icesi.edu.co.fitscan.navigation.Screen
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
-import icesi.edu.co.fitscan.ui.theme.dashboardGreen
-import icesi.edu.co.fitscan.ui.theme.greyStrong
 
 @Composable
 fun DashboardScreen(
@@ -56,12 +54,11 @@ fun DashboardScreen(
 
     val scrollState = rememberScrollState()
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
+    Box(modifier = Modifier.fillMaxSize()) {        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .background(greyStrong)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             // CABECERA CON ICONOS
             Row(
@@ -70,12 +67,11 @@ fun DashboardScreen(
                     .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                IconButton(onClick = { navController.navigate("profile") }) {
+            ) {                IconButton(onClick = { navController.navigate("profile") }) {
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = "Usuario",
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.size(28.dp)
                     )
                 }
@@ -84,7 +80,7 @@ fun DashboardScreen(
                         Icon(
                             imageVector = Icons.Default.Notifications,
                             contentDescription = "Notificaciones",
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -93,7 +89,7 @@ fun DashboardScreen(
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Configuración",
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -105,11 +101,10 @@ fun DashboardScreen(
                     .fillMaxWidth()
                     .padding(top = 16.dp),
                 contentAlignment = Alignment.Center
-            ) {
-                Text(
+            ) {                Text(
                     text = "FitScanAI",
                     style = MaterialTheme.typography.titleLarge,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 25.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -122,17 +117,16 @@ fun DashboardScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = dashboardGreen)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else if (error != null) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {                        Text(
                             text = error ?: "Error desconocido",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onBackground,
                             textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(16.dp))
@@ -145,15 +139,14 @@ fun DashboardScreen(
                 weeklyMetrics?.let { metrics ->
                     MetricContainer(
                         Triple(metrics.trainingHours, metrics.trainedDays, metrics.totalDistance)
-                    )
-                }
+                    )                }
 
                 Spacer(modifier = Modifier.height(20.dp))
-
+                
                 Text(
                     text = "Progreso de esta semana",
                     style = MaterialTheme.typography.titleLarge,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 22.sp,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
@@ -174,11 +167,10 @@ fun DashboardScreen(
                             .padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
+                    ) {                        Text(
                             text = "Actividades recientes",
                             style = MaterialTheme.typography.titleLarge,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = 22.sp,
                         )
                         IconButton(
@@ -187,7 +179,7 @@ fun DashboardScreen(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                                 contentDescription = "Ver rutinas",
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
                     }
@@ -224,7 +216,7 @@ fun DashboardScreen(
                 Text(
                     text = "Actividades",
                     style = MaterialTheme.typography.titleLarge,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 22.sp,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )

@@ -26,7 +26,6 @@ import icesi.edu.co.fitscan.navigation.NavigationHost
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanNavBar
 import icesi.edu.co.fitscan.navigation.Screen
-import icesi.edu.co.fitscan.ui.theme.greenLess
 
 class MainActivity : ComponentActivity() {    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +78,7 @@ fun App() {
 @Composable
 fun RegisterScreenPreview() {
     FitScanTheme {
-        RegisterScreen(greenLess)
+        RegisterScreen()
     }
 }
 
@@ -87,6 +86,6 @@ fun RegisterScreenPreview() {
 @Composable
 fun PersonalDataScreenPreview() {
     FitScanTheme {
-        PersonalDataScreen(greenLess)
+        PersonalDataScreen()
     }
 }

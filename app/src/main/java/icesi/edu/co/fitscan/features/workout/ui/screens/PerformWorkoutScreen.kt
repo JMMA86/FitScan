@@ -41,12 +41,7 @@ import icesi.edu.co.fitscan.features.workout.ui.model.PerformWorkoutUiState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.PerformWorkoutViewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.PerformWorkoutViewModelFactory
 import icesi.edu.co.fitscan.ui.theme.Dimensions
-import icesi.edu.co.fitscan.ui.theme.backgroundGrey
-import icesi.edu.co.fitscan.ui.theme.greenLess
-import icesi.edu.co.fitscan.ui.theme.greyButton
-import icesi.edu.co.fitscan.ui.theme.greyMed
-import icesi.edu.co.fitscan.ui.theme.greyTrueLight
-import icesi.edu.co.fitscan.ui.theme.redDangerous
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun PerformWorkoutScreen(
@@ -84,14 +79,13 @@ fun PerformWorkoutListComponent(
     sets: String = "NA",
     reps: String = "NA",
     onClick: () -> Unit = {}
-) {
-    Row(
+) {    Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(Dimensions.MediumCornerRadius))
             .border(
                 width = 2.dp,
-                color = greyMed,
+                color = MaterialTheme.colorScheme.outline,
                 shape = RoundedCornerShape(Dimensions.MediumCornerRadius)
             )
             .padding(Dimensions.MediumPadding),
@@ -103,12 +97,12 @@ fun PerformWorkoutListComponent(
         ) {
             Text(
                 text = title,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = Dimensions.LargeTextSize,
             )
             Text(
                 text = "$sets sets ~ $reps reps",
-                color = greenLess,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = Dimensions.SmallTextSize,
             )
         }
@@ -119,15 +113,14 @@ fun PerformWorkoutListComponent(
             onClick = onClick,
             shape = RectangleShape,
             contentPadding = PaddingValues(0.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = greyMed),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
             modifier = Modifier
                 .size(Dimensions.LargeIconSize)
                 .clip(RoundedCornerShape(Dimensions.SmallCornerRadius))
-        ) {
-            Icon(
+        ) {            Icon(
                 painter = painterResource(id = R.drawable.chevron_right),
                 contentDescription = "Mostrar ejercicio",
-                tint = greenLess,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .size(Dimensions.LargeIconSize)
             )
@@ -154,12 +147,10 @@ fun PerformWorkoutScreenContent(
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Text("Loading...")
             }
-        }
-
-        is PerformWorkoutUiState.Error -> {
+        }        is PerformWorkoutUiState.Error -> {
             val message = (uiState as PerformWorkoutUiState.Error).message
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Text("Error: $message", color = Color.Red)
+                Text("Error: $message", color = MaterialTheme.colorScheme.error)
             }
         }
 
@@ -167,7 +158,7 @@ fun PerformWorkoutScreenContent(
             val data = (uiState as PerformWorkoutUiState.Success).data
 
             LazyColumn(
-                modifier.background(backgroundGrey)
+                modifier.background(MaterialTheme.colorScheme.background)
             ) {
                 item {
                     // Header, subtitles and progress
@@ -176,29 +167,28 @@ fun PerformWorkoutScreenContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = Dimensions.MediumPadding)
-                    ) {
-                        Text(
+                    ) {                        Text(
                             text = data.title,
                             fontSize = Dimensions.XLargeTextSize,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
                         Text(
                             text = data.subtitle,
                             fontSize = Dimensions.SmallTextSize,
-                            color = Color.Gray
-                        )
+                            color = MaterialTheme.colorScheme.onSurfaceVariant                        )
                         Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
+                        
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(Dimensions.MediumCornerRadius))
-                                .background(greyMed)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                                 .padding(Dimensions.SmallPadding)
                         ) {
                             Text(
                                 text = data.progress,
                                 fontSize = Dimensions.MediumTextSize,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -207,10 +197,9 @@ fun PerformWorkoutScreenContent(
                     // Current exercise
                     Column(
                         modifier = Modifier.padding(horizontal = Dimensions.MediumPadding)
-                    ) {
-                        Text(
+                    ) {                        Text(
                             text = "Ejercicio actual",
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = Dimensions.SmallTextSize,
                         )
                         Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
@@ -221,36 +210,35 @@ fun PerformWorkoutScreenContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(Dimensions.MediumCornerRadius))
-                                    .background(greyTrueLight)
+                                    .background(MaterialTheme.colorScheme.surface)
                                     .padding(Dimensions.SmallPadding)
                             ) {
                                 Row(
                                     modifier = Modifier
                                         .wrapContentSize()
                                         .fillMaxWidth()
-                                ) {
-                                    Text(
+                                ) {                                    Text(
                                         text = data.currentExercise.name,
                                         fontSize = Dimensions.LargeTextSize,
-                                        color = Color.White,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                     )
                                     Spacer(modifier = Modifier.weight(1f))
                                     Text(
                                         text = data.currentExercise.time,
                                         fontSize = Dimensions.LargeTextSize,
-                                        color = greenLess,
+                                        color = MaterialTheme.colorScheme.primary,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
                                 Text(
                                     text = "Serie ${data.currentExercise.series}",
-                                    color = greenLess
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                                 Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
                                 Text(
                                     text = data.currentExercise.remainingTime,
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -259,21 +247,20 @@ fun PerformWorkoutScreenContent(
                     // Next exercise
                     Column(
                         modifier = Modifier.padding(Dimensions.MediumPadding)
-                    ) {
-                        Text(
+                    ) {                        Text(
                             text = "Siguiente ejercicio",
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         Text(
                             text = data.nextExercise.name,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = Dimensions.LargeTextSize,
                             fontWeight = FontWeight.Bold
                         )
                         Row {
                             Text(
                                 text = "${data.nextExercise.sets} sets | ${data.nextExercise.reps} reps",
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onBackground,
                             )
                         }
 
@@ -296,15 +283,14 @@ fun PerformWorkoutScreenContent(
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
-                        ) {
-                            Button(
+                        ) {                            Button(
                                 onClick = { viewModel.goToPreviousExercise() },
                                 shape = RectangleShape,
                                 modifier = Modifier
                                     .size(Dimensions.LargeIconSize)
                                     .clip(RoundedCornerShape(Dimensions.MediumCornerRadius)),
                                 contentPadding = PaddingValues(0.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = greyButton),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_back),
@@ -320,7 +306,7 @@ fun PerformWorkoutScreenContent(
                                     .size(Dimensions.LargeIconSize)
                                     .clip(RoundedCornerShape(Dimensions.MediumCornerRadius)),
                                 contentPadding = PaddingValues(0.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = greyButton),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.pause_outline_filled),
@@ -332,11 +318,10 @@ fun PerformWorkoutScreenContent(
                             Button(
                                 onClick = { viewModel.goToNextExercise() },
                                 shape = RectangleShape,
-                                modifier = Modifier
-                                    .size(Dimensions.LargeIconSize)
+                                modifier = Modifier                                    .size(Dimensions.LargeIconSize)
                                     .clip(RoundedCornerShape(Dimensions.MediumCornerRadius)),
                                 contentPadding = PaddingValues(0.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = greyButton),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_back),
@@ -374,16 +359,15 @@ fun PerformWorkoutScreenContent(
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
-                    ) {
-                        Button(
+                    ) {                        Button(
                             onClick = { onFinishWorkout() },
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = redDangerous),
-                            border = BorderStroke(2.dp, redDangerous)
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                            border = BorderStroke(2.dp, MaterialTheme.colorScheme.error)
                         ) {
                             Text(
                                 text = "Terminar entrenamiento",
                                 fontSize = Dimensions.MediumTextSize,
-                                color = redDangerous
+                                color = MaterialTheme.colorScheme.error
                             )
                         }
                     }

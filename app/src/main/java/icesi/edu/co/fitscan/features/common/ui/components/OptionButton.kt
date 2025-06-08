@@ -16,8 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import icesi.edu.co.fitscan.ui.theme.greenLess
-import icesi.edu.co.fitscan.ui.theme.greyMed
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun OptionButton(
@@ -27,8 +26,7 @@ fun OptionButton(
     modifier: Modifier,
     options: List<String>,
     icons: List<Int>,
-) {
-    val bgColor = greyMed
+) {    val bgColor = MaterialTheme.colorScheme.surface
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -36,7 +34,7 @@ fun OptionButton(
             .background(bgColor)
             .border(
                 width = if (selected) 2.dp else 0.dp,
-                color = if (selected) greenLess else Color.Transparent,
+                color = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
                 shape = RoundedCornerShape(10.dp)
             )
             .clickable(onClick = onClick)
@@ -46,7 +44,7 @@ fun OptionButton(
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = label,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 16.sp
         )
     }

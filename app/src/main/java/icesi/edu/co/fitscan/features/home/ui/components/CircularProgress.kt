@@ -12,8 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import icesi.edu.co.fitscan.ui.theme.dashboardGreen
-import icesi.edu.co.fitscan.ui.theme.greySuperLight
 
 @Composable
 fun CircularProgress(progress: Float) {
@@ -22,19 +20,19 @@ fun CircularProgress(progress: Float) {
             progress = { progress },
             strokeWidth = 10.dp,
             modifier = Modifier.fillMaxSize(),
-            color = dashboardGreen,
-            trackColor = Color.DarkGray
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant
         )
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = "${(progress * 100).toInt()}%",
                 style = MaterialTheme.typography.headlineMedium,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = "Completado",
                 style = MaterialTheme.typography.bodySmall,
-                color = greySuperLight
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
