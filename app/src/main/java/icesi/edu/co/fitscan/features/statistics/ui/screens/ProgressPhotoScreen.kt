@@ -55,19 +55,23 @@ fun ProgressPhotoScreen(
     var sortBy by remember { mutableStateOf("date_desc") }
     var selectedPhoto by remember { mutableStateOf<icesi.edu.co.fitscan.domain.model.ProgressPhoto?>(null) }
     var editingPhotoTitle by remember { mutableStateOf("") }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var photoToDelete by remember { mutableStateOf<icesi.edu.co.fitscan.domain.model.ProgressPhoto?>(null) }
+    var isInitialLoad by remember { mutableStateOf(true) }
 
-    // Update title when photos change
     LaunchedEffect(progressPhotos) {
-        if (progressPhotos.isNotEmpty()) {
+        if (progressPhotos.isNotEmpty() && !isEditingTitle && isInitialLoad) {
             title = progressPhotos.first().title ?: "Inserta un título"
+            isInitialLoad = false
         }
     }
-
+    
     val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            viewModel.uploadProgressPhoto(context, it, title)
+            // Always use default title for new photos
+            viewModel.uploadProgressPhoto(context, it, "Inserta un título")
         }
     }
 
@@ -78,7 +82,8 @@ fun ProgressPhotoScreen(
             try {
                 val tempUri = saveBitmapToTempFile(context, bitmap)
                 tempUri?.let { uri ->
-                    viewModel.uploadProgressPhoto(context, uri, title)
+                    // Always use default title for new photos
+                    viewModel.uploadProgressPhoto(context, uri, "Inserta un título")
                 }
             } catch (e: Exception) {
                 Toast.makeText(context, "Error procesando imagen: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -655,9 +660,8 @@ fun ProgressPhotoScreen(
                     // Botón de eliminar
                     Button(
                         onClick = {
-                            viewModel.deleteProgressPhoto(photo.id)
-                            selectedPhoto = null
-                            Toast.makeText(context, "Foto eliminada", Toast.LENGTH_SHORT).show()
+                            photoToDelete = photo
+                            showDeleteDialog = true
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red.copy(alpha = 0.8f),
@@ -674,9 +678,48 @@ fun ProgressPhotoScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Eliminar foto")
                     }
-                }
+                } 
             }
         }
+    }
+    
+    if (showDeleteDialog && photoToDelete != null) {
+        AlertDialog(
+            onDismissRequest = {
+                showDeleteDialog = false
+                photoToDelete = null
+            },
+            title = {
+                Text("¿Eliminar foto?")
+            },
+            text = {
+                Text("Esta acción no se puede deshacer.")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        photoToDelete?.let { photo ->
+                            viewModel.deleteProgressPhoto(photo.id)
+                        }
+                        showDeleteDialog = false
+                        photoToDelete = null
+                        selectedPhoto = null
+                    }
+                ) {
+                    Text("Eliminar", color = Color.Red)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        photoToDelete = null
+                    }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }
 
