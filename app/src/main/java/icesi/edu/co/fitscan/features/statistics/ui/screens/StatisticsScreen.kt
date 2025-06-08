@@ -67,7 +67,7 @@ fun StatisticsScreen(
             // Progress Visual Card
             StatisticCard(
                 title = "Progreso visual",
-                subtitle = "¡Próximamente!",
+                subtitle = "¡Toma una foto de tu progreso físico!",
                 iconRes = R.drawable.ic_camera,
                 onClick = { navController.navigate(Screen.VisualProgress.route) }
             )

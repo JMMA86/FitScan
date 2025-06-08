@@ -5,6 +5,7 @@ import icesi.edu.co.fitscan.domain.repositories.IProgressPhotoRepository
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 import icesi.edu.co.fitscan.features.statistics.data.dto.FileUpdateRequest
 import icesi.edu.co.fitscan.features.statistics.data.dto.ProgressPhotoCreateRequest
+import icesi.edu.co.fitscan.features.statistics.data.dto.ProgressPhotoUpdateRequest
 import icesi.edu.co.fitscan.features.statistics.data.mapper.ProgressPhotoMapper
 import icesi.edu.co.fitscan.features.statistics.data.remote.StatisticsRemoteDataSource
 
@@ -47,6 +48,16 @@ class ProgressPhotoRepositoryImpl(
             // Make file public
             val makePublicResponse = remoteDataSource.makeFilePublic(fileId, FileUpdateRequest(true))
             makePublicResponse.isSuccessful
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override suspend fun updateProgressPhotoTitle(photoId: String, title: String): Boolean {
+        return try {
+            val updateRequest = ProgressPhotoUpdateRequest(title)
+            val response = remoteDataSource.updateProgressPhoto(photoId, updateRequest)
+            response.isSuccessful
         } catch (e: Exception) {
             false
         }

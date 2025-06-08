@@ -8,6 +8,7 @@ import icesi.edu.co.fitscan.features.statistics.data.dto.FileUpdateRequest
 import icesi.edu.co.fitscan.features.statistics.data.dto.FileUploadResponse
 import icesi.edu.co.fitscan.features.statistics.data.dto.ProgressPhotoCreateRequest
 import icesi.edu.co.fitscan.features.statistics.data.dto.ProgressPhotoResponseDto
+import icesi.edu.co.fitscan.features.statistics.data.dto.ProgressPhotoUpdateRequest
 import icesi.edu.co.fitscan.features.statistics.data.dto.WeightMovedStatsResponseDto
 import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutSessionResponseDto
 import okhttp3.MultipartBody
@@ -50,10 +51,15 @@ interface StatisticsRemoteDataSource {
         @retrofit2.http.Header("Authorization") token: String,
         @Part file: MultipartBody.Part
     ): FileUploadResponse
-
     @POST("/items/progress_photo")
     suspend fun createProgressPhoto(
         @Body request: ProgressPhotoCreateRequest
+    ): Response<Unit>
+
+    @PATCH("/items/progress_photo/{id}")
+    suspend fun updateProgressPhoto(
+        @Path("id") photoId: String,
+        @Body request: ProgressPhotoUpdateRequest
     ): Response<Unit>
 
     @PATCH("/files/{id}")
