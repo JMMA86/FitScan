@@ -1,6 +1,7 @@
 package icesi.edu.co.fitscan.features.statistics.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -79,33 +80,38 @@ fun StatisticsScreen(
                 iconRes = R.drawable.ic_run,
                 onClick = { navController.navigate(Screen.ExerciseProgress.route) }
             )
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Hours Worked Chart Section
-            Text(
-                text = "Horas trabajadas vs La última semana",
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(20.dp))            // Hours Worked Chart Section
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 200.dp, max = 200.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .clickable { navController.navigate(Screen.DetailedCharts.route) }
+                    .padding(vertical = 8.dp)
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                } else {
-                    StackedBarChart(
-                        currentWeek = currentWeek,
-                        lastWeek = lastWeek,
-                        labels = labels,
-                        modifier = Modifier.fillMaxSize()
-                    )
+                Text(
+                    text = "Horas trabajadas vs La última semana",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 200.dp, max = 200.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    } else {
+                        StackedBarChart(
+                            currentWeek = currentWeek,
+                            lastWeek = lastWeek,
+                            labels = labels,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(20.dp))
@@ -115,21 +121,25 @@ fun StatisticsScreen(
                 modifier = Modifier
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+            ) {                
                 GoalCard(
                     title = "Calorías",
                     areaData = caloriesAreaData,
                     color = MaterialTheme.colorScheme.chartPrimary,
                     barColor = MaterialTheme.colorScheme.chartPrimary,
-                    modifier = Modifier.weight(1f).heightIn(min = 140.dp, max = 220.dp)
+                    modifier = Modifier.weight(1f).heightIn(min = 140.dp, max = 220.dp),
+                    onClick = { navController.navigate(Screen.DetailedCharts.route) }
                 )
+                /*
                 GoalCard(
                     title = "Peso Movido",
                     areaData = weightAreaData,
                     color = MaterialTheme.colorScheme.iconTint,
                     barColor = MaterialTheme.colorScheme.iconTint,
-                    modifier = Modifier.weight(1f).heightIn(min = 140.dp, max = 220.dp)
+                    modifier = Modifier.weight(1f).heightIn(min = 140.dp, max = 220.dp),
+                    onClick = { navController.navigate(Screen.DetailedCharts.route) }
                 )
+                */
             }
             Spacer(modifier = Modifier.height(16.dp))
         }

@@ -2,6 +2,7 @@ package icesi.edu.co.fitscan.features.common.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -26,12 +27,13 @@ fun GoalCard(
     areaData: List<Float>,
     color: Color,
     barColor: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     Surface(
         color = MaterialTheme.colorScheme.cardBackground,
         shape = RoundedCornerShape(18.dp),
-        modifier = modifier.height(140.dp)
+        modifier = modifier.height(140.dp).clickable { onClick() }
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
