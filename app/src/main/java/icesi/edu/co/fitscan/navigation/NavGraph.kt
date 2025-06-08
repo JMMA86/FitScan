@@ -124,6 +124,9 @@ fun NavigationHost(
                     navController.navigate(Screen.BodyMeasurements.route) {
                         popUpTo(Screen.Registration.route) { inclusive = true }
                     }
+                },
+                onNavigateToLogin = {
+                    navController.popBackStack(Screen.Login.route, false)
                 }
             )
         }
