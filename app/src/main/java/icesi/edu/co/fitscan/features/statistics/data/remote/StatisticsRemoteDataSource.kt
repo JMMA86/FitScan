@@ -51,6 +51,7 @@ interface StatisticsRemoteDataSource {
         @retrofit2.http.Header("Authorization") token: String,
         @Part file: MultipartBody.Part
     ): FileUploadResponse
+
     @POST("/items/progress_photo")
     suspend fun createProgressPhoto(
         @Body request: ProgressPhotoCreateRequest

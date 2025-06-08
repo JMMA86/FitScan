@@ -8,9 +8,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -45,18 +47,17 @@ fun ProgressPhotoScreen(
     val viewModel: ProgressPhotoViewModel = viewModel(factory = ProgressPhotoViewModelFactory())
     val context = LocalContext.current
     val progressPhotos by viewModel.progressPhotos.collectAsState()
-    var title by remember { mutableStateOf("Añadir un título") }
+    var title by remember { mutableStateOf("Inserta un título") }
     var isEditingTitle by remember { mutableStateOf(false) }
     var viewMode by remember { mutableStateOf("grid") }
     var sortBy by remember { mutableStateOf("date_desc") }
     var selectedPhoto by remember { mutableStateOf<icesi.edu.co.fitscan.domain.model.ProgressPhoto?>(null) }
-    var editingPhotoId by remember { mutableStateOf<String?>(null) }
     var editingPhotoTitle by remember { mutableStateOf("") }
 
     // Update title when photos change
     LaunchedEffect(progressPhotos) {
         if (progressPhotos.isNotEmpty()) {
-            title = progressPhotos.first().title ?: "Añadir un título"
+            title = progressPhotos.first().title ?: "Inserta un título"
         }
     }
 
@@ -175,7 +176,7 @@ fun ProgressPhotoScreen(
                                             TextButton(
                                                 onClick = {
                                                     // Cancel editing
-                                                    title = progressPhotos.firstOrNull()?.title ?: "Añadir un título"
+                                                    title = progressPhotos.firstOrNull()?.title ?: "Inserta un título"
                                                     isEditingTitle = false
                                                 }
                                             ) {
@@ -279,28 +280,59 @@ fun ProgressPhotoScreen(
                     }
                 }
             }
-
+            
             Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = "Progreso",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Progreso",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
-                    )
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        TextButton(onClick = {
-                            sortBy = if (sortBy == "date_desc") "date_asc" else "date_desc"
-                        }) { Text("Fecha") }
-                        TextButton(onClick = {
-                            sortBy = if (sortBy == "name_asc") "name_desc" else "name_asc"
-                        }) { Text("Nombre") }
-                        TextButton(onClick = {
+                        Text(
+                            text = "Ordenar por:",
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        TextButton(
+                            onClick = {
+                                sortBy = if (sortBy == "date_desc") "date_asc" else "date_desc"
+                            }
+                        ) { 
+                            Text(
+                                text = if (sortBy == "date_desc") "Fecha ↓" else if (sortBy == "date_asc") "Fecha ↑" else "Fecha",
+                                fontSize = 14.sp
+                            )
+                        }
+                        TextButton(
+                            onClick = {
+                                sortBy = if (sortBy == "name_asc") "name_desc" else "name_asc"
+                            }
+                        ) { 
+                            Text(
+                                text = if (sortBy == "name_asc") "Título ↑" else if (sortBy == "name_desc") "Título ↓" else "Título",
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                    
+                    TextButton(
+                        onClick = {
                             viewMode = if (viewMode == "grid") "list" else "grid"
-                        }) { Text(if (viewMode == "grid") "Lista" else "Cuadrícula") }
+                        }
+                    ) { 
+                        Text(
+                            text = if (viewMode == "grid") "Lista" else "Cuadrícula",
+                            fontSize = 14.sp
+                        )
                     }
                 }
 
@@ -356,49 +388,13 @@ fun ProgressPhotoScreen(
                                     )
                                 }
                                 
-                                // Título editable
-                                if (editingPhotoId == photo.id) {
-                                    OutlinedTextField(
-                                        value = editingPhotoTitle,
-                                        onValueChange = { editingPhotoTitle = it },
-                                        singleLine = true,
-                                        modifier = Modifier.width(120.dp),
-                                        textStyle = LocalTextStyle.current.copy(fontSize = 12.sp),
-                                        trailingIcon = {
-                                            Row {
-                                                IconButton(
-                                                    onClick = {
-                                                        viewModel.updateProgressPhotoTitle(photo.id, editingPhotoTitle)
-                                                        editingPhotoId = null
-                                                    },
-                                                    modifier = Modifier.size(20.dp)
-                                                ) {
-                                                    Text("✓", fontSize = 12.sp, color = Color.Green)
-                                                }
-                                                IconButton(
-                                                    onClick = {
-                                                        editingPhotoId = null
-                                                        editingPhotoTitle = ""
-                                                    },
-                                                    modifier = Modifier.size(20.dp)
-                                                ) {
-                                                    Text("✕", fontSize = 12.sp, color = Color.Red)
-                                                }
-                                            }
-                                        }
-                                    )
-                                } else {
-                                    Text(
-                                        text = photo.title ?: "Sin título",
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        modifier = Modifier.clickable {
-                                            editingPhotoId = photo.id
-                                            editingPhotoTitle = photo.title ?: ""
-                                        },
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
+                                // Título solo lectura
+                                Text(
+                                    text = photo.title ?: "Sin título",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    textAlign = TextAlign.Center
+                                )
                                 
                                 Text(
                                     text = formatDate(photo.photoDate.toString()),
@@ -409,8 +405,11 @@ fun ProgressPhotoScreen(
                         }
                     }
                 } else {
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        sortedPhotos.forEach { photo ->
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxHeight()
+                    ) {
+                        items(sortedPhotos) { photo ->
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.clickable { selectedPhoto = photo }
@@ -458,45 +457,11 @@ fun ProgressPhotoScreen(
                                 }
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
-                                    if (editingPhotoId == photo.id) {
-                                        OutlinedTextField(
-                                            value = editingPhotoTitle,
-                                            onValueChange = { editingPhotoTitle = it },
-                                            singleLine = true,
-                                            modifier = Modifier.width(200.dp),
-                                            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
-                                            trailingIcon = {
-                                                Row {
-                                                    IconButton(
-                                                        onClick = {
-                                                            viewModel.updateProgressPhotoTitle(photo.id, editingPhotoTitle)
-                                                            editingPhotoId = null
-                                                        }
-                                                    ) {
-                                                        Text("✓", color = Color.Green)
-                                                    }
-                                                    IconButton(
-                                                        onClick = {
-                                                            editingPhotoId = null
-                                                            editingPhotoTitle = ""
-                                                        }
-                                                    ) {
-                                                        Text("✕", color = Color.Red)
-                                                    }
-                                                }
-                                            }
-                                        )
-                                    } else {
-                                        Text(
-                                            text = photo.title ?: "Sin título",
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            modifier = Modifier.clickable {
-                                                editingPhotoId = photo.id
-                                                editingPhotoTitle = photo.title ?: ""
-                                            }
-                                        )
-                                    }
+                                    Text(
+                                        text = photo.title ?: "Sin título",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                     Text(
                                         text = formatDate(photo.photoDate.toString()),
                                         fontSize = 12.sp,
@@ -511,6 +476,8 @@ fun ProgressPhotoScreen(
         }
 
         selectedPhoto?.let { photo ->
+            var editingOverlayTitle by remember { mutableStateOf(false) }
+            
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -597,11 +564,11 @@ fun ProgressPhotoScreen(
                             }
                         )
                     }
-                    
+                     
                     Spacer(modifier = Modifier.height(24.dp))
                     
                     // Título editable
-                    if (editingPhotoId == photo.id) {
+                    if (editingOverlayTitle) {
                         OutlinedTextField(
                             value = editingPhotoTitle,
                             onValueChange = { editingPhotoTitle = it },
@@ -622,15 +589,15 @@ fun ProgressPhotoScreen(
                                     TextButton(
                                         onClick = {
                                             viewModel.updateProgressPhotoTitle(photo.id, editingPhotoTitle)
-                                            editingPhotoId = null
+                                            editingOverlayTitle = false
                                         }
                                     ) {
                                         Text("Guardar", color = Color.White)
                                     }
                                     TextButton(
                                         onClick = {
-                                            editingPhotoId = null
-                                            editingPhotoTitle = ""
+                                            editingOverlayTitle = false
+                                            editingPhotoTitle = photo.title ?: ""
                                         }
                                     ) {
                                         Text("Cancelar", color = Color.White)
@@ -647,7 +614,7 @@ fun ProgressPhotoScreen(
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .clickable {
-                                    editingPhotoId = photo.id
+                                    editingOverlayTitle = true
                                     editingPhotoTitle = photo.title ?: ""
                                 }
                                 .padding(16.dp)

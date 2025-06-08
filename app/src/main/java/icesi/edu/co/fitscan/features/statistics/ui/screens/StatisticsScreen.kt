@@ -53,7 +53,8 @@ fun StatisticsScreen(
     Column {
         FitScanHeader(
             title = "Estadísticas de Ejercicio",
-            showBackIcon = false,            navController = navController
+            showBackIcon = false,
+            navController = navController
         )
         
         Column(
