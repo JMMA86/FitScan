@@ -62,4 +62,13 @@ class ProgressPhotoRepositoryImpl(
             false
         }
     }
+
+    override suspend fun deleteProgressPhoto(photoId: String): Boolean {
+        return try {
+            val response = remoteDataSource.deleteProgressPhoto(photoId)
+            response.isSuccessful
+        } catch (e: Exception) {
+            false
+        }
+    }
 }

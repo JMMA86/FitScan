@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import icesi.edu.co.fitscan.domain.model.ProgressPhoto
+import icesi.edu.co.fitscan.domain.usecases.IDeleteProgressPhotoUseCase
 import icesi.edu.co.fitscan.domain.usecases.IFetchProgressPhotosUseCase
 import icesi.edu.co.fitscan.domain.usecases.IUpdateProgressPhotoTitleUseCase
 import icesi.edu.co.fitscan.domain.usecases.IUploadProgressPhotoUseCase
@@ -17,7 +18,8 @@ import kotlinx.coroutines.flow.asStateFlow
 class ProgressPhotoViewModel(
     private val fetchProgressPhotosUseCase: IFetchProgressPhotosUseCase,
     private val uploadProgressPhotoUseCase: IUploadProgressPhotoUseCase,
-    private val updateProgressPhotoTitleUseCase: IUpdateProgressPhotoTitleUseCase
+    private val updateProgressPhotoTitleUseCase: IUpdateProgressPhotoTitleUseCase,
+    private val deleteProgressPhotoUseCase: IDeleteProgressPhotoUseCase
 ) : ViewModel() {
 
     private val _progressPhotos = MutableStateFlow<List<ProgressPhoto>>(emptyList())
@@ -46,10 +48,19 @@ class ProgressPhotoViewModel(
             _isUploading.value = false
         }
     }
-
+    
     fun updateProgressPhotoTitle(photoId: String, title: String) {
         viewModelScope.launch {
             val success = updateProgressPhotoTitleUseCase(photoId, title)
+            if (success) {
+                loadProgressPhotos()
+            }
+        }
+    }
+    
+    fun deleteProgressPhoto(photoId: String) {
+        viewModelScope.launch {
+            val success = deleteProgressPhotoUseCase(photoId)
             if (success) {
                 loadProgressPhotos()
             }

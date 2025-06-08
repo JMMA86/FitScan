@@ -14,6 +14,7 @@ import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutSessionResponseDto
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
@@ -61,6 +62,11 @@ interface StatisticsRemoteDataSource {
     suspend fun updateProgressPhoto(
         @Path("id") photoId: String,
         @Body request: ProgressPhotoUpdateRequest
+    ): Response<Unit>
+
+    @DELETE("/items/progress_photo/{id}")
+    suspend fun deleteProgressPhoto(
+        @Path("id") photoId: String
     ): Response<Unit>
 
     @PATCH("/files/{id}")
