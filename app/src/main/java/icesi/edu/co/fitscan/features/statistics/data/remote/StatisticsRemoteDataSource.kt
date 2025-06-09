@@ -96,9 +96,7 @@ interface StatisticsRemoteDataSource {
     ): Response<CompletedExerciseProgressDto>
 
     @GET("/items/muscle_group")
-    suspend fun getAllMuscleGroups(): MuscleGroupListResponseDto
-
-    @GET("/items/completed_exercise")
+    suspend fun getAllMuscleGroups(): MuscleGroupListResponseDto    @GET("/items/completed_exercise")
     suspend fun getCompletedExercisesWithMuscleGroups(
         @Query("filter[workout_session_id][customer_id][_eq]") customerId: String,
         @Query("filter[workout_session_id][start_time][_gte]") fromDate: String,
@@ -109,5 +107,10 @@ interface StatisticsRemoteDataSource {
     suspend fun getSecondaryMuscleGroups(
         @Query("filter[exercise_id][_eq]") exerciseId: String,
         @Query("fields") fields: String = "*,muscle_group_id.*"
+    ): SecondaryMuscleGroupResponseDto
+
+    @GET("/items/exercise_secondary_muscle_group")
+    suspend fun getAllSecondaryMuscleGroups(
+        @Query("fields") fields: String = "exercise_id,muscle_group_id.*"
     ): SecondaryMuscleGroupResponseDto
 }
