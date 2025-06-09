@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import icesi.edu.co.fitscan.features.common.data.remote.RetrofitInstance
 import icesi.edu.co.fitscan.features.statistics.data.remote.StatisticsRemoteDataSource
 import icesi.edu.co.fitscan.features.statistics.data.repositories.ProgressPhotoRepositoryImpl
+import icesi.edu.co.fitscan.features.statistics.data.usecase.DeleteProgressPhotoUseCaseImpl
 import icesi.edu.co.fitscan.features.statistics.data.usecase.FetchProgressPhotosUseCaseImpl
+import icesi.edu.co.fitscan.features.statistics.data.usecase.UpdateProgressPhotoTitleUseCaseImpl
 import icesi.edu.co.fitscan.features.statistics.data.usecase.UploadProgressPhotoUseCaseImpl
 import icesi.edu.co.fitscan.features.statistics.ui.viewmodel.ProgressPhotoViewModel
 
@@ -16,8 +18,15 @@ class ProgressPhotoViewModelFactory : ViewModelProvider.Factory {
             val repository = ProgressPhotoRepositoryImpl(statisticsDataSource)
             val fetchProgressPhotosUseCase = FetchProgressPhotosUseCaseImpl(repository)
             val uploadProgressPhotoUseCase = UploadProgressPhotoUseCaseImpl(repository)
+            val updateProgressPhotoTitleUseCase = UpdateProgressPhotoTitleUseCaseImpl(repository)
+            val deleteProgressPhotoUseCase = DeleteProgressPhotoUseCaseImpl(repository)
             @Suppress("UNCHECKED_CAST")
-            return ProgressPhotoViewModel(fetchProgressPhotosUseCase, uploadProgressPhotoUseCase) as T
+            return ProgressPhotoViewModel(
+                fetchProgressPhotosUseCase, 
+                uploadProgressPhotoUseCase, 
+                updateProgressPhotoTitleUseCase,
+                deleteProgressPhotoUseCase
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

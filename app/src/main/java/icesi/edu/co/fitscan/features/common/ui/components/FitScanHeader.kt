@@ -33,7 +33,8 @@ fun FitScanHeader(
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             } else Box {}
-        },        actions = {
+        },
+        actions = {
             // Future: Add action buttons here if needed
         },
         colors = TopAppBarDefaults.topAppBarColors(

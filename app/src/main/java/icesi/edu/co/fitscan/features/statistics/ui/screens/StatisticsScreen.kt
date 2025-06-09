@@ -54,7 +54,8 @@ fun StatisticsScreen(
     Column {
         FitScanHeader(
             title = "Estadísticas de Ejercicio",
-            showBackIcon = false,            navController = navController
+            showBackIcon = false,
+            navController = navController
         )
         
         Column(
@@ -68,7 +69,7 @@ fun StatisticsScreen(
             // Progress Visual Card
             StatisticCard(
                 title = "Progreso visual",
-                subtitle = "¡Próximamente!",
+                subtitle = "¡Toma una foto de tu progreso físico!",
                 iconRes = R.drawable.ic_camera,
                 onClick = { navController.navigate(Screen.VisualProgress.route) }
             )
