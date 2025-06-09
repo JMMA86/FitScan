@@ -2,12 +2,17 @@ package icesi.edu.co.fitscan.features.common.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -26,28 +31,57 @@ fun GoalCard(
     areaData: List<Float>,
     color: Color,
     barColor: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     Surface(
         color = MaterialTheme.colorScheme.cardBackground,
         shape = RoundedCornerShape(18.dp),
-        modifier = modifier.height(140.dp)
+        modifier = modifier
+            .height(140.dp)
+            .clickable { onClick() },
+        shadowElevation = 4.dp
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = title, 
-                color = MaterialTheme.colorScheme.onSurface, 
-                fontWeight = FontWeight.Bold, 
-                fontSize = 18.sp
-            )
-            Text(
-                text = "Progreso", 
-                color = MaterialTheme.colorScheme.onSurfaceVariant, 
-                fontSize = 14.sp
-            )
+            // Header row with icon and title
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = title, 
+                        color = MaterialTheme.colorScheme.onSurface, 
+                        fontWeight = FontWeight.Bold, 
+                        fontSize = 18.sp
+                    )
+                    Text(
+                        text = "Progreso", 
+                        color = MaterialTheme.colorScheme.onSurfaceVariant, 
+                        fontSize = 14.sp
+                    )
+                }
+                // Trending icon with background
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = color.copy(alpha = 0.15f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.TrendingUp,
+                        contentDescription = "Tendencia",
+                        tint = color,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
             AreaChart(
                 data = areaData,

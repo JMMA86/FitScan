@@ -31,17 +31,29 @@ class WorkoutDetailViewModel(
     private val _state = MutableStateFlow<WorkoutDetailState>(WorkoutDetailState.Loading)
     val state: StateFlow<WorkoutDetailState> = _state
 
-    fun loadWorkout(workoutId: String) {
-        viewModelScope.launch {
+    fun loadWorkout(workoutId: String) {        viewModelScope.launch {
             _state.value = WorkoutDetailState.Loading
             try {
                 val id = UUID.fromString(workoutId)
                 val workoutResult = workoutRepository.getWorkoutById(id)
                 val exercisesResult = workoutExerciseRepository.getWorkoutExercises(id)
                 val allExercisesResult = exerciseRepository.getAllExercises()
+                
                 Log.d("WorkoutDetailVM", "workoutId: $workoutId")
-                Log.d("WorkoutDetailVM", "workoutResult: $workoutResult")
-                Log.d("WorkoutDetailVM", "exercisesResult: $exercisesResult")
+                Log.d("WorkoutDetailVM", "workoutResult isSuccess: ${workoutResult.isSuccess}")
+                Log.d("WorkoutDetailVM", "exercisesResult isSuccess: ${exercisesResult.isSuccess}")
+                Log.d("WorkoutDetailVM", "allExercisesResult isSuccess: ${allExercisesResult.isSuccess}")
+                
+                if (workoutResult.isFailure) {
+                    Log.e("WorkoutDetailVM", "Workout failed: ${workoutResult.exceptionOrNull()?.message}")
+                }
+                if (exercisesResult.isFailure) {
+                    Log.e("WorkoutDetailVM", "Exercises failed: ${exercisesResult.exceptionOrNull()?.message}")
+                }
+                if (allExercisesResult.isFailure) {
+                    Log.e("WorkoutDetailVM", "All exercises failed: ${allExercisesResult.exceptionOrNull()?.message}")
+                }
+                
                 if (workoutResult.isSuccess && exercisesResult.isSuccess && allExercisesResult.isSuccess) {
                     val allExercises = allExercisesResult.getOrThrow()
                     val exerciseMap = allExercises.associateBy { it.id }
@@ -56,9 +68,15 @@ class WorkoutDetailViewModel(
                     _state.value = WorkoutDetailState.Success(
                         workout = workoutResult.getOrThrow(),
                         exercises = uiExercises
-                    )
-                } else {
-                    _state.value = WorkoutDetailState.Error("No se pudo cargar la rutina o sus ejercicios")
+                    )                } else {
+                    val errorMessage = when {
+                        workoutResult.isFailure -> "Error al cargar la rutina: ${workoutResult.exceptionOrNull()?.message}"
+                        exercisesResult.isFailure -> "Error al cargar los ejercicios de la rutina: ${exercisesResult.exceptionOrNull()?.message}"
+                        allExercisesResult.isFailure -> "Error al cargar la información de ejercicios: ${allExercisesResult.exceptionOrNull()?.message}"
+                        else -> "No se pudo cargar la rutina o sus ejercicios"
+                    }
+                    Log.e("WorkoutDetailVM", "Failed to load workout data: $errorMessage")
+                    _state.value = WorkoutDetailState.Error(errorMessage)
                 }
             } catch (e: Exception) {
                 Log.e("WorkoutDetailVM", "Exception: ${e.localizedMessage}", e)

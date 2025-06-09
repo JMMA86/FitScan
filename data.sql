@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS running_workout_detail CASCADE;
 DROP TABLE IF EXISTS workout_exercise CASCADE;
 DROP TABLE IF EXISTS workout CASCADE;
 DROP TABLE IF EXISTS exercise CASCADE;
+DROP TABLE IF EXISTS meal_plan_meal CASCADE;
 DROP TABLE IF EXISTS meal CASCADE;
 DROP TABLE IF EXISTS meal_plan CASCADE;
 DROP TABLE IF EXISTS customer_preference CASCADE;
@@ -20,6 +21,9 @@ DROP TABLE IF EXISTS fitness_goal CASCADE;
 DROP TABLE IF EXISTS training_level CASCADE;
 DROP TABLE IF EXISTS body_measure CASCADE;
 DROP TABLE IF EXISTS customer CASCADE;
+DROP TABLE IF EXISTS exercise_secondary_muscle_group CASCADE;
+DROP TABLE IF EXISTS muscle_group CASCADE;
+DELETE FROM directus_files;
 
 -- =============================
 -- EXTENSIONES
@@ -51,6 +55,12 @@ CREATE TABLE dietary_restriction (
 CREATE TABLE dietary_preference (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT UNIQUE NOT NULL
+);
+
+CREATE TABLE muscle_group (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT UNIQUE NOT NULL,
+    description TEXT
 );
 
 CREATE TABLE body_measure (
@@ -108,7 +118,6 @@ CREATE TABLE meal_plan (
 
 CREATE TABLE meal (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    meal_plan_id UUID REFERENCES meal_plan(id) ON DELETE CASCADE,
     meal_type TEXT,
     name TEXT,
     description TEXT,
@@ -118,11 +127,26 @@ CREATE TABLE meal (
     fat_g INTEGER
 );
 
+CREATE TABLE meal_plan_meal (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    meal_plan_id UUID REFERENCES meal_plan(id) ON DELETE CASCADE,
+    meal_id UUID REFERENCES meal(id) ON DELETE CASCADE,
+    UNIQUE(meal_plan_id, meal_id)
+);
+
 CREATE TABLE exercise (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
     description TEXT,
-    muscle_groups TEXT
+    muscle_groups TEXT, -- Keeping for compatibility
+    primary_muscle_group_id UUID REFERENCES muscle_group(id) ON DELETE SET NULL
+);
+
+CREATE TABLE exercise_secondary_muscle_group (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    exercise_id UUID REFERENCES exercise(id) ON DELETE CASCADE,
+    muscle_group_id UUID REFERENCES muscle_group(id) ON DELETE CASCADE,
+    UNIQUE(exercise_id, muscle_group_id)
 );
 
 CREATE TABLE workout (
@@ -183,6 +207,30 @@ CREATE TABLE progress_photo (
     image_path UUID REFERENCES directus_files(id) ON DELETE CASCADE
 );
 
+CREATE OR REPLACE VIEW muscle_group_sets AS
+SELECT
+    mg.id AS muscle_group_id,
+    mg.name AS muscle_group_name,
+    SUM(
+        CASE WHEN e.primary_muscle_group_id = mg.id THEN ce.sets * 1.0
+             ELSE ce.sets * 0.5
+        END
+    ) AS weighted_sets
+FROM
+    completed_exercise ce
+JOIN exercise e ON ce.exercise_id = e.id
+JOIN muscle_group mg ON (
+    e.primary_muscle_group_id = mg.id
+    OR
+    EXISTS (
+        SELECT 1
+        FROM exercise_secondary_muscle_group s
+        WHERE s.exercise_id = e.id AND s.muscle_group_id = mg.id
+    )
+)
+GROUP BY
+    mg.id, mg.name;
+
 DELETE FROM directus_users WHERE email <> 'admin@fitscan.com';
 
 -- =============================
@@ -232,14 +280,26 @@ BEGIN
         INSERT INTO dietary_restriction (id, name)
         VALUES (uuid_generate_v4(), 'Restriction ' || i);
     END LOOP;
-    RAISE NOTICE 'Inserted % dietary restrictions', num_dietary_restrictions;
-
-    -- Insert dietary preferences
+    RAISE NOTICE 'Inserted % dietary restrictions', num_dietary_restrictions;    -- Insert dietary preferences
     FOR i IN 1..num_dietary_preferences LOOP
         INSERT INTO dietary_preference (id, name)
         VALUES (uuid_generate_v4(), 'Preference ' || i);
     END LOOP;
     RAISE NOTICE 'Inserted % dietary preferences', num_dietary_preferences;
+
+    -- Insert muscle groups
+    INSERT INTO muscle_group (id, name, description) VALUES
+        (uuid_generate_v4(), 'Chest', 'Pectoral muscles'),
+        (uuid_generate_v4(), 'Back', 'Latissimus dorsi, rhomboids, middle traps'),
+        (uuid_generate_v4(), 'Shoulders', 'Deltoids'),
+        (uuid_generate_v4(), 'Biceps', 'Biceps brachii'),
+        (uuid_generate_v4(), 'Triceps', 'Triceps brachii'),
+        (uuid_generate_v4(), 'Legs', 'Quadriceps, hamstrings, glutes'),
+        (uuid_generate_v4(), 'Calves', 'Gastrocnemius, soleus'),
+        (uuid_generate_v4(), 'Abs', 'Abdominal muscles'),
+        (uuid_generate_v4(), 'Forearms', 'Forearm muscles'),
+        (uuid_generate_v4(), 'Traps', 'Trapezius muscles');
+    RAISE NOTICE 'Inserted muscle groups';
 
     -- Insert body measures
     FOR i IN 1..num_body_measures LOOP
@@ -300,16 +360,19 @@ BEGIN
             );
         END LOOP;
     END LOOP;
-    RAISE NOTICE 'Inserted % meal plans per customer', num_meal_plans_per_customer;
-
-    -- Insert meals
-    FOR meal_plan_rec IN (SELECT id FROM meal_plan) LOOP
-        FOR i IN 1..num_meals_per_plan LOOP
-            INSERT INTO meal (id, meal_plan_id, meal_type, name, description, calories, protein_g, carbs_g, fat_g)
+    RAISE NOTICE 'Inserted % meal plans per customer', num_meal_plans_per_customer;    -- Insert meals (independent of meal plans)
+    DECLARE
+        num_total_meals INTEGER := 100; -- Create a pool of meals
+    BEGIN
+        FOR i IN 1..num_total_meals LOOP
+            INSERT INTO meal (id, meal_type, name, description, calories, protein_g, carbs_g, fat_g)
             VALUES (
                 uuid_generate_v4(),
-                meal_plan_rec.id,
-                CASE WHEN i = 1 THEN 'Breakfast' WHEN i = 2 THEN 'Lunch' ELSE 'Dinner' END,
+                CASE 
+                    WHEN i % 3 = 1 THEN 'Breakfast' 
+                    WHEN i % 3 = 2 THEN 'Lunch' 
+                    ELSE 'Dinner' 
+                END,
                 'Meal ' || i,
                 'Description for Meal ' || i,
                 200 + (RANDOM() * 300)::INTEGER,
@@ -318,20 +381,58 @@ BEGIN
                 5 + (RANDOM() * 20)::INTEGER
             );
         END LOOP;
+        RAISE NOTICE 'Inserted % total meals', num_total_meals;
+    END;
+
+    -- Insert meal plan-meal relationships (many-to-many)
+    FOR meal_plan_rec IN (SELECT id FROM meal_plan) LOOP
+        FOR i IN 1..num_meals_per_plan LOOP
+            INSERT INTO meal_plan_meal (id, meal_plan_id, meal_id)
+            VALUES (
+                uuid_generate_v4(),
+                meal_plan_rec.id,
+                (SELECT id FROM meal OFFSET (RANDOM() * 99)::INTEGER LIMIT 1) -- Random meal from the pool
+            )
+            ON CONFLICT (meal_plan_id, meal_id) DO NOTHING; -- Avoid duplicates
+        END LOOP;
     END LOOP;
-    RAISE NOTICE 'Inserted % meals per plan', num_meals_per_plan;
+    RAISE NOTICE 'Inserted meal plan-meal relationships';
 
     -- Insert exercises
     FOR i IN 1..num_exercises LOOP
-        INSERT INTO exercise (id, name, description, muscle_groups)
+        INSERT INTO exercise (id, name, description, muscle_groups, primary_muscle_group_id)
         VALUES (
             uuid_generate_v4(),
             'Exercise ' || i,
             'Description for Exercise ' || i,
-            'Muscle Group ' || i
+            'Muscle Group ' || i,
+            (SELECT id FROM muscle_group OFFSET (RANDOM() * (10 - 1))::INTEGER LIMIT 1) -- Assuming 10 muscle groups
         );
     END LOOP;
     RAISE NOTICE 'Inserted % exercises', num_exercises;
+
+    -- Insert secondary muscle groups for exercises
+    DECLARE
+        exercise_rec RECORD;
+        chosen_muscle_group_id UUID;
+    BEGIN
+        FOR exercise_rec IN SELECT id FROM exercise LOOP
+            FOR i IN 1..((RANDOM() * 3)::INTEGER + 1) LOOP -- Randomly assign 1 to 3 secondary muscle groups
+                chosen_muscle_group_id := (SELECT id FROM muscle_group OFFSET (RANDOM() * (10 - 1))::INTEGER LIMIT 1);
+                IF NOT EXISTS (
+                    SELECT 1 FROM exercise_secondary_muscle_group
+                    WHERE exercise_id = exercise_rec.id AND muscle_group_id = chosen_muscle_group_id
+                ) THEN
+                    INSERT INTO exercise_secondary_muscle_group (id, exercise_id, muscle_group_id)
+                    VALUES (
+                        uuid_generate_v4(),
+                        exercise_rec.id,
+                        chosen_muscle_group_id
+                    );
+                END IF;
+            END LOOP;
+        END LOOP;
+    END;
 
     -- Insert workouts
     FOR customer_rec IN (SELECT id FROM customer) LOOP
@@ -435,6 +536,7 @@ END $$;
 -- TRUNCATE TABLE workout_exercise CASCADE;
 -- TRUNCATE TABLE workout CASCADE;
 -- TRUNCATE TABLE exercise CASCADE;
+-- TRUNCATE TABLE meal_plan_meal CASCADE;
 -- TRUNCATE TABLE meal CASCADE;
 -- TRUNCATE TABLE meal_plan CASCADE;
 -- TRUNCATE TABLE customer_preference CASCADE;

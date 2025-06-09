@@ -32,7 +32,7 @@ val Grey900 = Color(0xFF212121)
 
 // Dark theme specific colors
 val DarkBackground = Color(0xFF101414)
-val DarkSurface = Color(0xFF302C2C)
+val DarkSurface = Color(0xFF101414)
 val DarkSurfaceVariant = Color(0xFF2B2B2A)
 val DarkCard = Color(0xFF284048)
 val DarkButton = Color(0xFF3F4946)

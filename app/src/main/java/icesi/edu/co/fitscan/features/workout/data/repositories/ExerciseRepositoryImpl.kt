@@ -10,13 +10,14 @@ import java.util.UUID
 class ExerciseRepositoryImpl(
     private val datasource: IExerciseDataSource,
     private val mapper: ExerciseMapper
-) : IExerciseRepository {
-
-    override suspend fun getAllExercises(): Result<List<Exercise>> {
+) : IExerciseRepository {    override suspend fun getAllExercises(): Result<List<Exercise>> {
         return try {
+            android.util.Log.d("ExerciseRepositoryImpl", "[getAllExercises] Requesting all exercises")
             val response = datasource.getAllExercises()
+            android.util.Log.d("ExerciseRepositoryImpl", "[getAllExercises] Response successful: ${response.isSuccessful}, code: ${response.code()}")
             if (response.isSuccessful) {
                 val responseBody = response.body()
+                android.util.Log.d("ExerciseRepositoryImpl", "[getAllExercises] Response body: $responseBody")
                 val exerciseDto = responseBody?.data ?: emptyList()
                 android.util.Log.d("ExerciseRepositoryImpl", "[getAllExercises] DTOs: $exerciseDto")
                 val exercises = exerciseDto.map { dto ->
@@ -26,9 +27,11 @@ class ExerciseRepositoryImpl(
                 android.util.Log.d("ExerciseRepositoryImpl", "[getAllExercises] Exercises: $exercises")
                 Result.success(exercises)
             } else {
+                android.util.Log.e("ExerciseRepositoryImpl", "[getAllExercises] Error response: ${response.code()}, ${response.errorBody()?.string()}")
                 Result.failure(Exception("Error getting exercises: ${response.code()}"))
             }
         } catch (e: Exception) {
+            android.util.Log.e("ExerciseRepositoryImpl", "[getAllExercises] Exception: ${e.message}", e)
             Result.failure(e)
         }
     }

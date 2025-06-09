@@ -17,7 +17,9 @@ import icesi.edu.co.fitscan.features.notifications.ui.screens.NotificationsScree
 import icesi.edu.co.fitscan.features.nutrition.ui.screens.NutritionPlanListScreen
 import icesi.edu.co.fitscan.features.profile.ui.screens.ProfileScreen
 import icesi.edu.co.fitscan.features.settings.ui.screens.SettingsScreen
+import icesi.edu.co.fitscan.features.statistics.ui.screens.DetailedChartsScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseProgressScreen
+import icesi.edu.co.fitscan.features.statistics.ui.screens.MuscleGroupProgressScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ProgressPhotoScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.StatisticsScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
@@ -198,12 +200,18 @@ fun NavigationHost(
                 workoutExerciseId = workoutExerciseId,
                 workoutId = workoutId,
                 onNavigateBack = { navController.popBackStack() },
-                viewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = ExerciseDetailViewModelFactory())
-            )
+                viewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = ExerciseDetailViewModelFactory())            )
+        }
+          composable(Screen.DetailedCharts.route) {
+            DetailedChartsScreen(navController = navController)
         }
 
         composable(Screen.VisualProgress.route) {
             ProgressPhotoScreen(navController = navController)
+        }
+
+        composable(Screen.MuscleGroupProgress.route) {
+            MuscleGroupProgressScreen(navController = navController)
         }
     }
 }
