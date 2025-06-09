@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS running_workout_detail CASCADE;
 DROP TABLE IF EXISTS workout_exercise CASCADE;
 DROP TABLE IF EXISTS workout CASCADE;
 DROP TABLE IF EXISTS exercise CASCADE;
+DROP TABLE IF EXISTS meal_plan_meal CASCADE;
 DROP TABLE IF EXISTS meal CASCADE;
 DROP TABLE IF EXISTS meal_plan CASCADE;
 DROP TABLE IF EXISTS customer_preference CASCADE;
@@ -117,7 +118,6 @@ CREATE TABLE meal_plan (
 
 CREATE TABLE meal (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    meal_plan_id UUID REFERENCES meal_plan(id) ON DELETE CASCADE,
     meal_type TEXT,
     name TEXT,
     description TEXT,
@@ -125,6 +125,13 @@ CREATE TABLE meal (
     protein_g INTEGER,
     carbs_g INTEGER,
     fat_g INTEGER
+);
+
+CREATE TABLE meal_plan_meal (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    meal_plan_id UUID REFERENCES meal_plan(id) ON DELETE CASCADE,
+    meal_id UUID REFERENCES meal(id) ON DELETE CASCADE,
+    UNIQUE(meal_plan_id, meal_id)
 );
 
 CREATE TABLE exercise (
@@ -353,16 +360,19 @@ BEGIN
             );
         END LOOP;
     END LOOP;
-    RAISE NOTICE 'Inserted % meal plans per customer', num_meal_plans_per_customer;
-
-    -- Insert meals
-    FOR meal_plan_rec IN (SELECT id FROM meal_plan) LOOP
-        FOR i IN 1..num_meals_per_plan LOOP
-            INSERT INTO meal (id, meal_plan_id, meal_type, name, description, calories, protein_g, carbs_g, fat_g)
+    RAISE NOTICE 'Inserted % meal plans per customer', num_meal_plans_per_customer;    -- Insert meals (independent of meal plans)
+    DECLARE
+        num_total_meals INTEGER := 100; -- Create a pool of meals
+    BEGIN
+        FOR i IN 1..num_total_meals LOOP
+            INSERT INTO meal (id, meal_type, name, description, calories, protein_g, carbs_g, fat_g)
             VALUES (
                 uuid_generate_v4(),
-                meal_plan_rec.id,
-                CASE WHEN i = 1 THEN 'Breakfast' WHEN i = 2 THEN 'Lunch' ELSE 'Dinner' END,
+                CASE 
+                    WHEN i % 3 = 1 THEN 'Breakfast' 
+                    WHEN i % 3 = 2 THEN 'Lunch' 
+                    ELSE 'Dinner' 
+                END,
                 'Meal ' || i,
                 'Description for Meal ' || i,
                 200 + (RANDOM() * 300)::INTEGER,
@@ -371,8 +381,22 @@ BEGIN
                 5 + (RANDOM() * 20)::INTEGER
             );
         END LOOP;
+        RAISE NOTICE 'Inserted % total meals', num_total_meals;
+    END;
+
+    -- Insert meal plan-meal relationships (many-to-many)
+    FOR meal_plan_rec IN (SELECT id FROM meal_plan) LOOP
+        FOR i IN 1..num_meals_per_plan LOOP
+            INSERT INTO meal_plan_meal (id, meal_plan_id, meal_id)
+            VALUES (
+                uuid_generate_v4(),
+                meal_plan_rec.id,
+                (SELECT id FROM meal OFFSET (RANDOM() * 99)::INTEGER LIMIT 1) -- Random meal from the pool
+            )
+            ON CONFLICT (meal_plan_id, meal_id) DO NOTHING; -- Avoid duplicates
+        END LOOP;
     END LOOP;
-    RAISE NOTICE 'Inserted % meals per plan', num_meals_per_plan;
+    RAISE NOTICE 'Inserted meal plan-meal relationships';
 
     -- Insert exercises
     FOR i IN 1..num_exercises LOOP
@@ -512,6 +536,7 @@ END $$;
 -- TRUNCATE TABLE workout_exercise CASCADE;
 -- TRUNCATE TABLE workout CASCADE;
 -- TRUNCATE TABLE exercise CASCADE;
+-- TRUNCATE TABLE meal_plan_meal CASCADE;
 -- TRUNCATE TABLE meal CASCADE;
 -- TRUNCATE TABLE meal_plan CASCADE;
 -- TRUNCATE TABLE customer_preference CASCADE;
