@@ -5,7 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -34,29 +34,33 @@ fun StatisticCard(
         shape = RoundedCornerShape(18.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable { onClick() },
+        shadowElevation = 4.dp
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Left icon with enhanced background
             Box(
                 modifier = Modifier
                     .background(
                         color = if (iconBackground != Color.Unspecified) iconBackground 
-                               else MaterialTheme.colorScheme.primaryContainer,
-                        shape = RoundedCornerShape(50)
+                               else MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(12.dp)
                     )
-                    .padding(10.dp)
+                    .padding(12.dp)
             ) {
                 Icon(
                     painter = painterResource(id = iconRes),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = if (iconBackground != Color.Unspecified) MaterialTheme.colorScheme.onPrimary
+                          else MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp)
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
+            // Text content
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title, 
@@ -70,18 +74,21 @@ fun StatisticCard(
                     fontSize = 14.sp
                 )
             }
+            // Right arrow with subtle background
             Box(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(50))
+                    .background(
+                        MaterialTheme.colorScheme.surfaceVariant, 
+                        shape = RoundedCornerShape(50)
+                    )
                     .padding(8.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "Ver más",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp)
-                )
-            }
+                )            }
         }
     }
 }

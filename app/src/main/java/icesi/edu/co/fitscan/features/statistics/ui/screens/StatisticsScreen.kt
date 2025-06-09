@@ -72,15 +72,14 @@ fun StatisticsScreen(
                 iconRes = R.drawable.ic_camera,
                 onClick = { navController.navigate(Screen.VisualProgress.route) }
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            // Exercise Progress Card
+            Spacer(modifier = Modifier.height(12.dp))            // Muscle Group Progress Card
             StatisticCard(
-                title = "Progreso por ejercicio",
-                subtitle = "Visualiza tu avance en ejercicios específicos",
-                iconRes = R.drawable.ic_run,
-                onClick = { navController.navigate(Screen.ExerciseProgress.route) }
+                title = "Progreso por grupo muscular",
+                subtitle = "Analiza tu desarrollo muscular con gráficos avanzados",
+                iconRes = R.drawable.ic_biceps, // Enhanced with specific fitness icon
+                onClick = { navController.navigate(Screen.MuscleGroupProgress.route) }
             )
-            Spacer(modifier = Modifier.height(20.dp))            // Hours Worked Chart Section
+            Spacer(modifier = Modifier.height(20.dp))// Hours Worked Chart Section
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -124,22 +123,20 @@ fun StatisticsScreen(
             ) {                
                 GoalCard(
                     title = "Calorías",
-                    areaData = caloriesAreaData,
+                    areaData = listOf(2.0f, 5.0f, 3.0f, 4.0f, 6.0f),
                     color = MaterialTheme.colorScheme.chartPrimary,
                     barColor = MaterialTheme.colorScheme.chartPrimary,
                     modifier = Modifier.weight(1f).heightIn(min = 140.dp, max = 220.dp),
                     onClick = { navController.navigate(Screen.DetailedCharts.route) }
                 )
-                /*
                 GoalCard(
                     title = "Peso Movido",
-                    areaData = weightAreaData,
+                    areaData = listOf(2.0f, 5.0f, 3.0f, 4.0f, 6.0f),
                     color = MaterialTheme.colorScheme.iconTint,
                     barColor = MaterialTheme.colorScheme.iconTint,
                     modifier = Modifier.weight(1f).heightIn(min = 140.dp, max = 220.dp),
-                    onClick = { navController.navigate(Screen.DetailedCharts.route) }
+                    onClick = { navController.navigate(Screen.ExerciseProgress.route) }
                 )
-                */
             }
             Spacer(modifier = Modifier.height(16.dp))
         }

@@ -41,22 +41,30 @@ class WorkoutRepositoryImpl(
         } catch (e: Exception) {
             Result.failure(e)
         }
-    }
-
-    override suspend fun getWorkoutById(id: UUID): Result<Workout> {
+    }    override suspend fun getWorkoutById(id: UUID): Result<Workout> {
         return try {
+            android.util.Log.d("WorkoutRepositoryImpl", "[getWorkoutById] Requesting workout with id: $id")
             val response = datasource.getWorkoutById(id.toString())
+            android.util.Log.d("WorkoutRepositoryImpl", "[getWorkoutById] Response successful: ${response.isSuccessful}, code: ${response.code()}")
             if (response.isSuccessful) {
-                val workout = response.body()?.data?.let { dto: WorkoutDto -> mapper.toDomain(dto) }
+                val responseBody = response.body()
+                android.util.Log.d("WorkoutRepositoryImpl", "[getWorkoutById] Response body: $responseBody")
+                val workout = responseBody?.data?.let { dto: WorkoutDto -> 
+                    android.util.Log.d("WorkoutRepositoryImpl", "[getWorkoutById] Mapping DTO: $dto")
+                    mapper.toDomain(dto) 
+                }
+                android.util.Log.d("WorkoutRepositoryImpl", "[getWorkoutById] Mapped workout: $workout")
                 if (workout != null) {
                     Result.success(workout)
                 } else {
                     Result.failure(Exception("Workout not found"))
                 }
             } else {
+                android.util.Log.e("WorkoutRepositoryImpl", "[getWorkoutById] Error response: ${response.code()}, ${response.errorBody()?.string()}")
                 Result.failure(Exception("Error: ${response.code()}"))
             }
         } catch (e: Exception) {
+            android.util.Log.e("WorkoutRepositoryImpl", "[getWorkoutById] Exception: ${e.message}", e)
             Result.failure(e)
         }
     }

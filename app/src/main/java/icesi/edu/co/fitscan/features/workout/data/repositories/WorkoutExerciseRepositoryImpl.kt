@@ -11,20 +11,27 @@ import java.util.UUID
 class WorkoutExerciseRepositoryImpl(
     private val datasource: IWorkoutExerciseDataSource,
     private val mapper: WorkoutExerciseMapper
-) : IWorkoutExerciseRepository {
-
-    override suspend fun getWorkoutExercises(workoutId: UUID): Result<List<WorkoutExercise>> {
+) : IWorkoutExerciseRepository {    override suspend fun getWorkoutExercises(workoutId: UUID): Result<List<WorkoutExercise>> {
         return try {
+            android.util.Log.d("WorkoutExerciseRepositoryImpl", "[getWorkoutExercises] Requesting exercises for workout: $workoutId")
             val response = datasource.getExercisesByWorkoutId(workoutId.toString())
+            android.util.Log.d("WorkoutExerciseRepositoryImpl", "[getWorkoutExercises] Response successful: ${response.isSuccessful}, code: ${response.code()}")
             if (response.isSuccessful) {
+                val responseBody = response.body()
+                android.util.Log.d("WorkoutExerciseRepositoryImpl", "[getWorkoutExercises] Response body: $responseBody")
                 val workoutExercises =
-                    response.body()?.data?.map { dto: WorkoutExerciseDto -> mapper.toDomain(dto) }
-                        ?: emptyList()
+                    responseBody?.data?.map { dto: WorkoutExerciseDto -> 
+                        android.util.Log.d("WorkoutExerciseRepositoryImpl", "[getWorkoutExercises] Mapping DTO: $dto")
+                        mapper.toDomain(dto) 
+                    } ?: emptyList()
+                android.util.Log.d("WorkoutExerciseRepositoryImpl", "[getWorkoutExercises] Mapped exercises: $workoutExercises")
                 Result.success(workoutExercises)
             } else {
-                Result.failure(Exception("Error getting workout exercises: \\${response.code()}"))
+                android.util.Log.e("WorkoutExerciseRepositoryImpl", "[getWorkoutExercises] Error response: ${response.code()}, ${response.errorBody()?.string()}")
+                Result.failure(Exception("Error getting workout exercises: ${response.code()}"))
             }
         } catch (e: Exception) {
+            android.util.Log.e("WorkoutExerciseRepositoryImpl", "[getWorkoutExercises] Exception: ${e.message}", e)
             Result.failure(e)
         }
     }

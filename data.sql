@@ -20,6 +20,9 @@ DROP TABLE IF EXISTS fitness_goal CASCADE;
 DROP TABLE IF EXISTS training_level CASCADE;
 DROP TABLE IF EXISTS body_measure CASCADE;
 DROP TABLE IF EXISTS customer CASCADE;
+DROP TABLE IF EXISTS exercise_secondary_muscle_group CASCADE;
+DROP TABLE IF EXISTS muscle_group CASCADE;
+DELETE FROM directus_files;
 
 -- =============================
 -- EXTENSIONES
@@ -51,6 +54,12 @@ CREATE TABLE dietary_restriction (
 CREATE TABLE dietary_preference (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT UNIQUE NOT NULL
+);
+
+CREATE TABLE muscle_group (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT UNIQUE NOT NULL,
+    description TEXT
 );
 
 CREATE TABLE body_measure (
@@ -122,7 +131,15 @@ CREATE TABLE exercise (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
     description TEXT,
-    muscle_groups TEXT
+    muscle_groups TEXT, -- Keeping for compatibility
+    primary_muscle_group_id UUID REFERENCES muscle_group(id) ON DELETE SET NULL
+);
+
+CREATE TABLE exercise_secondary_muscle_group (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    exercise_id UUID REFERENCES exercise(id) ON DELETE CASCADE,
+    muscle_group_id UUID REFERENCES muscle_group(id) ON DELETE CASCADE,
+    UNIQUE(exercise_id, muscle_group_id)
 );
 
 CREATE TABLE workout (
@@ -183,6 +200,30 @@ CREATE TABLE progress_photo (
     image_path UUID REFERENCES directus_files(id) ON DELETE CASCADE
 );
 
+CREATE OR REPLACE VIEW muscle_group_sets AS
+SELECT
+    mg.id AS muscle_group_id,
+    mg.name AS muscle_group_name,
+    SUM(
+        CASE WHEN e.primary_muscle_group_id = mg.id THEN ce.sets * 1.0
+             ELSE ce.sets * 0.5
+        END
+    ) AS weighted_sets
+FROM
+    completed_exercise ce
+JOIN exercise e ON ce.exercise_id = e.id
+JOIN muscle_group mg ON (
+    e.primary_muscle_group_id = mg.id
+    OR
+    EXISTS (
+        SELECT 1
+        FROM exercise_secondary_muscle_group s
+        WHERE s.exercise_id = e.id AND s.muscle_group_id = mg.id
+    )
+)
+GROUP BY
+    mg.id, mg.name;
+
 DELETE FROM directus_users WHERE email <> 'admin@fitscan.com';
 
 -- =============================
@@ -232,14 +273,26 @@ BEGIN
         INSERT INTO dietary_restriction (id, name)
         VALUES (uuid_generate_v4(), 'Restriction ' || i);
     END LOOP;
-    RAISE NOTICE 'Inserted % dietary restrictions', num_dietary_restrictions;
-
-    -- Insert dietary preferences
+    RAISE NOTICE 'Inserted % dietary restrictions', num_dietary_restrictions;    -- Insert dietary preferences
     FOR i IN 1..num_dietary_preferences LOOP
         INSERT INTO dietary_preference (id, name)
         VALUES (uuid_generate_v4(), 'Preference ' || i);
     END LOOP;
     RAISE NOTICE 'Inserted % dietary preferences', num_dietary_preferences;
+
+    -- Insert muscle groups
+    INSERT INTO muscle_group (id, name, description) VALUES
+        (uuid_generate_v4(), 'Chest', 'Pectoral muscles'),
+        (uuid_generate_v4(), 'Back', 'Latissimus dorsi, rhomboids, middle traps'),
+        (uuid_generate_v4(), 'Shoulders', 'Deltoids'),
+        (uuid_generate_v4(), 'Biceps', 'Biceps brachii'),
+        (uuid_generate_v4(), 'Triceps', 'Triceps brachii'),
+        (uuid_generate_v4(), 'Legs', 'Quadriceps, hamstrings, glutes'),
+        (uuid_generate_v4(), 'Calves', 'Gastrocnemius, soleus'),
+        (uuid_generate_v4(), 'Abs', 'Abdominal muscles'),
+        (uuid_generate_v4(), 'Forearms', 'Forearm muscles'),
+        (uuid_generate_v4(), 'Traps', 'Trapezius muscles');
+    RAISE NOTICE 'Inserted muscle groups';
 
     -- Insert body measures
     FOR i IN 1..num_body_measures LOOP
@@ -323,15 +376,39 @@ BEGIN
 
     -- Insert exercises
     FOR i IN 1..num_exercises LOOP
-        INSERT INTO exercise (id, name, description, muscle_groups)
+        INSERT INTO exercise (id, name, description, muscle_groups, primary_muscle_group_id)
         VALUES (
             uuid_generate_v4(),
             'Exercise ' || i,
             'Description for Exercise ' || i,
-            'Muscle Group ' || i
+            'Muscle Group ' || i,
+            (SELECT id FROM muscle_group OFFSET (RANDOM() * (10 - 1))::INTEGER LIMIT 1) -- Assuming 10 muscle groups
         );
     END LOOP;
     RAISE NOTICE 'Inserted % exercises', num_exercises;
+
+    -- Insert secondary muscle groups for exercises
+    DECLARE
+        exercise_rec RECORD;
+        chosen_muscle_group_id UUID;
+    BEGIN
+        FOR exercise_rec IN SELECT id FROM exercise LOOP
+            FOR i IN 1..((RANDOM() * 3)::INTEGER + 1) LOOP -- Randomly assign 1 to 3 secondary muscle groups
+                chosen_muscle_group_id := (SELECT id FROM muscle_group OFFSET (RANDOM() * (10 - 1))::INTEGER LIMIT 1);
+                IF NOT EXISTS (
+                    SELECT 1 FROM exercise_secondary_muscle_group
+                    WHERE exercise_id = exercise_rec.id AND muscle_group_id = chosen_muscle_group_id
+                ) THEN
+                    INSERT INTO exercise_secondary_muscle_group (id, exercise_id, muscle_group_id)
+                    VALUES (
+                        uuid_generate_v4(),
+                        exercise_rec.id,
+                        chosen_muscle_group_id
+                    );
+                END IF;
+            END LOOP;
+        END LOOP;
+    END;
 
     -- Insert workouts
     FOR customer_rec IN (SELECT id FROM customer) LOOP

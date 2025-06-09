@@ -11,13 +11,14 @@ interface IExerciseDataSource {
 
     companion object {
         const val BASE_PATH = "items"
-    }
-
-    @GET("$BASE_PATH/exercise")
-    suspend fun getAllExercises(): Response<ExerciseResponseDto>
-
-    @GET("$BASE_PATH/exercise/{id}")
-    suspend fun getExerciseById(@Path("id") id: String): Response<ExerciseSingleResponseDto>
+    }    @GET("$BASE_PATH/exercise")
+    suspend fun getAllExercises(
+        @Query("fields") fields: String = "*,primary_muscle_group_id.*,secondary_muscle_groups.*,secondary_muscle_groups.muscle_group.*"
+    ): Response<ExerciseResponseDto>    @GET("$BASE_PATH/exercise/{id}")
+    suspend fun getExerciseById(
+        @Path("id") id: String,
+        @Query("fields") fields: String = "*,primary_muscle_group_id.*,secondary_muscle_groups.*,secondary_muscle_groups.muscle_group.*"
+    ): Response<ExerciseSingleResponseDto>
 
     @POST("$BASE_PATH/exercise")
     suspend fun createExercise(@Body exercise: ExerciseDto): Response<ExerciseDto>
