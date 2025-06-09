@@ -109,19 +109,18 @@ fun ProgressPhotoScreen(navController: NavController = rememberNavController()) 
                 "date_asc" -> progressPhotos.sortedBy { it.photoDate }
                 "name_asc" -> progressPhotos.sortedBy { it.title ?: "" }
                 "name_desc" -> progressPhotos.sortedByDescending { it.title ?: "" }
-                else -> progressPhotos.sortedByDescending { it.photoDate }
-            }
+                else -> progressPhotos.sortedByDescending { it.photoDate }            }
         }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        Column(modifier = Modifier.fillMaxSize()) {
             FitScanHeader(
                 title = "Toma una foto de las gains 🔥🔥🔥",
                 navController = navController
             )
 
             if (progressPhotos.isNotEmpty()) {
-                Box(modifier = Modifier.fillMaxWidth().aspectRatio(1f)) {
+                Box(modifier = Modifier.fillMaxWidth().aspectRatio(1.2f)) {
                     SubcomposeAsyncImage(
                         model =
                             ImageRequest.Builder(LocalContext.current)
@@ -337,7 +336,7 @@ fun ProgressPhotoScreen(navController: NavController = rememberNavController()) 
                 }
             }
 
-            Column(modifier = Modifier.padding(12.dp)) {
+            Column(modifier = Modifier.padding(12.dp).fillMaxHeight()) {
                 Text(text = "Progreso", fontSize = 18.sp, fontWeight = FontWeight.Medium)
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -392,8 +391,7 @@ fun ProgressPhotoScreen(navController: NavController = rememberNavController()) 
                         Text(
                             text = if (viewMode == "grid") "Lista" else "Cuadrícula",
                             fontSize = 14.sp
-                        )
-                    }
+                        )                    }
                 }
 
                 if (viewMode == "grid") {
@@ -401,10 +399,7 @@ fun ProgressPhotoScreen(navController: NavController = rememberNavController()) 
                         columns = GridCells.Fixed(3),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier =
-                            Modifier.height(
-                                400.dp
-                            )
+                        modifier = Modifier.fillMaxSize().weight(1f)
                     ) {
                         items(sortedPhotos) { photo ->
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -471,11 +466,10 @@ fun ProgressPhotoScreen(navController: NavController = rememberNavController()) 
                                 )
                             }
                         }
-                    }
-                } else {
+                    }                } else {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.height(400.dp)
+                        modifier = Modifier.fillMaxSize().weight(1f)
                     ) {
                         items(sortedPhotos) { photo ->
                             Row(
