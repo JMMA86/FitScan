@@ -25,3 +25,5 @@ val redDangerous = Color(0xFF9F423C)
 
 val dashboardCardBackground = Color(0xFF2F483C)
 val dashboardGreen = Color(0xFF00FF7F)
+
+val navBarGreen = Color(0xFF86EFAC)

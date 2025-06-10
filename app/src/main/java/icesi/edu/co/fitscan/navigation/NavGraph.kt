@@ -2,6 +2,7 @@ package icesi.edu.co.fitscan.navigation
 
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -21,6 +22,7 @@ import icesi.edu.co.fitscan.features.statistics.ui.screens.StatisticsScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.CreateWorkoutScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.ExerciseDetailScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.PerformWorkoutScreen
+import icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutDetailScreen
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.ExerciseDetailViewModelFactory
 import icesi.edu.co.fitscan.features.workoutlist.ui.screens.WorkoutListScreen
 import icesi.edu.co.fitscan.ui.theme.greenLess
@@ -59,7 +61,14 @@ fun NavigationHost(
         }
 
         composable(Screen.Meal.route) {
-            NutritionPlanListScreen(/* Pasa parámetros si necesita */)
+            NutritionPlanListScreen(
+                myPlans = TODO(),
+                popularPlans = TODO(),
+                onEdit = TODO(),
+                onDetail = TODO(),
+                onAdd = TODO(),
+                navController = TODO()/* Pasa parámetros si necesita */
+            )
         }
 
         composable(Screen.Statistics.route) {
@@ -150,7 +159,7 @@ fun NavigationHost(
         ) { backStackEntry ->
             val workoutId = backStackEntry.arguments?.getString("workoutId")
             Log.d("NavGraph", "Navegando a workout_detail con workoutId: $workoutId")
-            icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutDetailScreen(
+            WorkoutDetailScreen(
                 workoutId = workoutId,
                 onExerciseClick = { workoutId, workoutExerciseId ->
                     navController.navigate("exercise_detail/$workoutId/$workoutExerciseId")
@@ -174,7 +183,7 @@ fun NavigationHost(
                 workoutExerciseId = workoutExerciseId,
                 workoutId = workoutId,
                 onNavigateBack = { navController.popBackStack() },
-                viewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = ExerciseDetailViewModelFactory())
+                viewModel = viewModel(factory = ExerciseDetailViewModelFactory())
             )
         }
 

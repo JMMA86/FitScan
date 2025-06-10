@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import icesi.edu.co.fitscan.ui.theme.greyLight
 import icesi.edu.co.fitscan.ui.theme.greyMed
+import icesi.edu.co.fitscan.ui.theme.navBarGreen
 
 
 @Composable
