@@ -27,6 +27,7 @@ import icesi.edu.co.fitscan.features.workout.ui.screens.ExerciseDetailScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.PerformWorkoutScreen
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.ExerciseDetailViewModelFactory
 import icesi.edu.co.fitscan.features.workoutlist.ui.screens.WorkoutListScreen
+import icesi.edu.co.fitscan.features.mealplan.ui.screens.CreateMealPlanScreen
 
 @Composable
 fun NavigationHost(
@@ -86,7 +87,7 @@ fun NavigationHost(
         }
 
         composable(Screen.Meal.route) {
-            NutritionPlanListScreen(/* Pasa parámetros si necesita */)
+            CreateMealPlanScreen()
         }
 
         composable(Screen.Statistics.route) {
@@ -212,6 +213,10 @@ fun NavigationHost(
 
         composable(Screen.MuscleGroupProgress.route) {
             MuscleGroupProgressScreen(navController = navController)
+        }
+
+        composable("nutrition_plan_list") {
+            NutritionPlanListScreen()
         }
     }
 }

@@ -134,6 +134,20 @@ CREATE TABLE meal_plan_meal (
     UNIQUE(meal_plan_id, meal_id)
 );
 
+CREATE TABLE meal_plan_restriction (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    meal_plan_id UUID REFERENCES meal_plan(id) ON DELETE CASCADE,
+    restriction_id UUID REFERENCES dietary_restriction(id) ON DELETE CASCADE,
+    UNIQUE(meal_plan_id, restriction_id)
+);
+
+CREATE TABLE meal_plan_preference (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    meal_plan_id UUID REFERENCES meal_plan(id) ON DELETE CASCADE,
+    preference_id UUID REFERENCES dietary_preference(id) ON DELETE CASCADE,
+    UNIQUE(meal_plan_id, preference_id)
+);
+
 CREATE TABLE exercise (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
