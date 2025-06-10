@@ -67,7 +67,7 @@ fun NavigationHost(
                 onEdit = TODO(),
                 onDetail = TODO(),
                 onAdd = TODO(),
-                navController = TODO()/* Pasa parámetros si necesita */
+                navController = TODO()
             )
         }
 

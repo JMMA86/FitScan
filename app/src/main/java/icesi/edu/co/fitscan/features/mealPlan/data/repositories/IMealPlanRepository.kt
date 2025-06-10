@@ -1,4 +1,4 @@
-package icesi.edu.co.fitscan.features.nutrition.data.repositories
+package icesi.edu.co.fitscan.features.mealPlan.data.repositories
 
 import icesi.edu.co.fitscan.domain.model.MealPlan
 

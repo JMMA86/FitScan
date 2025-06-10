@@ -1,9 +1,9 @@
-package icesi.edu.co.fitscan.features.nutrition.ui.viewmodel
+package icesi.edu.co.fitscan.features.mealPlan.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import icesi.edu.co.fitscan.domain.model.MealPlan
-import icesi.edu.co.fitscan.features.nutrition.data.repositories.IMealPlanRepository
+import icesi.edu.co.fitscan.features.mealPlan.data.repositories.IMealPlanRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

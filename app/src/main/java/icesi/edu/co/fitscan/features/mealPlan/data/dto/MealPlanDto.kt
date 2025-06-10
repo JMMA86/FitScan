@@ -1,4 +1,4 @@
-package icesi.edu.co.fitscan.features.nutrition.data.dto
+package icesi.edu.co.fitscan.features.mealPlan.data.dto
 
 import icesi.edu.co.fitscan.domain.model.Meal
 

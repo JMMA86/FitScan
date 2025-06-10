@@ -1,4 +1,4 @@
-package icesi.edu.co.fitscan.features.nutrition.ui.screens
+package icesi.edu.co.fitscan.features.mealPlan.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
