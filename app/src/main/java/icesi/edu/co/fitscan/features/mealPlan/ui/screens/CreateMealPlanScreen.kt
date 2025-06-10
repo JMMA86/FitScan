@@ -35,11 +35,12 @@ import icesi.edu.co.fitscan.features.mealPlan.data.dto.FitnessGoalDto
 import icesi.edu.co.fitscan.features.mealPlan.data.dto.DietaryRestrictionDto
 import icesi.edu.co.fitscan.features.mealPlan.data.dto.DietaryPreferenceDto
 import icesi.edu.co.fitscan.features.mealPlan.data.dto.MealDto
+import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CreateMealPlanScreen(
-    customerId: String = "demo-customer-id"
+    customerId: String = AppState.customerId ?: ""
 ) {
     // ViewModel setup (in real app, use DI or pass from NavGraph)
     val dataSource = remember { RetrofitInstance.create(IMealPlanDataSource::class.java) }
@@ -276,7 +277,7 @@ fun CreateMealPlanScreen(
         val message = if (isSuccess) "¡Plan de alimentación creado exitosamente!" else (uiState as? icesi.edu.co.fitscan.features.mealPlan.ui.viewmodel.CreateMealPlanUiState.Error)?.message ?: "Error desconocido"
         androidx.compose.ui.window.Dialog(onDismissRequest = {
             viewModel.loadData() // Optionally reload data
-            viewModel._uiState.value = icesi.edu.co.fitscan.features.mealPlan.ui.viewmodel.CreateMealPlanUiState.Idle
+            viewModel.resetUiState()
             if (isSuccess) {
                 navController.navigate("nutrition_plan_list") {
                     popUpTo("meal") { inclusive = true }
@@ -292,7 +293,7 @@ fun CreateMealPlanScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
                         viewModel.loadData()
-                        viewModel._uiState.value = icesi.edu.co.fitscan.features.mealPlan.ui.viewmodel.CreateMealPlanUiState.Idle
+                        viewModel.resetUiState()
                         if (isSuccess) {
                             navController.navigate("nutrition_plan_list") {
                                 popUpTo("meal") { inclusive = true }

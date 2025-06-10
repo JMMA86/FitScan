@@ -61,4 +61,8 @@ class CreateMealPlanViewModel(
             _uiState.value = if (result) CreateMealPlanUiState.Success else CreateMealPlanUiState.Error("No se pudo crear el plan")
         }
     }
+
+    fun resetUiState() {
+        _uiState.value = CreateMealPlanUiState.Idle
+    }
 }

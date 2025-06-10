@@ -20,15 +20,18 @@ class CreateMealPlanUseCase(private val repository: MealPlanRepository) {
             goal = goal
         )
         val created = repository.createMealPlan(mealPlan)
-        if (created?.id != null) {
-            mealIds.forEach { mealId ->
-                repository.addMealToMealPlan(MealPlanMealDto(meal_plan_id = created.id, meal_id = mealId))
-            }
-            restrictionIds.forEach { restrictionId ->
-                repository.addRestrictionToMealPlan(created.id, restrictionId)
-            }
-            preferenceIds.forEach { preferenceId ->
-                repository.addPreferenceToMealPlan(created.id, preferenceId)
+        // Considera éxito si el objeto retornado no es null (aunque el id sea null)
+        if (created != null) {
+            created.id?.let { id ->
+                mealIds.forEach { mealId ->
+                    repository.addMealToMealPlan(MealPlanMealDto(meal_plan_id = id, meal_id = mealId))
+                }
+                restrictionIds.forEach { restrictionId ->
+                    repository.addRestrictionToMealPlan(id, restrictionId)
+                }
+                preferenceIds.forEach { preferenceId ->
+                    repository.addPreferenceToMealPlan(id, preferenceId)
+                }
             }
             return true
         }

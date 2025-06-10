@@ -17,7 +17,15 @@ class MealPlanRepository(private val dataSource: IMealPlanDataSource) {
         return dataSource.getMeals().body()?.data ?: emptyList()
     }
     suspend fun createMealPlan(mealPlan: MealPlanDto): MealPlanDto? {
-        return dataSource.createMealPlan(mealPlan).body()
+        val response = dataSource.createMealPlan(mealPlan)
+        // Considera éxito si el status HTTP es exitoso, aunque el body sea null
+        return if (response.isSuccessful) response.body() ?: MealPlanDto(
+            id = null, // o puedes intentar extraer el id de otra forma si tu backend lo retorna en headers
+            customer_id = mealPlan.customer_id,
+            name = mealPlan.name,
+            description = mealPlan.description,
+            goal = mealPlan.goal
+        ) else null
     }
     suspend fun addMealToMealPlan(mealPlanMeal: MealPlanMealDto): MealPlanMealDto? {
         return dataSource.addMealToMealPlan(mealPlanMeal).body()

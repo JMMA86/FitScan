@@ -216,7 +216,14 @@ fun NavigationHost(
         }
 
         composable("nutrition_plan_list") {
-            NutritionPlanListScreen()
+            NutritionPlanListScreen(
+                myPlans = emptyList(),
+                popularPlans = emptyList(),
+                onEdit = {},
+                onDetail = {},
+                onAdd = {},
+                navController = navController
+            )
         }
     }
 }
