@@ -26,8 +26,10 @@ import icesi.edu.co.fitscan.navigation.NavigationHost
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import icesi.edu.co.fitscan.features.common.ui.components.FitScanNavBar
 import icesi.edu.co.fitscan.navigation.Screen
+import icesi.edu.co.fitscan.notification.NotificationUtil
 
-class MainActivity : ComponentActivity() {    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestPermissions(
@@ -40,14 +42,28 @@ class MainActivity : ComponentActivity() {    @RequiresApi(Build.VERSION_CODES.T
         Firebase.messaging.subscribeToTopic("noti").addOnSuccessListener {
             Log.e(">>>","Suscrito")
         }
-
+        
         enableEdgeToEdge()
         MultipartProvider.init(applicationContext)
+        
+        // Cancelar notificación pendiente cuando se abre la app
+        NotificationUtil.cancelInactivityNotification(this)
+        
         setContent {
             FitScanTheme {
                 App()
             }
         }
+    }    override fun onStop() {
+        super.onStop()
+        // Programar notificación cuando el usuario sale completamente de la app
+        NotificationUtil.scheduleInactivityNotification(this, 30)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        // Cancelar notificación cuando el usuario regresa a la app
+        NotificationUtil.cancelInactivityNotification(this)
     }
 }
 
@@ -61,7 +77,7 @@ fun App() {
         Screen.Registration.route,
         Screen.BodyMeasurements.route
     )
-    val showHeaderAndNavBar = currentRoute != null && authRoutes.none { currentRoute?.startsWith(it) == true }
+    val showHeaderAndNavBar = currentRoute != null && authRoutes.none { currentRoute.startsWith(it) }
 
     Scaffold (
         bottomBar = {
