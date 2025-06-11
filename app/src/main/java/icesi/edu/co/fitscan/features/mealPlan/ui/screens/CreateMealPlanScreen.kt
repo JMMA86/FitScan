@@ -4,6 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -104,17 +106,18 @@ fun CreateMealPlanScreen(
             Text("¿Cuál es tu meta?", color = primaryTextColor, fontSize = 16.sp)
             Text("Selecciona tu meta principal", color = secondaryTextColor, fontSize = 14.sp)
             Spacer(modifier = Modifier.height(8.dp))
-            Row(
+            // Cambiado a scroll horizontal para metas
+            LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                goals.forEach { goal ->
+                items(goals) { goal ->
                     val selected = selectedGoal?.id == goal.id
                     Surface(
                         shape = RoundedCornerShape(16.dp),
                         color = if (selected) accentColor.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant,
                         modifier = Modifier
-                            .weight(1f)
+                            .width(IntrinsicSize.Min)
                             .clip(RoundedCornerShape(16.dp))
                             .clickable { selectedGoal = goal }
                     ) {
@@ -129,7 +132,15 @@ fun CreateMealPlanScreen(
                                 modifier = Modifier.size(32.dp)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(goal.goal_name, color = if (selected) accentColor else secondaryTextColor, fontSize = 14.sp)
+                            Text(
+                                goal.goal_name,
+                                color = if (selected) accentColor else secondaryTextColor,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                maxLines = 2,
+                                modifier = Modifier.widthIn(min = 80.dp, max = 140.dp),
+                                softWrap = true
+                            )
                         }
                     }
                 }
