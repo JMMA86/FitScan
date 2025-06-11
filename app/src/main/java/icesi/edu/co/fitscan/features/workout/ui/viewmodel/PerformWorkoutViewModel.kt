@@ -126,6 +126,10 @@ class PerformWorkoutViewModel(
                 timerManager.reset()
                 timerManager.start()
                 updateCurrentAndNextExercises()
+            } else if (currentExerciseIndex == exercises.size - 1) {
+                // Permitir llegar al último ejercicio y actualizar la UI
+                currentExerciseIndex++
+                updateCurrentAndNextExercises()
             }
         }
     }
@@ -137,6 +141,7 @@ class PerformWorkoutViewModel(
                 currentExerciseStartTime = getCurrentTimeHumanReadable()
                 timerManager.reset()
                 timerManager.start()
+                // Fuerza la actualización del StateFlow para redibujar la UI
                 updateCurrentAndNextExercises()
             }
         }
@@ -226,15 +231,20 @@ class PerformWorkoutViewModel(
     ): CurrentExercise {
         val elapsed = formatSeconds(seconds)
         return exercises.getOrNull(index)?.let {
-            // Generate repetitions list based on reps value
+            // Generate repetitions and weight lists based on reps value
             val repsCount = it.reps.toIntOrNull() ?: 0
-            val repsList = (1..repsCount).map { repNum -> "Rep $repNum" }
+            val repsList = (1..repsCount).map { repNum -> "Set $repNum" }
+            // Default values for reps and kilos: 0 if not saved
+            val defaultRepsValues = List(repsCount) { 0 }
+            val defaultKilosValues = List(repsCount) { 0f }
             CurrentExercise(
                 name = it.title,
                 time = formattedTime,
                 series = it.sets,
                 remainingTime = "Tiempo transcurrido: $elapsed",
-                repetitions = repsList
+                repetitions = repsList,
+                repsValues = defaultRepsValues,
+                kilosValues = defaultKilosValues
             )
         } ?: CurrentExercise()
     }
@@ -277,7 +287,7 @@ class PerformWorkoutViewModel(
         val next = createNextExercise(exercises, currentExerciseIndex + 1)
         val remaining = exercises.drop(currentExerciseIndex + 1)
         _workoutState = _workoutState.copy(
-            currentExercise = current,
+            currentExercise = current, // always update with the new exercise's reps
             nextExercise = next,
             remainingExercises = remaining,
             progress = "${currentExerciseIndex}/${exercises.size} ejercicios completados"

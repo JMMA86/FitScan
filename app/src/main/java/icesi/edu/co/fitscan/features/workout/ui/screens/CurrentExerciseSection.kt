@@ -113,7 +113,7 @@ fun CurrentExerciseSection(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "Numero de repetición",
+                                text = "Serie",
                                 modifier = Modifier.weight(1f),
                                 fontSize = Dimensions.MediumTextSize,
                                 color = MaterialTheme.colorScheme.onSurface
