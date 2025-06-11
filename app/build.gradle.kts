@@ -41,6 +41,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
     implementation(libs.androidx.material.icons.core)
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
