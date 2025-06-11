@@ -31,10 +31,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.common.ui.components.ToggleOption
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 
+/*
 @Composable
 fun WorkoutTypeSelector(
     selectedTab: String,
@@ -66,10 +69,11 @@ fun WorkoutTypeSelector(
         )
     }
 }
+*/
 
 @Composable
-fun CreateWorkoutScreen() {
-    var selectedTab by remember { mutableStateOf("Gym") }
+fun CreateWorkoutScreen(navController: NavController) {
+    // var selectedTab by remember { mutableStateOf("Gym") }
 
     val scrollState = rememberScrollState()
 
@@ -90,7 +94,7 @@ fun CreateWorkoutScreen() {
                     contentDescription = "Regresar",
                     tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
-                        .clickable { /* Acción regresar */ }
+                        .clickable { navController.popBackStack() }
                         .size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
@@ -104,13 +108,19 @@ fun CreateWorkoutScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Selector de tipo de entrenamiento (Gym o Carrera)
+            // Selector de tipo de entrenamiento (Gym o Carrera) - COMENTADO
+            /*
             WorkoutTypeSelector(
                 selectedTab = selectedTab,
                 onTabSelected = { selectedTab = it }
             )
+            */
 
-            // El contenido específico se muestra según el tab seleccionado
+            // Mostrar directamente la pantalla de gimnasio
+            CreateWorkoutGymScreen()
+            
+            // El contenido específico se muestra según el tab seleccionado - COMENTADO
+            /*
             when (selectedTab) {
                 "Gym" -> {
                     CreateWorkoutGymScreen()
@@ -119,6 +129,7 @@ fun CreateWorkoutScreen() {
                     CreateWorkoutRunningScreen()
                 }
             }
+            */
         }
     }
 }
@@ -127,6 +138,6 @@ fun CreateWorkoutScreen() {
 @Composable
 fun CreateWorkoutScreenPreview() {
     FitScanTheme {
-        CreateWorkoutScreen()
+        CreateWorkoutScreen(navController = rememberNavController())
     }
 }

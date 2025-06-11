@@ -135,9 +135,9 @@ fun NavigationHost(
         composable(Screen.ExerciseProgress.route) {
             ExerciseProgressScreen(navController = navController)
         }
-
+        
         composable(Screen.CreateWorkout.route) {
-            CreateWorkoutScreen()
+            CreateWorkoutScreen(navController = navController)
         }
 
         composable(
