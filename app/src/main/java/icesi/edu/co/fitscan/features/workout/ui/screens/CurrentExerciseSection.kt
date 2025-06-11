@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,6 +49,10 @@ fun CurrentExerciseSection(
 ) {
     // State for repetitions
     val repState = remember { mutableStateListOf(*repetitions.toTypedArray()) }
+    LaunchedEffect(repetitions) {
+        repState.clear()
+        repState.addAll(repetitions)
+    }
 
     Column(
         modifier = Modifier.padding(horizontal = Dimensions.MediumPadding)
