@@ -175,7 +175,8 @@ fun PerformWorkoutScreenContent(
                         name = data.currentExercise.name,
                         time = data.currentExercise.time,
                         series = data.currentExercise.series,
-                        remainingTime = data.currentExercise.remainingTime
+                        remainingTime = data.currentExercise.remainingTime,
+                        repetitions = data.currentExercise.repetitions
                     )
 
                     // Next exercise

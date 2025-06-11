@@ -43,10 +43,11 @@ fun CurrentExerciseSection(
     name: String,
     time: String,
     series: String,
-    remainingTime: String
+    remainingTime: String,
+    repetitions: List<String>
 ) {
     // State for repetitions
-    val repetitions = remember { mutableStateListOf("Rep 1", "Rep 2", "Rep 3") }
+    val repState = remember { mutableStateListOf(*repetitions.toTypedArray()) }
 
     Column(
         modifier = Modifier.padding(horizontal = Dimensions.MediumPadding)
@@ -149,7 +150,7 @@ fun CurrentExerciseSection(
                             Spacer(modifier = Modifier.width(15.dp)) // For delete button alignment
                         }
                         LazyColumn {
-                            itemsIndexed(repetitions) { index, rep ->
+                            itemsIndexed(repState) { index, rep ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically
@@ -186,7 +187,7 @@ fun CurrentExerciseSection(
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     IconButton(
-                                        onClick = { repetitions.removeAt(index) },
+                                        onClick = { repState.removeAt(index) },
                                         modifier = Modifier.size(40.dp)
                                     ) {
                                         Icon(
@@ -201,7 +202,7 @@ fun CurrentExerciseSection(
                 }
                 // --- Add Button Fixed at Bottom ---
                 Button(
-                    onClick = { repetitions.add("Rep ${repetitions.size + 1}") },
+                    onClick = { repState.add("Rep ${repState.size + 1}") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp)
@@ -222,6 +223,7 @@ fun CurrentExerciseSectionPreview() {
         name = "Flexiones",
         time = "30s",
         series = "1/3",
-        remainingTime = "Tiempo restante: 15s"
+        remainingTime = "Tiempo restante: 15s",
+        repetitions = listOf("Rep 1", "Rep 2", "Rep 3")
     )
 }

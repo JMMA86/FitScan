@@ -1,9 +1,11 @@
 package icesi.edu.co.fitscan.features.workout.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -28,17 +29,23 @@ fun WorkoutControls(
     onNext: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(Dimensions.MediumCornerRadius))
+            .padding(horizontal = Dimensions.MediumPadding),
         horizontalArrangement = Arrangement.Center
     ) {
         Button(
             onClick = onPrevious,
-            shape = RectangleShape,
+            shape = RoundedCornerShape(50),
             modifier = Modifier
                 .size(Dimensions.LargeIconSize)
-                .clip(RoundedCornerShape(Dimensions.MediumCornerRadius)),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),
+                .clip(RoundedCornerShape(50)),
+            contentPadding = PaddingValues(0.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_back),
@@ -46,15 +53,18 @@ fun WorkoutControls(
                 modifier = Modifier.size(Dimensions.MediumIconSize),
             )
         }
-        Spacer(modifier = Modifier.width(6.dp))
+        Spacer(modifier = Modifier.width(12.dp))
         Button(
             onClick = onPause,
-            shape = RectangleShape,
+            shape = RoundedCornerShape(50),
             modifier = Modifier
                 .size(Dimensions.LargeIconSize)
-                .clip(RoundedCornerShape(Dimensions.MediumCornerRadius)),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),
+                .clip(RoundedCornerShape(50)),
+            contentPadding = PaddingValues(0.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.pause_outline_filled),
@@ -62,15 +72,18 @@ fun WorkoutControls(
                 modifier = Modifier.size(Dimensions.MediumIconSize)
             )
         }
-        Spacer(modifier = Modifier.width(6.dp))
+        Spacer(modifier = Modifier.width(12.dp))
         Button(
             onClick = onNext,
-            shape = RectangleShape,
+            shape = RoundedCornerShape(50),
             modifier = Modifier
                 .size(Dimensions.LargeIconSize)
-                .clip(RoundedCornerShape(Dimensions.MediumCornerRadius)),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),
+                .clip(RoundedCornerShape(50)),
+            contentPadding = PaddingValues(0.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_back),
@@ -82,4 +95,3 @@ fun WorkoutControls(
         }
     }
 }
-

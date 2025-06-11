@@ -5,7 +5,8 @@ data class CurrentExercise(
     val name: String = "Pull up",
     val time: String = "10:32",
     val series: String = "2 de 4",
-    val remainingTime: String = "Quedan 55 segundos"
+    val remainingTime: String = "Quedan 55 segundos",
+    val repetitions: List<String> = emptyList() // New property for actual repetitions
 )
 
 // represents the next exercise
