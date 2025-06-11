@@ -1,5 +1,6 @@
 package icesi.edu.co.fitscan.features.workout.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import icesi.edu.co.fitscan.domain.model.CompletedExercise
@@ -194,11 +195,17 @@ class PerformWorkoutViewModel(
         val exercisesResponse = performWorkoutUseCase.getWorkoutExercises(workoutUUID)
         return exercisesResponse.getOrNull().orEmpty().map { item ->
             val exercise = exerciseUseCase.getExerciseById(item.exerciseId)
+            val setsCount = item.sets
+            val repsPerSet = item.reps
+            val repsValues = List(setsCount) { repsPerSet }
+            val kilosValues = List(setsCount) { 0f }
             RemainingExercise(
                 id = item.exerciseId.toString(),
                 title = exercise.name.toString(),
-                sets = item.sets.toString(),
-                reps = item.reps.toString()
+                sets = setsCount.toString(),
+                reps = repsPerSet.toString(),
+                repsValues = repsValues,
+                kilosValues = kilosValues
             )
         }
     }
@@ -232,20 +239,20 @@ class PerformWorkoutViewModel(
     ): CurrentExercise {
         val elapsed = formatSeconds(seconds)
         return exercises.getOrNull(index)?.let {
-            // Generate repetitions and weight lists based on reps value
             val repsCount = it.reps.toIntOrNull() ?: 0
             val repsList = (1..repsCount).map { repNum -> "Set $repNum" }
-            // Default values for reps and kilos: 0 if not saved
-            val defaultRepsValues = List(repsCount) { 0 }
-            val defaultKilosValues = List(repsCount) { 0f }
+            // Use the values from RemainingExercise if available
+            val repsValues = it.repsValues.takeIf { l -> l.isNotEmpty() } ?: List(repsCount) { 0 }
+            val kilosValues =
+                it.kilosValues.takeIf { l -> l.isNotEmpty() } ?: List(repsCount) { 0f }
             CurrentExercise(
                 name = it.title,
                 time = formattedTime,
                 series = it.sets,
                 remainingTime = "Tiempo transcurrido: $elapsed",
                 repetitions = repsList,
-                repsValues = defaultRepsValues,
-                kilosValues = defaultKilosValues
+                repsValues = repsValues,
+                kilosValues = kilosValues
             )
         } ?: CurrentExercise()
     }
@@ -314,5 +321,42 @@ class PerformWorkoutViewModel(
 
     fun recordCompletedExercise(exercise: CompletedExercise) {
         completedExercises.add(exercise)
+    }
+
+    fun hasUnfinishedExercises(): Boolean {
+        // The number of completed exercises is the size of completedExercises
+        // The total number of exercises is exercises.size
+        // If there are any exercises not completed, return true
+        return completedExercises.size < exercises.size
+    }
+
+    fun updateRepsValues(newValues: List<Int>) {
+        Log.d("PerformWorkoutViewModel", "updateRepsValues llamado con valores: $newValues")
+        // Actualiza los valores de repeticiones en el ejercicio actual
+        _workoutState = _workoutState.copy(
+            currentExercise = _workoutState.currentExercise.copy(
+                repsValues = newValues
+            )
+        )
+        Log.d(
+            "PerformWorkoutViewModel",
+            "Después de updateRepsValues, currentExercise.repsValues: ${_workoutState.currentExercise.repsValues}"
+        )
+        _uiState.value = PerformWorkoutUiState.Success(_workoutState)
+    }
+
+    fun updateKilosValues(newValues: List<Float>) {
+        Log.d("PerformWorkoutViewModel", "updateKilosValues llamado con valores: $newValues")
+        // Actualiza los valores de kilos en el ejercicio actual
+        _workoutState = _workoutState.copy(
+            currentExercise = _workoutState.currentExercise.copy(
+                kilosValues = newValues
+            )
+        )
+        Log.d(
+            "PerformWorkoutViewModel",
+            "Después de updateKilosValues, currentExercise.kilosValues: ${_workoutState.currentExercise.kilosValues}"
+        )
+        _uiState.value = PerformWorkoutUiState.Success(_workoutState)
     }
 }

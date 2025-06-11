@@ -20,11 +20,12 @@ data class NextExercise(
 
 // Represents the remaining exercises
 data class RemainingExercise(
-    //TODO: add id to the other exercises types
     val id: String,
     val title: String,
     val sets: String,
-    val reps: String
+    val reps: String,
+    val repsValues: List<Int> = emptyList(),
+    val kilosValues: List<Float> = emptyList()
 )
 
 // Global state of the workout screen

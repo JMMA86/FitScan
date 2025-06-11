@@ -1,6 +1,9 @@
 package icesi.edu.co.fitscan.features.workout.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +18,8 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -25,19 +30,53 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import icesi.edu.co.fitscan.ui.theme.Dimensions
+
+@Composable
+fun CustomTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    textStyle: androidx.compose.ui.text.TextStyle = androidx.compose.ui.text.TextStyle()
+) {
+    Box(
+        modifier = modifier
+            .border(
+                1.dp,
+                MaterialTheme.colorScheme.outline,
+                RoundedCornerShape(4.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 12.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            keyboardOptions = keyboardOptions,
+            textStyle = textStyle.copy(
+                color = MaterialTheme.colorScheme.onSurface
+            ),
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
 
 @Composable
 fun CurrentExerciseSection(
@@ -45,15 +84,137 @@ fun CurrentExerciseSection(
     time: String,
     series: String,
     remainingTime: String,
-    repetitions: List<String>
+    repetitions: List<String>,
+    initialRepsValues: List<Int> = emptyList(),
+    initialKilosValues: List<Float> = emptyList(),
+    onRepsChanged: (List<Int>) -> Unit = {},
+    onKilosChanged: (List<Float>) -> Unit = {}
 ) {
     // State for repetitions
     val repState = remember { mutableStateListOf(*repetitions.toTypedArray()) }
-    LaunchedEffect(repetitions) {
-        repState.clear()
-        repState.addAll(repetitions)
+
+    // Evitamos ciclos de recomposición y sobrecarga de logs
+    val isInitializing = remember { mutableStateOf(true) }
+
+    // Convertir valores numéricos a string para mostrar en TextFields
+    var repsValues by remember(name) {
+        mutableStateOf(
+            if (initialRepsValues.isNotEmpty()) {
+                Log.d(
+                    "CurrentExerciseSection",
+                    "Inicializando repsValues para ejercicio: $name con valores: $initialRepsValues"
+                )
+                initialRepsValues.map { it.toString() }
+            } else {
+                Log.d(
+                    "CurrentExerciseSection",
+                    "Inicializando repsValues con valores por defecto para ejercicio: $name"
+                )
+                List(repetitions.size) { "1" }
+            }
+        )
     }
 
+    var kilosValues by remember(name) {
+        mutableStateOf(
+            if (initialKilosValues.isNotEmpty()) {
+                Log.d(
+                    "CurrentExerciseSection",
+                    "Inicializando kilosValues para ejercicio: $name con valores: $initialKilosValues"
+                )
+                initialKilosValues.map { it.toString() }
+            } else {
+                Log.d(
+                    "CurrentExerciseSection",
+                    "Inicializando kilosValues con valores por defecto para ejercicio: $name"
+                )
+                List(repetitions.size) { "1" }
+            }
+        )
+    }
+
+    // Sincronización cuando cambian las repeticiones o el ejercicio
+    LaunchedEffect(key1 = name, key2 = repetitions) {
+        repState.clear()
+        repState.addAll(repetitions)
+
+        // Reset initialization flag when exercise changes
+        isInitializing.value = true
+
+        // Update values with initial values if available
+        if (initialRepsValues.isNotEmpty() && initialRepsValues.size >= repetitions.size) {
+            repsValues = initialRepsValues.map { it.toString() }
+        } else {
+            repsValues = List(repetitions.size) { "1" }
+        }
+
+        if (initialKilosValues.isNotEmpty() && initialKilosValues.size >= repetitions.size) {
+            kilosValues = initialKilosValues.map { it.toString() }
+        } else {
+            kilosValues = List(repetitions.size) { "1" }
+        }
+
+        // Allow updates after a short delay
+        kotlinx.coroutines.delay(100)
+        isInitializing.value = false
+    }
+
+    // Sincronización cuando cambia el tamaño de repState (por ejemplo, al agregar/eliminar sets)
+    LaunchedEffect(repState.size) {
+        // Si aumentó el tamaño, agregar nuevos valores por defecto
+        if (repsValues.size < repState.size) {
+            val newRepsValues = repsValues.toMutableList()
+            // Agregar valores por defecto solo para los nuevos elementos
+            for (i in repsValues.size until repState.size) {
+                newRepsValues.add("1")
+            }
+            repsValues = newRepsValues
+        }
+        // Si disminuyó, reducir la lista
+        else if (repsValues.size > repState.size) {
+            repsValues = repsValues.take(repState.size)
+        }
+
+        // Hacer lo mismo con kilosValues
+        if (kilosValues.size < repState.size) {
+            val newKilosValues = kilosValues.toMutableList()
+            for (i in kilosValues.size until repState.size) {
+                newKilosValues.add("1")
+            }
+            kilosValues = newKilosValues
+        } else if (kilosValues.size > repState.size) {
+            kilosValues = kilosValues.take(repState.size)
+        }
+
+        // Solo enviamos los valores al ViewModel si ya terminamos la inicialización
+        if (!isInitializing.value) {
+            onRepsChanged(repsValues.map { it.toIntOrNull() ?: 1 })
+            onKilosChanged(kilosValues.map { it.toFloatOrNull() ?: 1f })
+        }
+    }
+
+    // Efecto para enviar cambios al viewModel solo cuando el usuario modifique los valores manualmente
+    LaunchedEffect(repsValues) {
+        if (!isInitializing.value) {
+            Log.d(
+                "CurrentExerciseSection",
+                "Usuario modificó repeticiones para ejercicio $name: $repsValues"
+            )
+            onRepsChanged(repsValues.map { it.toIntOrNull() ?: 1 })
+        }
+    }
+
+    LaunchedEffect(kilosValues) {
+        if (!isInitializing.value) {
+            Log.d(
+                "CurrentExerciseSection",
+                "Usuario modificó pesos para ejercicio $name: $kilosValues"
+            )
+            onKilosChanged(kilosValues.map { it.toFloatOrNull() ?: 1f })
+        }
+    }
+
+    // --- UI CODE ---
     Column(
         modifier = Modifier.padding(horizontal = Dimensions.MediumPadding)
     ) {
@@ -154,41 +315,67 @@ fun CurrentExerciseSection(
                             Spacer(modifier = Modifier.width(8.dp))
                             Spacer(modifier = Modifier.width(15.dp)) // For delete button alignment
                         }
-                        LazyColumn {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             itemsIndexed(repState) { index, rep ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(rep, modifier = Modifier.weight(1f))
-                                    OutlinedTextField(
-                                        value = "1",
-                                        onValueChange = {},
+                                    CustomTextField(
+                                        value = repsValues.getOrNull(index) ?: "",
+                                        onValueChange = { newValue ->
+                                            if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
+                                                val value =
+                                                    if (newValue.isEmpty()) "0" else newValue
+                                                // Actualizar solo el elemento específico
+                                                val updatedList = repsValues.toMutableList()
+                                                updatedList[index] = value
+                                                repsValues = updatedList
+                                                Log.d(
+                                                    "CurrentExerciseSection",
+                                                    "Rep $index changed to: $value"
+                                                )
+                                            }
+                                        },
                                         modifier = Modifier
                                             .width(56.dp)
-                                            .height(32.dp)
-                                            .padding(horizontal = 2.dp),
-                                        singleLine = true,
-                                        label = { },
-                                        textStyle = androidx.compose.ui.text.TextStyle.Default.copy(
-                                            fontSize = Dimensions.SmallTextSize,
-                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                                        )
+                                            .height(40.dp),
+                                        textStyle = androidx.compose.ui.text.TextStyle(
+                                            fontSize = Dimensions.MediumTextSize,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                        ),
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    OutlinedTextField(
-                                        value = "1",
-                                        onValueChange = {},
+                                    CustomTextField(
+                                        value = kilosValues.getOrNull(index) ?: "",
+                                        onValueChange = { newValue ->
+                                            if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
+                                                val value =
+                                                    if (newValue.isEmpty()) "0" else newValue
+                                                // Actualizar solo el elemento específico
+                                                val updatedList = kilosValues.toMutableList()
+                                                updatedList[index] = value
+                                                kilosValues = updatedList
+                                                Log.d(
+                                                    "CurrentExerciseSection",
+                                                    "Kilo $index changed to: $value"
+                                                )
+                                            }
+                                        },
                                         modifier = Modifier
                                             .width(56.dp)
-                                            .height(32.dp)
-                                            .padding(horizontal = 2.dp),
-                                        singleLine = true,
-                                        label = { },
-                                        textStyle = androidx.compose.ui.text.TextStyle.Default.copy(
-                                            fontSize = Dimensions.SmallTextSize,
-                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                                        )
+                                            .height(40.dp),
+                                        textStyle = androidx.compose.ui.text.TextStyle(
+                                            fontSize = Dimensions.MediumTextSize,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                        ),
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     IconButton(
@@ -207,7 +394,13 @@ fun CurrentExerciseSection(
                 }
                 // --- Add Button Fixed at Bottom ---
                 Button(
-                    onClick = { repState.add("Rep ${repState.size + 1}") },
+                    onClick = {
+                        repState.add("Rep ${repState.size + 1}")
+                        Log.d(
+                            "CurrentExerciseSection",
+                            "Agregada nueva repetición. repState ahora tiene ${repState.size} elementos"
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp)
