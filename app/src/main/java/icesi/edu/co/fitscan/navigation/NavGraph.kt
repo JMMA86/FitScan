@@ -13,7 +13,6 @@ import icesi.edu.co.fitscan.features.auth.ui.screens.LoginScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
 import icesi.edu.co.fitscan.features.home.ui.screens.DashboardScreen
-import icesi.edu.co.fitscan.features.notifications.ui.screens.NotificationsScreen
 import icesi.edu.co.fitscan.features.nutrition.ui.screens.NutritionPlanListScreen
 import icesi.edu.co.fitscan.features.profile.ui.screens.ProfileScreen
 import icesi.edu.co.fitscan.features.settings.ui.screens.SettingsScreen
@@ -68,10 +67,6 @@ fun NavigationHost(
 
         composable(Screen.Settings.route) {
             SettingsScreen(navController = navController)
-        }
-
-        composable(Screen.Notifications.route) {
-            NotificationsScreen(navController = navController)
         }
 
         composable(Screen.Workouts.route) {

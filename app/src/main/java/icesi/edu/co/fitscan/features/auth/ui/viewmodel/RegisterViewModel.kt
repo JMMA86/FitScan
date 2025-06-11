@@ -10,6 +10,7 @@ import icesi.edu.co.fitscan.features.auth.domain.usecase.LoginUseCase
 import icesi.edu.co.fitscan.features.auth.domain.usecase.RegisterUseCase
 import icesi.edu.co.fitscan.features.auth.ui.model.RegisterUiState
 import icesi.edu.co.fitscan.features.common.data.remote.RetrofitInstance
+import icesi.edu.co.fitscan.notification.NotificationUtil
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -94,6 +95,9 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
                                             "Registration completed successfully"
                                         )
                                         _uiState.update { RegisterUiState.Success }
+
+                                        // Send notification
+                                        NotificationUtil.showNotification(getApplication(), "Registro Exitoso 😎", "¡Bienvenido a FitScan! ¿Listo para transformar tu vida? 🤑🔥")
                                     },
                                     onFailure = { customerException ->
                                         Log.e(
