@@ -58,39 +58,13 @@ fun DashboardScreen(
                 .verticalScroll(scrollState)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            // CABECERA CON ICONOS
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {                IconButton(onClick = { navController.navigate("profile") }) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Usuario",
-                        tint = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { navController.navigate("settings") }) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Configuración",
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
-            }
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp),
                 contentAlignment = Alignment.Center
-            ) {                Text(
+            ) {
+                Text(
                     text = "FitScanAI",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onBackground,

@@ -14,8 +14,6 @@ import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
 import icesi.edu.co.fitscan.features.home.ui.screens.DashboardScreen
 import icesi.edu.co.fitscan.features.nutrition.ui.screens.NutritionPlanListScreen
-import icesi.edu.co.fitscan.features.profile.ui.screens.ProfileScreen
-import icesi.edu.co.fitscan.features.settings.ui.screens.SettingsScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.DetailedChartsScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseProgressScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.MuscleGroupProgressScreen
@@ -61,14 +59,6 @@ fun NavigationHost(
     ) {
         composable(Screen.Home.route) {
             DashboardScreen(navController = navController)
-        }
-
-        composable(Screen.Profile.route) {
-            ProfileScreen(navController = navController)
-        }
-
-        composable(Screen.Settings.route) {
-            SettingsScreen(navController = navController)
         }
 
         composable(Screen.Workouts.route) {
