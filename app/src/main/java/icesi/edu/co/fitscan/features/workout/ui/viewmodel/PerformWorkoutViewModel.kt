@@ -109,6 +109,7 @@ class PerformWorkoutViewModel(
             if (currentExerciseIndex < exercises.size - 1) {
                 if (currentExerciseIndex > lastCompletedExerciseIndex) {
                     val exercise = exercises[currentExerciseIndex]
+                    val totalWeight = _workoutState.currentExercise.kilosValues.sum()
                     val completed = CompletedExercise(
                         id = null,
                         workoutSessionId = null,
@@ -116,7 +117,7 @@ class PerformWorkoutViewModel(
                         sets = exercise.sets.toIntOrNull(),
                         reps = exercise.reps.toIntOrNull(),
                         rpe = null,
-                        weightKg = null
+                        weightKg = totalWeight
                     )
                     completedExercises.add(completed)
                     lastCompletedExerciseIndex = currentExerciseIndex
@@ -127,7 +128,6 @@ class PerformWorkoutViewModel(
                 timerManager.start()
                 updateCurrentAndNextExercises()
             } else if (currentExerciseIndex == exercises.size - 1) {
-                // Permitir llegar al último ejercicio y actualizar la UI
                 currentExerciseIndex++
                 updateCurrentAndNextExercises()
             }
@@ -141,7 +141,6 @@ class PerformWorkoutViewModel(
                 currentExerciseStartTime = getCurrentTimeHumanReadable()
                 timerManager.reset()
                 timerManager.start()
-                // Fuerza la actualización del StateFlow para redibujar la UI
                 updateCurrentAndNextExercises()
             }
         }
@@ -255,7 +254,11 @@ class PerformWorkoutViewModel(
     ): NextExercise {
         return exercises.getOrNull(index)?.let {
             NextExercise(it.title, it.sets.toInt(), it.reps.toInt())
-        } ?: NextExercise()
+        } ?: NextExercise(
+            name = "No quedan más ejercicios 💪🔥",
+            sets = 0,
+            reps = 0
+        )
     }
 
     private fun updateSeries(series: String): String {
@@ -286,11 +289,17 @@ class PerformWorkoutViewModel(
         )
         val next = createNextExercise(exercises, currentExerciseIndex + 1)
         val remaining = exercises.drop(currentExerciseIndex + 1)
+
+        val progress = if (currentExerciseIndex < exercises.size) {
+            "${currentExerciseIndex + 1}/${exercises.size} ejercicios completados"
+        } else {
+            "${exercises.size}/${exercises.size} ejercicios completados"
+        }
         _workoutState = _workoutState.copy(
-            currentExercise = current, // always update with the new exercise's reps
+            currentExercise = current,
             nextExercise = next,
             remainingExercises = remaining,
-            progress = "${currentExerciseIndex}/${exercises.size} ejercicios completados"
+            progress = progress
         )
         _uiState.value = PerformWorkoutUiState.Success(_workoutState)
     }

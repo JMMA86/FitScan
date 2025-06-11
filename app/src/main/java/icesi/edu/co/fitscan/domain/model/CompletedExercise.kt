@@ -7,5 +7,5 @@ data class CompletedExercise(
     val sets: Int?,
     val reps: Int?,
     val rpe: Int?,
-    val weightKg: Int?,
+    val weightKg: Float,
 )
