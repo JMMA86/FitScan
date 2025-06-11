@@ -96,8 +96,7 @@ fun NavigationHost(
                     defaultValue = ""
                     nullable = true
                 }
-            )        ) { backStackEntry ->
-            val message = backStackEntry.arguments?.getString("message")
+            )        ) {
             LoginScreen(
                 onLoginSuccess = {
                     // Navigate to Home (Dashboard) and clear the history up to Login
@@ -108,9 +107,6 @@ fun NavigationHost(
                 },
                 onNavigateToRegister = {
                     navController.navigate(Screen.Registration.route)
-                },
-                onNavigateToForgotPassword = {
-                    // Navigation to password recovery screen
                 }
             )
         }
