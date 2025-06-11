@@ -22,10 +22,8 @@ import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
-//TODO: Refactor this ViewModel to use a more modular approach, separating concerns and improving testability.
 //TODO: Add error handling and loading states for better user experience.
 //TODO: Implement a more robust timer mechanism that can handle edge cases like app backgrounding or interruptions.
-//TODO: manage the problem with rps, reps and weight, not used correctly
 class PerformWorkoutViewModel(
     private val performWorkoutUseCase: IManageWorkoutExercisesUseCase,
     private val exerciseUseCase: IManageExercisesUseCase,
@@ -78,7 +76,7 @@ class PerformWorkoutViewModel(
                 exerciseSeconds.value
             )
             val nextExercise = createNextExercise(exercises, currentExerciseIndex + 1)
-            val remainingExercises = exercises.drop(1)
+            val remainingExercises = exercises.drop(2)
 
             _workoutState = _workoutState.copy(
                 title = actualWorkout?.name.orEmpty(),
@@ -109,15 +107,19 @@ class PerformWorkoutViewModel(
             if (currentExerciseIndex < exercises.size - 1) {
                 if (currentExerciseIndex > lastCompletedExerciseIndex) {
                     val exercise = exercises[currentExerciseIndex]
-                    val totalWeight = _workoutState.currentExercise.kilosValues.sum()
+                    val kilosValues = _workoutState.currentExercise.kilosValues
+                    val repsValues = _workoutState.currentExercise.repsValues
+                    val totalWeight = kilosValues.sum()
+                    val totalReps = repsValues.sum()
+                    val maxWeight = kilosValues.maxOrNull() ?: 0f
                     val completed = CompletedExercise(
                         id = null,
                         workoutSessionId = null,
                         exerciseId = exercise.id,
                         sets = exercise.sets.toIntOrNull(),
-                        reps = exercise.reps.toIntOrNull(),
-                        rpe = null,
-                        weightKg = totalWeight
+                        reps = totalReps,
+                        rpe = maxWeight.toInt(), // maximum weight lifted
+                        weightKg = totalWeight.toInt() // sum of all weights lifted
                     )
                     completedExercises.add(completed)
                     lastCompletedExerciseIndex = currentExerciseIndex
@@ -288,7 +290,7 @@ class PerformWorkoutViewModel(
             exerciseSeconds.value
         )
         val next = createNextExercise(exercises, currentExerciseIndex + 1)
-        val remaining = exercises.drop(currentExerciseIndex + 1)
+        val remaining = exercises.drop(currentExerciseIndex + 2)
 
         val progress = if (currentExerciseIndex < exercises.size) {
             "${currentExerciseIndex + 1}/${exercises.size} ejercicios completados"
