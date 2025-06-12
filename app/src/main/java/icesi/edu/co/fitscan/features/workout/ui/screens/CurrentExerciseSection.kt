@@ -87,9 +87,9 @@ fun CurrentExerciseSection(
     remainingTime: String,
     repetitions: List<String>,
     initialRepsValues: List<Int> = emptyList(),
-    initialKilosValues: List<Float> = emptyList(),
+    initialKilosValues: List<Int> = emptyList(),
     onRepsChanged: (List<Int>) -> Unit = {},
-    onKilosChanged: (List<Float>) -> Unit = {},
+    onKilosChanged: (List<Int>) -> Unit = {},
     onSetsCountChanged: (Int) -> Unit = {},
     isTimeExceeded: Boolean = false,
     onExerciseDetailClick: () -> Unit = {}
@@ -219,7 +219,7 @@ fun CurrentExerciseSection(
         // Solo enviamos los valores al ViewModel si ya terminamos la inicialización
         if (!isInitializing.value) {
             onRepsChanged(repsValues.map { it.toIntOrNull() ?: 1 })
-            onKilosChanged(kilosValues.map { it.toFloatOrNull() ?: 1f })
+            onKilosChanged(kilosValues.map { it.toIntOrNull() ?: 1 })
             // Notificar el cambio en el número de series
             onSetsCountChanged(repState.size)
             Log.d("CurrentExerciseSection", "Notificando cambio de sets count a: ${repState.size}")
@@ -243,7 +243,7 @@ fun CurrentExerciseSection(
                 "CurrentExerciseSection",
                 "Usuario modificó pesos para ejercicio $name: $kilosValues"
             )
-            onKilosChanged(kilosValues.map { it.toFloatOrNull() ?: 1f })
+            onKilosChanged(kilosValues.map { it.toIntOrNull() ?: 1 })
         }
     }
 

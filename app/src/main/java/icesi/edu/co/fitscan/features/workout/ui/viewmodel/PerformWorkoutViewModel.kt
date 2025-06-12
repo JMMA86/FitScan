@@ -177,7 +177,7 @@ class PerformWorkoutViewModel(
                     val setsPerformed = repsValues.count { it > 0 }
 
                     // Calculate average weight per rep for RPE approximation
-                    val averageWeight = if (totalReps > 0) totalVolume / totalReps else 0f
+                    val averageWeight = if (totalReps > 0) totalVolume / totalReps else 0
 
                     Log.d(
                         "PerformWorkoutViewModel", "Exercise completion - " +
@@ -276,7 +276,7 @@ class PerformWorkoutViewModel(
             val defaultSetsCount = 1
             val repsPerSet = item.reps
             val repsValues = List(defaultSetsCount) { repsPerSet }
-            val kilosValues = List(defaultSetsCount) { 0f }
+            val kilosValues = List(defaultSetsCount) { 0 }
             RemainingExercise(
                 id = item.exerciseId.toString(),
                 title = exercise.name.toString(),
@@ -335,11 +335,11 @@ class PerformWorkoutViewModel(
             val kilosValues = if (it.kilosValues.isNotEmpty()) {
                 // Use existing values and pad if necessary
                 it.kilosValues.toMutableList().apply {
-                    while (size < expectedSetsCount) add(0f)
+                    while (size < expectedSetsCount) add(0)
                 }.take(expectedSetsCount)
             } else {
                 // Create initial list with default values
-                List(expectedSetsCount) { 0f }
+                List(expectedSetsCount) { 0 }
             }
 
             val repsList = (1..expectedSetsCount).map { repNum -> "Set $repNum" }
@@ -482,7 +482,7 @@ class PerformWorkoutViewModel(
         _uiState.value = PerformWorkoutUiState.Success(_workoutState)
     }
 
-    fun updateKilosValues(newValues: List<Float>) {
+    fun updateKilosValues(newValues: List<Int>) {
         Log.d("PerformWorkoutViewModel", "updateKilosValues llamado con valores: $newValues")
 
         // Actualizar también los valores en la lista de ejercicios para que persistan
@@ -519,7 +519,7 @@ class PerformWorkoutViewModel(
                     newSetsCount,
                     currentExercise.reps.toIntOrNull() ?: 1
                 ),
-                kilosValues = adjustListSize(currentExercise.kilosValues, newSetsCount, 0f)
+                kilosValues = adjustListSize(currentExercise.kilosValues, newSetsCount, 0)
             )
 
             // Actualizar también el estado actual de la UI

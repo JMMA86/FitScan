@@ -8,7 +8,7 @@ data class CurrentExercise(
     val remainingTime: String = "Quedan 55 segundos",
     val repetitions: List<String> = emptyList(),
     val repsValues: List<Int> = emptyList(),
-    val kilosValues: List<Float> = emptyList(),
+    val kilosValues: List<Int> = emptyList(),
     val isTimeExceeded: Boolean = false,
     val workoutExerciseId: String = ""
 )
@@ -28,7 +28,7 @@ data class RemainingExercise(
     val sets: String,
     val reps: String,
     val repsValues: List<Int> = emptyList(),
-    val kilosValues: List<Float> = emptyList(),
+    val kilosValues: List<Int> = emptyList(),
     val workoutExerciseId: String = ""
 )
 
