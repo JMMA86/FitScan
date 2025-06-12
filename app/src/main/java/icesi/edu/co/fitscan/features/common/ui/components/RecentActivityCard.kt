@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import icesi.edu.co.fitscan.R
+import icesi.edu.co.fitscan.features.workout.ui.components.WorkoutThumbnail
 import icesi.edu.co.fitscan.ui.theme.cardBackground
 
 @Composable
@@ -53,14 +54,15 @@ fun RecentActivityCard(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(start = 10.dp)
-            ) {                Icon(
-                    painter = painterResource(id = R.drawable.ic_fitness),
-                    contentDescription = "Tipo de ejercicio",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .size(25.dp)
+            ) {
+                // Workout thumbnail
+                WorkoutThumbnail(
+                    workoutName = title,
+                    workoutType = exercises,
+                    size = 48,
+                    shape = "circular"
                 )
-
+                
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column {                    Text(

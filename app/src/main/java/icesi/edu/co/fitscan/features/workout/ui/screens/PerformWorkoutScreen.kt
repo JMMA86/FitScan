@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -57,6 +58,7 @@ import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.workout.ui.model.PerformWorkoutUiState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.PerformWorkoutViewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.PerformWorkoutViewModelFactory
+import icesi.edu.co.fitscan.features.workout.ui.components.ExerciseImageThumbnail
 import icesi.edu.co.fitscan.ui.theme.Dimensions
 
 @Composable
@@ -139,6 +141,15 @@ fun PerformWorkoutListComponent(
             .padding(Dimensions.MediumPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Exercise thumbnail
+        ExerciseImageThumbnail(
+            exerciseName = title,
+            size = 40,
+            isCircular = true
+        )
+        
+        Spacer(modifier = Modifier.width(12.dp))
+        
         Column(
             modifier = Modifier,
             verticalArrangement = Arrangement.Center
