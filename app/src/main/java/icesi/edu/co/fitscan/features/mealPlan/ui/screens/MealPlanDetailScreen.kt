@@ -3,6 +3,7 @@ package icesi.edu.co.fitscan.features.mealPlan.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,9 +32,10 @@ fun MealPlanDetailScreen(mealPlanId: String) {
         initializer { MealPlanDetailViewModel(useCase) }
     })
     val mealPlan by viewModel.mealPlan.collectAsState()
+    val meals by viewModel.meals.collectAsState()
 
     LaunchedEffect(mealPlanId) {
-        viewModel.loadMealPlan(mealPlanId)
+        viewModel.loadMealPlanAndMeals(mealPlanId, repository)
     }
 
     val backgroundColor = MaterialTheme.colorScheme.background
@@ -65,23 +67,20 @@ fun MealPlanDetailScreen(mealPlanId: String) {
                         Spacer(Modifier.height(16.dp))
                     }
                 }
-                // Show meals if present
-                plan.meals?.let { meals ->
-                    if (meals.isNotEmpty()) {
-                        item {
-                            Text("Comidas", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = accentColor)
-                            Spacer(Modifier.height(8.dp))
-                        }
-                        items(meals.size) { idx ->
-                            val meal = meals[idx]
-                            Column(Modifier.padding(bottom = 16.dp)) {
-                                Text(meal.name, fontWeight = FontWeight.SemiBold, color = textColor, fontSize = 16.sp)
-                                meal.meal_type?.let {
-                                    Text(it, color = secondaryTextColor, fontSize = 14.sp)
-                                }
-                                meal.description?.let {
-                                    if (it.isNotBlank()) Text(it, color = secondaryTextColor, fontSize = 14.sp)
-                                }
+                // Show meals if present via relation
+                if (meals.isNotEmpty()) {
+                    item {
+                        Text("Comidas", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = accentColor)
+                        Spacer(Modifier.height(8.dp))
+                    }
+                    items(meals) { meal ->
+                        Column(Modifier.padding(bottom = 16.dp)) {
+                            Text(meal.name, fontWeight = FontWeight.SemiBold, color = textColor, fontSize = 16.sp)
+                            meal.meal_type?.let {
+                                Text(it, color = secondaryTextColor, fontSize = 14.sp)
+                            }
+                            meal.description?.let {
+                                if (it.isNotBlank()) Text(it, color = secondaryTextColor, fontSize = 14.sp)
                             }
                         }
                     }

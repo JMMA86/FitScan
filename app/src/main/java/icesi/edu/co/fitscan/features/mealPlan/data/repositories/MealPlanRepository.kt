@@ -46,4 +46,7 @@ class MealPlanRepository(private val dataSource: IMealPlanDataSource) {
     suspend fun getMealPlanById(id: String): MealPlanDto? {
         return dataSource.getMealPlanById(id).body()?.data
     }
+    suspend fun getMealsForMealPlan(mealPlanId: String): List<MealPlanMealWithMealDto> {
+        return dataSource.getMealsForMealPlan(mealPlanId).body()?.data ?: emptyList()
+    }
 }

@@ -7,6 +7,8 @@ import icesi.edu.co.fitscan.features.mealPlan.data.usecases.GetMealPlanByIdUseCa
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import icesi.edu.co.fitscan.features.mealPlan.data.repositories.MealPlanRepository
+import icesi.edu.co.fitscan.features.mealPlan.data.dto.MealDto
 
 class MealPlanDetailViewModel(
     private val getMealPlanByIdUseCase: GetMealPlanByIdUseCase
@@ -14,9 +16,15 @@ class MealPlanDetailViewModel(
     private val _mealPlan = MutableStateFlow<MealPlanDto?>(null)
     val mealPlan: StateFlow<MealPlanDto?> = _mealPlan
 
-    fun loadMealPlan(id: String) {
+    private val _meals = MutableStateFlow<List<MealDto>>(emptyList())
+    val meals: StateFlow<List<MealDto>> = _meals
+
+    fun loadMealPlanAndMeals(mealPlanId: String, repository: MealPlanRepository) {
         viewModelScope.launch {
-            _mealPlan.value = getMealPlanByIdUseCase(id)
+            val plan = getMealPlanByIdUseCase(mealPlanId)
+            _mealPlan.value = plan
+            val mealPlanMeals = repository.getMealsForMealPlan(mealPlanId)
+            _meals.value = mealPlanMeals.mapNotNull { it.meal_id }
         }
     }
 } 
