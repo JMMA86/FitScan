@@ -29,96 +29,98 @@ import icesi.edu.co.fitscan.ui.theme.cardBackground
 
 @Composable
 fun RecentActivityCard(
-    id: String, // Nuevo parámetro para el ID
+    id: String, 
     title: String,
     time: String,
     level: String,
     exercises: String,
-    onClick: (String) -> Unit // Callback para el click
-) {    Card(
-        shape = RoundedCornerShape(16.dp),
+    onClick: (String) -> Unit 
+) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.cardBackground),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp)
-            .clickable { onClick(id) }, // Acción de click
-        elevation = CardDefaults.cardElevation(4.dp)
+            .padding(vertical = 4.dp)
+            .clickable { onClick(id) },
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 10.dp)
+            // Workout thumbnail
+            WorkoutThumbnail(
+                workoutName = title,
+                workoutType = exercises,
+                size = 40,
+                shape = "circular"
+            )
+            
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                // Workout thumbnail
-                WorkoutThumbnail(
-                    workoutName = title,
-                    workoutType = exercises,
-                    size = 48,
-                    shape = "circular"
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                
-                Spacer(modifier = Modifier.width(16.dp))
 
-                Column {                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                Spacer(modifier = Modifier.height(4.dp))
 
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {                        Icon(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Time info
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
                             painter = painterResource(R.drawable.ic_time),
                             contentDescription = "Duración",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(14.dp)
                         )
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = time,
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                    }
 
-                        Spacer(modifier = Modifier.width(10.dp))
-
+                    // Level info
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painter = painterResource(R.drawable.ic_fire),
                             contentDescription = "Nivel",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(16.dp)                        )
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = level,
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-
-                        Spacer(modifier = Modifier.width(10.dp))
-
-                        Surface(
-                            shape = RoundedCornerShape(50),
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                        ) {
-                            Text(
-                                text = exercises,
-                                color = MaterialTheme.colorScheme.primary,
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                            )
-                        }
                     }
                 }
+            }
+
+            // Exercise type badge
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            ) {
+                Text(
+                    text = exercises,
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                )
             }
         }
     }
