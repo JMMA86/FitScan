@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,6 +28,8 @@ import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import icesi.edu.co.fitscan.features.workout.ui.util.ExerciseImageProvider
+import icesi.edu.co.fitscan.features.workout.ui.util.ExerciseVisual
+import kotlinx.coroutines.launch
 
 @Composable
 fun ExerciseImageHeader(
@@ -149,3 +152,25 @@ fun ExerciseImageHeader(
         }
     }
 }
+
+/**
+ * Header mejorado que combina imágenes e iconos
+ */
+@Composable
+fun ExerciseImageHeaderV2(
+    exerciseName: String,
+    muscleGroups: String? = null,
+    modifier: Modifier = Modifier,
+    height: androidx.compose.ui.unit.Dp = 200.dp
+) {
+    ExerciseVisualHeader(
+        exerciseName = exerciseName,
+        muscleGroups = muscleGroups,
+        modifier = modifier,
+        height = height
+    )
+}
+
+/**
+ * Versión original mantenida para compatibilidad
+ */

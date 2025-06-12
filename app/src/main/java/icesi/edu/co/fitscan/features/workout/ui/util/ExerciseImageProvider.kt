@@ -1,9 +1,18 @@
 package icesi.edu.co.fitscan.features.workout.ui.util
 
 import android.util.Log
+import androidx.compose.ui.graphics.vector.ImageVector
 import icesi.edu.co.fitscan.features.workout.data.remote.UnsplashClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+
+/**
+ * Sealed class para representar diferentes tipos de representaciones visuales de ejercicios
+ */
+sealed class ExerciseVisual {
+    data class ImageUrl(val url: String) : ExerciseVisual()
+    data class Icon(val icon: ImageVector) : ExerciseVisual()
+}
 
 object ExerciseImageProvider {
 
@@ -25,6 +34,16 @@ object ExerciseImageProvider {
         "peso muerto" to "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=300&fit=crop",
         "curl de biceps" to "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop",
         "abdominales" to "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+        "sentadillas" to "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+        "press_de_banca" to "https://images.unsplash.com/photo-1652363722833-509b3aac287b?q=80&w=400&h=300&auto=format&fit=crop",
+        "plancha" to "https://images.unsplash.com/photo-1626444231642-6bd985bca16a?q=80&w=400&h=300&auto=format&fit=crop",
+        "burpees" to "https://images.unsplash.com/photo-1540472736633-28eeff4a185c?q=80&w=400&h=300&auto=format&fit=crop",
+        "remo" to "https://images.unsplash.com/photo-1646072508128-c6413aaeeae6?q=80&w=400&h=300&auto=format&fit=crop",
+        "fondos" to "https://images.unsplash.com/photo-1720788073779-04a9e709935c?q=80&w=400&h=300&auto=format&fit=crop",
+        "elevaciones_laterales" to "https://plus.unsplash.com/premium_photo-1663045367772-c746a5c707e3?q=80&w=400&h=300&auto=format&fit=crop",
+        "press_militar" to "https://plus.unsplash.com/premium_photo-1663036275037-413d2f634be7?q=80&w=400&h=300&auto=format&fit=crop",
+        "jalones" to "https://plus.unsplash.com/premium_photo-1664298328578-71c5f671737a?q=80&w=400&300&auto=format&fit=crop",
+        "prensa_de_piernas" to "https://images.unsplash.com/photo-1434682772747-f16d3ea162c3?q=80&w=400&h=300&auto=format&fit=crop",
     )
 
     init {
@@ -458,5 +477,52 @@ object ExerciseImageProvider {
      */
     fun logApiStats() {
         Log.i("ExerciseImageProvider", getApiUsageStats())
+    }
+
+    /**
+     * Obtiene la mejor representación visual para un ejercicio (imagen o icono)
+     * Esta función combina imágenes con iconos como fallback
+     */
+    suspend fun getExerciseVisual(
+        exerciseName: String,
+        muscleGroups: String? = null
+    ): ExerciseVisual {
+        // 1. Intentar obtener imagen primero
+        val imageUrl = getExerciseImageUrl(exerciseName, muscleGroups)
+
+        if (imageUrl != null) {
+            Log.d("ExerciseImageProvider", "📸 Using image for '$exerciseName': $imageUrl")
+            return ExerciseVisual.ImageUrl(imageUrl)
+        }
+
+        // 2. Fallback a icono cuando no hay imagen disponible
+        val icon = ExerciseIconProvider.getBestIcon(exerciseName, muscleGroups)
+        Log.d("ExerciseImageProvider", "🎯 Using icon fallback for '$exerciseName'")
+        return ExerciseVisual.Icon(icon)
+    }
+
+    /**
+     * Versión síncrona que prioriza iconos para mejor rendimiento
+     * Útil cuando se necesita una respuesta inmediata
+     */
+    fun getExerciseVisualSync(exerciseName: String, muscleGroups: String? = null): ExerciseVisual {
+        val cacheKey = "${exerciseName}_${muscleGroups ?: "none"}"
+
+        // 1. Verificar cache de imágenes precargadas
+        preloadedImages[exerciseName.lowercase()]?.let { preloadedUrl ->
+            Log.d("ExerciseImageProvider", "🎯 Using preloaded image (sync) for '$exerciseName'")
+            return ExerciseVisual.ImageUrl(preloadedUrl)
+        }
+
+        // 2. Verificar cache en memoria
+        memoryCache[cacheKey]?.let { cachedUrl ->
+            Log.d("ExerciseImageProvider", "🗂️ Using cached image (sync) for '$exerciseName'")
+            return ExerciseVisual.ImageUrl(cachedUrl)
+        }
+
+        // 3. Fallback inmediato a icono
+        val icon = ExerciseIconProvider.getBestIcon(exerciseName, muscleGroups)
+        Log.d("ExerciseImageProvider", "⚡ Using icon (sync) for '$exerciseName'")
+        return ExerciseVisual.Icon(icon)
     }
 }

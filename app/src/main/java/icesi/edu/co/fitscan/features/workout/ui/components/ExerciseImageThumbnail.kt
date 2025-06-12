@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,6 +27,30 @@ import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import icesi.edu.co.fitscan.features.workout.ui.util.ExerciseImageProvider
+import icesi.edu.co.fitscan.features.workout.ui.util.ExerciseVisual
+import kotlinx.coroutines.launch
+
+/**
+ * Thumbnail mejorado que combina imágenes e iconos
+ */
+@Composable
+fun ExerciseImageThumbnailV2(
+    exerciseName: String,
+    muscleGroups: String? = null,
+    modifier: Modifier = Modifier,
+    size: androidx.compose.ui.unit.Dp = 60.dp
+) {
+    ExerciseVisualThumbnail(
+        exerciseName = exerciseName,
+        muscleGroups = muscleGroups,
+        modifier = modifier,
+        size = size
+    )
+}
+
+/**
+ * Versión original mantenida para compatibilidad
+ */
 
 @Composable
 fun ExerciseImageThumbnail(
