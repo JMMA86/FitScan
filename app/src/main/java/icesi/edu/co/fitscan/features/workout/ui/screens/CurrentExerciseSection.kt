@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import icesi.edu.co.fitscan.features.workout.ui.components.CurrentExerciseImage
 import icesi.edu.co.fitscan.ui.theme.Dimensions
 
 @Composable
@@ -257,6 +258,16 @@ fun CurrentExerciseSection(
             fontSize = Dimensions.SmallTextSize,
         )
         Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
+        
+        // Imagen del ejercicio actual
+        CurrentExerciseImage(
+            exerciseName = name,
+            onDetailsClick = onExerciseDetailClick,
+            modifier = Modifier.fillMaxWidth()
+        )
+        
+        Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
+        
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -272,22 +283,11 @@ fun CurrentExerciseSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = name,
+                        text = series,
                         fontSize = Dimensions.LargeTextSize,
                         color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    IconButton(
-                        onClick = onExerciseDetailClick,
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Visibility,
-                            contentDescription = "Ver detalles del ejercicio",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         text = time,

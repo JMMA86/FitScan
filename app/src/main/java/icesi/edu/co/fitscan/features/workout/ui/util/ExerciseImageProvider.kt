@@ -1,6 +1,93 @@
 package icesi.edu.co.fitscan.features.workout.ui.util
 
+import android.util.Log
+import icesi.edu.co.fitscan.features.workout.data.remote.UnsplashClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 object ExerciseImageProvider {
+    
+    private val unsplashRepository = UnsplashClient.UnsplashRepository()
+    
+    // Cache para evitar llamadas repetidas
+    private val imageCache = mutableMapOf<String, String>()
+    
+    /**
+     * Obtiene una URL de imagen usando la API oficial de Unsplash
+     */
+    suspend fun getExerciseImageUrl(exerciseName: String, muscleGroups: String? = null): String? {
+        val cacheKey = "${exerciseName}_${muscleGroups ?: "none"}"
+        
+        // Verificar cache primero
+        imageCache[cacheKey]?.let { cachedUrl ->
+            Log.d("ExerciseImageProvider", "🗂️ Using cached image for '$exerciseName': $cachedUrl")
+            return cachedUrl
+        }
+        
+        return withContext(Dispatchers.IO) {
+            try {
+                Log.d("ExerciseImageProvider", "🌐 Fetching image for '$exerciseName' with muscles: $muscleGroups")
+                
+                val imageUrl = unsplashRepository.searchExercisePhotos(exerciseName, muscleGroups)
+                
+                if (imageUrl != null) {
+                    // Guardar en cache
+                    imageCache[cacheKey] = imageUrl
+                    Log.i("ExerciseImageProvider", "✅ Successfully got image for '$exerciseName': $imageUrl")
+                    imageUrl
+                } else {
+                    Log.w("ExerciseImageProvider", "⚠️ No image found for '$exerciseName', trying fallback")
+                    getFallbackImageUrl(exerciseName, muscleGroups)
+                }
+            } catch (e: Exception) {
+                Log.e("ExerciseImageProvider", "🚨 Error getting image for '$exerciseName': ${e.message}", e)
+                getFallbackImageUrl(exerciseName, muscleGroups)
+            }
+        }
+    }
+    
+    /**
+     * Obtiene una imagen de fallback cuando la API principal falla
+     */
+    private suspend fun getFallbackImageUrl(exerciseName: String, muscleGroups: String?): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                // Intentar solo con el grupo muscular
+                val primaryMuscle = muscleGroups?.split(",")?.firstOrNull()?.trim()
+                if (!primaryMuscle.isNullOrBlank()) {
+                    Log.d("ExerciseImageProvider", "🔄 Trying fallback with muscle group: '$primaryMuscle'")
+                    val fallbackUrl = unsplashRepository.searchExercisePhotos("workout", primaryMuscle)
+                    if (fallbackUrl != null) {
+                        Log.i("ExerciseImageProvider", "✅ Fallback successful for '$exerciseName': $fallbackUrl")
+                        return@withContext fallbackUrl
+                    }
+                }
+                
+                // Fallback final: búsqueda genérica de fitness
+                Log.d("ExerciseImageProvider", "🏃 Using generic fitness fallback for '$exerciseName'")
+                unsplashRepository.searchExercisePhotos("fitness workout", null)
+                
+            } catch (e: Exception) {
+                Log.e("ExerciseImageProvider", "🚨 Fallback failed for '$exerciseName': ${e.message}", e)
+                null
+            }
+        }
+    }
+    
+    /**
+     * URL de imagen por defecto (placeholder local)
+     */
+    fun getDefaultImagePlaceholder(): String {
+        return "android.resource://icesi.edu.co.fitscan/drawable/ic_fitness_center" // Placeholder local
+    }
+    
+    /**
+     * Limpia el cache de imágenes
+     */
+    fun clearCache() {
+        imageCache.clear()
+        Log.d("ExerciseImageProvider", "🗑️ Image cache cleared")
+    }
     
     /**
      * Genera una URL de imagen usando Unsplash basada en el nombre del ejercicio
@@ -8,6 +95,27 @@ object ExerciseImageProvider {
     fun getExerciseImageUrl(exerciseName: String, width: Int = 400, height: Int = 300): String {
         val searchQuery = cleanExerciseName(exerciseName)
         return "https://source.unsplash.com/${width}x${height}/?$searchQuery,fitness,exercise,gym"
+    }
+    
+    /**
+     * FUNCIONES SÍNCRONAS DE FALLBACK (usando placeholders)
+     * Estas se usan cuando la API no está disponible o como fallback inmediato
+     */
+    
+    /**
+     * Genera una URL de imagen usando placeholders cuando la API no está disponible
+     */
+    fun getTranslatedExerciseImageUrl(exerciseName: String, width: Int = 400, height: Int = 300): String {
+        Log.d("ExerciseImageProvider", "🔍 Generating placeholder for '$exerciseName' (${width}x${height})")
+        
+        val cleanName = cleanExerciseName(exerciseName)
+        val translatedName = exerciseTranslations[cleanName] ?: cleanName
+        
+        // Por ahora usar un placeholder hasta que tengamos la API key
+        val url = "https://via.placeholder.com/${width}x${height}/2196F3/FFFFFF?text=${translatedName.replace("+", "%20")}"
+        
+        Log.d("ExerciseImageProvider", "🎯 Generated placeholder URL for '$exerciseName': $url")
+        return url
     }
     
     /**
@@ -74,37 +182,16 @@ object ExerciseImageProvider {
         "martillo" to "hammer+curl",
         "curl concentrado" to "concentration+curl",
         "extensiones por encima" to "overhead+extension",
-        "patadas de triceps" to "tricep+kickback",
-        
-        // Ejercicios cardiovasculares
-        "correr" to "running",
-        "trotar" to "jogging",
-        "caminar" to "walking",
-        "bicicleta" to "cycling",
-        "saltar cuerda" to "jump+rope",
-        "eliptica" to "elliptical",
-        
-        // Ejercicios funcionales
-        "thrusters" to "thrusters",
-        "wall balls" to "wall+balls",
-        "box jumps" to "box+jumps",
-        "mountain climbers" to "mountain+climbers"
+        "patadas de triceps" to "tricep+kickback"
     )
-    
-    /**
-     * Versión mejorada que traduce ejercicios comunes al inglés
-     */
-    fun getTranslatedExerciseImageUrl(exerciseName: String, width: Int = 400, height: Int = 300): String {
-        val cleanName = cleanExerciseName(exerciseName)
-        val translatedName = exerciseTranslations[cleanName] ?: cleanName
-        return "https://source.unsplash.com/${width}x${height}/?$translatedName,fitness,exercise,gym"
-    }
     
     /**
      * URL de imagen por defecto cuando no se encuentra una específica
      */
     fun getDefaultExerciseImageUrl(width: Int = 400, height: Int = 300): String {
-        return "https://source.unsplash.com/${width}x${height}/?fitness,gym,exercise,workout"
+        val url = "https://via.placeholder.com/${width}x${height}/FF9800/FFFFFF?text=Exercise"
+        Log.d("ExerciseImageProvider", "🏃 Generated default exercise URL: $url")
+        return url
     }
     
     /**
@@ -121,76 +208,71 @@ object ExerciseImageProvider {
             "brazos" to "arm+workout",
             "hombros" to "shoulder+workout",
             "abdomen" to "core+workout",
-            
-            // Grupos específicos
             "biceps" to "bicep+workout",
             "triceps" to "tricep+workout",
+            "pantorrillas" to "calf+workout",
+            
+            // Músculos específicos
             "cuadriceps" to "quadriceps+workout",
-            "gluteos" to "glutes+workout",
-            "pantorrillas" to "calves+workout",
             "femorales" to "hamstring+workout",
-            "isquiotibiales" to "hamstring+workout",
-            
-            // Sinónimos y variaciones
-            "core" to "core+workout",
-            "abs" to "abs+workout",
+            "glúteos" to "glute+workout",
             "deltoides" to "shoulder+workout",
-            "dorsal" to "back+workout",
-            "pectorales" to "chest+workout",
-            "gemelos" to "calves+workout",
-            "muslos" to "leg+workout",
+            "dorsal" to "lat+workout",
+            "trapecio" to "trap+workout",
+            "serrato" to "serratus+workout",
             
-            // Grupos compuestos
-            "tren superior" to "upper+body+workout",
-            "tren inferior" to "lower+body+workout",
-            "cardio" to "cardio+exercise",
-            "funcional" to "functional+training"
+            // Variaciones en inglés
+            "chest" to "chest+workout",
+            "back" to "back+workout",
+            "legs" to "leg+workout",
+            "arms" to "arm+workout",
+            "shoulders" to "shoulder+workout",
+            "core" to "core+workout",
+            "abs" to "core+workout"
         )
         
         val searchTerm = muscleImageMap[primaryMuscle] ?: "fitness+workout"
-        return "https://source.unsplash.com/400x300/?$searchTerm,gym,exercise"
+        val url = "https://via.placeholder.com/400x300/4CAF50/FFFFFF?text=${searchTerm.replace("+", "%20")}"
+        
+        Log.d("ExerciseImageProvider", "💪 Generated muscle group URL for '$primaryMuscle': $url")
+        return url
     }
     
     /**
-     * Búsqueda inteligente que combina nombre y grupo muscular
+     * Función inteligente que combina nombre del ejercicio y grupo muscular
+     * Primero intenta con la API real, luego con fallbacks
      */
-    fun getSmartExerciseImageUrl(exerciseName: String, muscleGroups: String?, width: Int = 400, height: Int = 300): String {
-        val cleanName = cleanExerciseName(exerciseName)
+    suspend fun getSmartExerciseImageUrl(exerciseName: String, muscleGroups: String? = null, width: Int = 400, height: Int = 300): String {
+        Log.d("ExerciseImageProvider", "🧠 Smart search started for '$exerciseName' with muscles: $muscleGroups")
         
-        // Intentar traducción exacta primero
-        exerciseTranslations[cleanName]?.let { translatedName ->
-            return "https://source.unsplash.com/${width}x${height}/?$translatedName,fitness,exercise,gym"
+        // Intentar primero con la API real
+        val apiUrl = getExerciseImageUrl(exerciseName, muscleGroups)
+        if (apiUrl != null) {
+            Log.i("ExerciseImageProvider", "🎯 Smart search: Using API result for '$exerciseName': $apiUrl")
+            return apiUrl
         }
         
-        // Buscar por palabras clave en el nombre
-        val nameKeywords = cleanName.split("+").filter { it.length > 2 }
-        val foundTranslation = exerciseTranslations.entries.find { (key, _) ->
-            nameKeywords.any { keyword -> key.contains(keyword) || keyword.contains(key) }
-        }?.value
+        // Fallback a imagen traducida
+        val fallbackUrl = getTranslatedExerciseImageUrl(exerciseName, width, height)
+        Log.d("ExerciseImageProvider", "🔄 Smart search: Using translated fallback for '$exerciseName': $fallbackUrl")
+        return fallbackUrl
+    }
+    
+    /**
+     * Versión síncrona simplificada para uso en componentes que no pueden usar LaunchedEffect
+     */
+    fun getSmartExerciseImageUrlSync(exerciseName: String, muscleGroups: String? = null, width: Int = 400, height: Int = 300): String {
+        Log.d("ExerciseImageProvider", "🔄 Using sync fallback for '$exerciseName'")
         
-        if (foundTranslation != null) {
-            return "https://source.unsplash.com/${width}x${height}/?$foundTranslation,fitness,exercise,gym"
-        }
+        // Primero intentar con traducción
+        val translatedUrl = getTranslatedExerciseImageUrl(exerciseName, width, height)
         
-        // Si no encuentra traducción, combinar con grupo muscular
-        val primaryMuscle = muscleGroups?.split(",")?.firstOrNull()?.trim()?.lowercase()
-        val muscleSearchTerm = primaryMuscle?.let { muscle ->
-            mapOf(
-                "pecho" to "chest",
-                "espalda" to "back", 
-                "piernas" to "legs",
-                "brazos" to "arms",
-                "hombros" to "shoulders",
-                "abdomen" to "core"
-            )[muscle] ?: muscle
-        }
-        
-        val combinedSearch = if (muscleSearchTerm != null) {
-            "$cleanName+$muscleSearchTerm+exercise"
+        // Si hay grupos musculares disponibles, usar eso como fallback
+        return if (!muscleGroups.isNullOrBlank()) {
+            Log.d("ExerciseImageProvider", "💪 Using muscle group fallback for '$exerciseName': $muscleGroups")
+            getImageByMuscleGroup(muscleGroups)
         } else {
-            "$cleanName+fitness+exercise"
+            translatedUrl
         }
-        
-        return "https://source.unsplash.com/${width}x${height}/?$combinedSearch,gym"
     }
 }

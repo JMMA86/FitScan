@@ -17,6 +17,25 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Leer variables del archivo .env
+        val envFile = file("../.env")
+        if (envFile.exists()) {
+            envFile.readLines().forEach { line ->
+                if (line.contains("=") && !line.startsWith("#")) {
+                    val (key, value) = line.split("=", limit = 2)
+                    buildConfigField("String", key.trim(), "\"${value.trim()}\"")
+                }
+            }
+        } else {
+            // Valores por defecto si no existe .env
+            buildConfigField("String", "UNSPLASH_ACCESS_KEY", "\"DEMO-KEY\"")
+            buildConfigField("String", "UNSPLASH_BASE_URL", "\"https://api.unsplash.com/\"")
+        }
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
