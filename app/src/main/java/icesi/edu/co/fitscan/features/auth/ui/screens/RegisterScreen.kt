@@ -64,7 +64,8 @@ import kotlinx.coroutines.launch
 fun RegisterScreen(
     greenLess: Color = MaterialTheme.colorScheme.primary,
     registerViewModel: RegisterViewModel = viewModel(),
-    onRegisterSuccess: () -> Unit = {}
+    onRegisterSuccess: () -> Unit = {},
+    onNavigateToLogin: () -> Unit = {}
 ) {
     var fullName by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
@@ -299,7 +300,7 @@ fun RegisterScreen(
 
                 Column(
                     modifier = Modifier
-                        .padding(bottom = 40.dp),
+                        .padding(bottom = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Button(
@@ -328,6 +329,14 @@ fun RegisterScreen(
                         } else {
                             Text(text = "Registrarme", color = Color.White)
                         }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    TextButton(onClick = { onNavigateToLogin() }) {
+                        Text(
+                            text = "¿Ya tienes cuenta? Inicia sesión",
+                            color = greenLess,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }
