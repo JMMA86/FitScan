@@ -141,17 +141,43 @@ fun CurrentExerciseSection(
         // Reset initialization flag when exercise changes
         isInitializing.value = true
 
-        // Update values with initial values if available
-        if (initialRepsValues.isNotEmpty() && initialRepsValues.size >= repetitions.size) {
-            repsValues = initialRepsValues.map { it.toString() }
+        // Update values with initial values if available, preserving existing values and padding as needed
+        if (initialRepsValues.isNotEmpty()) {
+            // Use stored values and pad with defaults if the list is shorter than repetitions
+            val newRepsValues = initialRepsValues.map { it.toString() }.toMutableList()
+            while (newRepsValues.size < repetitions.size) {
+                newRepsValues.add("1")
+            }
+            repsValues = newRepsValues.take(repetitions.size)
+            Log.d(
+                "CurrentExerciseSection",
+                "Usando valores guardados de reps para $name: $repsValues"
+            )
         } else {
             repsValues = List(repetitions.size) { "1" }
+            Log.d(
+                "CurrentExerciseSection",
+                "Usando valores por defecto de reps para $name: $repsValues"
+            )
         }
 
-        if (initialKilosValues.isNotEmpty() && initialKilosValues.size >= repetitions.size) {
-            kilosValues = initialKilosValues.map { it.toString() }
+        if (initialKilosValues.isNotEmpty()) {
+            // Use stored values and pad with defaults if the list is shorter than repetitions
+            val newKilosValues = initialKilosValues.map { it.toString() }.toMutableList()
+            while (newKilosValues.size < repetitions.size) {
+                newKilosValues.add("1")
+            }
+            kilosValues = newKilosValues.take(repetitions.size)
+            Log.d(
+                "CurrentExerciseSection",
+                "Usando valores guardados de kilos para $name: $kilosValues"
+            )
         } else {
             kilosValues = List(repetitions.size) { "1" }
+            Log.d(
+                "CurrentExerciseSection",
+                "Usando valores por defecto de kilos para $name: $kilosValues"
+            )
         }
 
         // Allow updates after a short delay
@@ -252,11 +278,6 @@ fun CurrentExerciseSection(
                 }
                 Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
                 Text(
-                    text = "Serie $series",
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
-                Text(
                     text = remainingTime,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -330,7 +351,6 @@ fun CurrentExerciseSection(
                                             if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
                                                 val value =
                                                     if (newValue.isEmpty()) "0" else newValue
-                                                // Actualizar solo el elemento específico
                                                 val updatedList = repsValues.toMutableList()
                                                 updatedList[index] = value
                                                 repsValues = updatedList

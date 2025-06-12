@@ -39,7 +39,7 @@ class PerformWorkoutViewModel(
 
     // StateFlow to manage the workout details
     private var _workoutState = WorkoutUiState()
-    private var exercises: List<RemainingExercise> = emptyList()
+    private var exercises: MutableList<RemainingExercise> = mutableListOf()
     private var currentExerciseIndex: Int = 0
     private var isPaused: Boolean = false
 
@@ -110,17 +110,35 @@ class PerformWorkoutViewModel(
                     val exercise = exercises[currentExerciseIndex]
                     val kilosValues = _workoutState.currentExercise.kilosValues
                     val repsValues = _workoutState.currentExercise.repsValues
-                    val totalWeight = kilosValues.sum()
+                    
+                    // Calculate total reps: sum of all reps across all sets
                     val totalReps = repsValues.sum()
-                    val maxWeight = kilosValues.maxOrNull() ?: 0f
+                    
+                    // Calculate total weight: sum of (reps * weight) for each set
+                    val totalVolume = repsValues.zip(kilosValues) { reps, weight -> reps * weight }.sum()
+                    
+                    // Get number of sets actually performed (non-zero reps)
+                    val setsPerformed = repsValues.count { it > 0 }
+                    
+                    // Calculate average weight per rep for RPE approximation
+                    val averageWeight = if (totalReps > 0) totalVolume / totalReps else 0f
+                    
+                    Log.d("PerformWorkoutViewModel", "Exercise completion - " +
+                            "repsValues: $repsValues, " +
+                            "kilosValues: $kilosValues, " +
+                            "totalReps: $totalReps, " +
+                            "totalVolume: $totalVolume, " +
+                            "setsPerformed: $setsPerformed, " +
+                            "averageWeight: $averageWeight")
+                    
                     val completed = CompletedExercise(
                         id = null,
                         workoutSessionId = null,
                         exerciseId = exercise.id,
-                        sets = exercise.sets.toIntOrNull(),
-                        reps = totalReps,
-                        rpe = maxWeight.toInt(), // maximum weight lifted
-                        weightKg = totalWeight.toInt() // sum of all weights lifted
+                        sets = setsPerformed, // Number of sets actually performed
+                        reps = totalReps, // Total reps across all sets
+                        rpe = averageWeight.toInt(), // Average weight as RPE approximation
+                        weightKg = totalVolume.toInt() // Total volume (reps * weight across all sets)
                     )
                     completedExercises.add(completed)
                     lastCompletedExerciseIndex = currentExerciseIndex
@@ -190,24 +208,25 @@ class PerformWorkoutViewModel(
         _uiState.value = PerformWorkoutUiState.Idle
     }
 
-    private suspend fun loadExercises(): List<RemainingExercise> {
+    private suspend fun loadExercises(): MutableList<RemainingExercise> {
         val workoutUUID = UUID.fromString(workoutId)
         val exercisesResponse = performWorkoutUseCase.getWorkoutExercises(workoutUUID)
         return exercisesResponse.getOrNull().orEmpty().map { item ->
             val exercise = exerciseUseCase.getExerciseById(item.exerciseId)
-            val setsCount = item.sets
+            // Siempre inicializar con 1 serie por defecto en lugar del valor de la BD
+            val defaultSetsCount = 1
             val repsPerSet = item.reps
-            val repsValues = List(setsCount) { repsPerSet }
-            val kilosValues = List(setsCount) { 0f }
+            val repsValues = List(defaultSetsCount) { repsPerSet }
+            val kilosValues = List(defaultSetsCount) { 0f }
             RemainingExercise(
                 id = item.exerciseId.toString(),
                 title = exercise.name.toString(),
-                sets = setsCount.toString(),
+                sets = defaultSetsCount.toString(),
                 reps = repsPerSet.toString(),
                 repsValues = repsValues,
                 kilosValues = kilosValues
             )
-        }
+        }.toMutableList()
     }
 
     private suspend fun loadWorkout(): icesi.edu.co.fitscan.domain.model.Workout? {
@@ -239,12 +258,37 @@ class PerformWorkoutViewModel(
     ): CurrentExercise {
         val elapsed = formatSeconds(seconds)
         return exercises.getOrNull(index)?.let {
-            val repsCount = it.reps.toIntOrNull() ?: 0
-            val repsList = (1..repsCount).map { repNum -> "Set $repNum" }
-            // Use the values from RemainingExercise if available
-            val repsValues = it.repsValues.takeIf { l -> l.isNotEmpty() } ?: List(repsCount) { 0 }
-            val kilosValues =
-                it.kilosValues.takeIf { l -> l.isNotEmpty() } ?: List(repsCount) { 0f }
+            // Get the expected number of sets from the exercise definition
+            val expectedSetsCount = it.sets.toIntOrNull() ?: 0
+            
+            // Preserve existing values and pad with defaults if needed
+            val repsValues = if (it.repsValues.isNotEmpty()) {
+                // Use existing values and pad if necessary
+                it.repsValues.toMutableList().apply {
+                    while (size < expectedSetsCount) add(0)
+                }.take(expectedSetsCount)
+            } else {
+                // Create initial list with default values
+                List(expectedSetsCount) { 0 }
+            }
+            
+            val kilosValues = if (it.kilosValues.isNotEmpty()) {
+                // Use existing values and pad if necessary
+                it.kilosValues.toMutableList().apply {
+                    while (size < expectedSetsCount) add(0f)
+                }.take(expectedSetsCount)
+            } else {
+                // Create initial list with default values
+                List(expectedSetsCount) { 0f }
+            }
+            
+            val repsList = (1..expectedSetsCount).map { repNum -> "Set $repNum" }
+            
+            Log.d("PerformWorkoutViewModel", "createCurrentExercise - ejercicio: ${it.title}, " +
+                    "expectedSetsCount: $expectedSetsCount, " +
+                    "repsValues: $repsValues, " +
+                    "kilosValues: $kilosValues")
+            
             CurrentExercise(
                 name = it.title,
                 time = formattedTime,
@@ -332,6 +376,14 @@ class PerformWorkoutViewModel(
 
     fun updateRepsValues(newValues: List<Int>) {
         Log.d("PerformWorkoutViewModel", "updateRepsValues llamado con valores: $newValues")
+        
+        // Actualizar también los valores en la lista de ejercicios para que persistan
+        if (currentExerciseIndex < exercises.size) {
+            exercises[currentExerciseIndex] = exercises[currentExerciseIndex].copy(
+                repsValues = newValues
+            )
+        }
+        
         // Actualiza los valores de repeticiones en el ejercicio actual
         _workoutState = _workoutState.copy(
             currentExercise = _workoutState.currentExercise.copy(
@@ -347,6 +399,14 @@ class PerformWorkoutViewModel(
 
     fun updateKilosValues(newValues: List<Float>) {
         Log.d("PerformWorkoutViewModel", "updateKilosValues llamado con valores: $newValues")
+        
+        // Actualizar también los valores en la lista de ejercicios para que persistan
+        if (currentExerciseIndex < exercises.size) {
+            exercises[currentExerciseIndex] = exercises[currentExerciseIndex].copy(
+                kilosValues = newValues
+            )
+        }
+        
         // Actualiza los valores de kilos en el ejercicio actual
         _workoutState = _workoutState.copy(
             currentExercise = _workoutState.currentExercise.copy(
