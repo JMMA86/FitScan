@@ -4,12 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -50,12 +46,10 @@ fun DashboardScreen(
         }
     }
 
-    val scrollState = rememberScrollState()
-
-    Box(modifier = Modifier.fillMaxSize()) {        Column(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState)
                 .background(MaterialTheme.colorScheme.background)
         ) {
             Box(
@@ -119,8 +113,7 @@ fun DashboardScreen(
                         .fillMaxWidth()
                         .padding(vertical = 16.dp),
                     contentAlignment = Alignment.Center
-                ) {
-                    CircularProgress(progress = weeklyProgress)
+                ) {                CircularProgress(progress = weeklyProgress)
                 }
 
                 if (recentActivities.isNotEmpty()) {
@@ -143,37 +136,34 @@ fun DashboardScreen(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                                 contentDescription = "Ver rutinas",
                                 tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
+                            )                        }
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Box(
+                    LazyColumn(
                         modifier = Modifier
-                            .heightIn(max = 320.dp)
-                            .padding(horizontal = 16.dp)
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp)
                     ) {
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            items(recentActivities) { activity ->
-                                RecentActivityCard(
-                                    id = activity.id,
-                                    title = activity.title,
-                                    time = activity.time,
-                                    level = activity.level,
-                                    exercises = activity.exercises,
-                                    onClick = { workoutId ->
-                                        navController.navigate("workout_detail/$workoutId")
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
+                        items(recentActivities) { activity ->
+                            RecentActivityCard(
+                                id = activity.id,
+                                title = activity.title,
+                                time = activity.time,
+                                level = activity.level,
+                                exercises = activity.exercises,
+                                onClick = { workoutId ->
+                                    navController.navigate("workout_detail/$workoutId")
+                                }
+                            )
+                        }                    }
+                } else {
+                    // If no recent activities, add a spacer to push the "Actividades" section down
+                    Spacer(modifier = Modifier.weight(1f))
                 }
 
                 Text(
