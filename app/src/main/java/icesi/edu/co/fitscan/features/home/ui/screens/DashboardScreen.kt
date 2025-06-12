@@ -147,15 +147,15 @@ fun DashboardScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Box(
                         modifier = Modifier
-                            .height(250.dp)
+                            .heightIn(max = 320.dp)
                             .padding(horizontal = 16.dp)
                     ) {
                         LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxSize()
                         ) {
                             items(recentActivities) { activity ->
@@ -173,7 +173,7 @@ fun DashboardScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
 
                 Text(
