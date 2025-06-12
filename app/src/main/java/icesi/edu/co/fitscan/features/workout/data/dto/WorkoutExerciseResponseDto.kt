@@ -1,5 +1,5 @@
 package icesi.edu.co.fitscan.features.workout.data.dto
 
-data class WorkoutExerciseResponseDTO(
+data class WorkoutExerciseResponseDto(
     val data: List<WorkoutExerciseDto>? = null
 )
