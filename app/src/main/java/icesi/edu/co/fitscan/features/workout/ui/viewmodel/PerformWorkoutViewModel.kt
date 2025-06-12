@@ -161,52 +161,18 @@ class PerformWorkoutViewModel(
     fun goToNextExercise() {
         viewModelScope.launch {
             if (currentExerciseIndex < exercises.size - 1) {
-                if (currentExerciseIndex > lastCompletedExerciseIndex) {
-                    val exercise = exercises[currentExerciseIndex]
-                    val kilosValues = _workoutState.currentExercise.kilosValues
-                    val repsValues = _workoutState.currentExercise.repsValues
-
-                    // Calculate total reps: sum of all reps across all sets
-                    val totalReps = repsValues.sum()
-
-                    // Calculate total weight: sum of (reps * weight) for each set
-                    val totalVolume =
-                        repsValues.zip(kilosValues) { reps, weight -> reps * weight }.sum()
-
-                    // Get number of sets actually performed (non-zero reps)
-                    val setsPerformed = repsValues.count { it > 0 }
-
-                    // Calculate average weight per rep for RPE approximation
-                    val averageWeight = if (totalReps > 0) totalVolume / totalReps else 0
-
-                    Log.d(
-                        "PerformWorkoutViewModel", "Exercise completion - " +
-                                "repsValues: $repsValues, " +
-                                "kilosValues: $kilosValues, " +
-                                "totalReps: $totalReps, " +
-                                "totalVolume: $totalVolume, " +
-                                "setsPerformed: $setsPerformed, " +
-                                "averageWeight: $averageWeight"
-                    )
-
-                    val completed = CompletedExercise(
-                        id = null,
-                        workoutSessionId = null,
-                        exerciseId = exercise.id,
-                        sets = setsPerformed, // Number of sets actually performed
-                        reps = totalReps, // Total reps across all sets
-                        rpe = averageWeight.toInt(), // Average weight as RPE approximation
-                        weightKg = totalVolume.toInt() // Total volume (reps * weight across all sets)
-                    )
-                    completedExercises.add(completed)
-                    lastCompletedExerciseIndex = currentExerciseIndex
-                }
+                // Capturar el ejercicio actual antes de avanzar
+                captureCurrentExerciseIfValid()
+                
                 currentExerciseIndex++
                 currentExerciseStartTime = getCurrentTimeHumanReadable()
                 timerManager.reset()
                 timerManager.start()
                 updateCurrentAndNextExercises()
             } else if (currentExerciseIndex == exercises.size - 1) {
+                // Capturar el último ejercicio
+                captureCurrentExerciseIfValid()
+                
                 currentExerciseIndex++
                 updateCurrentAndNextExercises()
             }
@@ -241,6 +207,9 @@ class PerformWorkoutViewModel(
     fun finishWorkout() {
         sessionEndTime = getCurrentTimeFormatted()
         viewModelScope.launch {
+            // Capturar el ejercicio actual si tiene datos válidos antes de terminar
+            captureCurrentExerciseIfValid()
+            
             val session = WorkoutSession(
                 id = null,
                 customerId = AppState.customerId.toString(),
@@ -552,5 +521,65 @@ class PerformWorkoutViewModel(
             currentList.size < targetSize -> currentList + List(targetSize - currentList.size) { defaultValue }
             else -> currentList.take(targetSize)
         }
+    }
+
+    private fun captureCurrentExerciseIfValid() {
+        // Solo capturar si estamos en un ejercicio válido y no ha sido capturado previamente
+        if (currentExerciseIndex < exercises.size && currentExerciseIndex > lastCompletedExerciseIndex) {
+            val exercise = exercises[currentExerciseIndex]
+            val kilosValues = _workoutState.currentExercise.kilosValues
+            val repsValues = _workoutState.currentExercise.repsValues
+
+            // Verificar que hay datos válidos (al menos una serie con reps > 0)
+            val hasValidData = repsValues.any { it > 0 }
+            
+            if (hasValidData) {
+                // Calculate total reps: sum of all reps across all sets
+                val totalReps = repsValues.sum()
+
+                // Calculate total weight: sum of (reps * weight) for each set
+                val totalVolume =
+                    repsValues.zip(kilosValues) { reps, weight -> reps * weight }.sum()
+
+                // Get number of sets actually performed (non-zero reps)
+                val setsPerformed = repsValues.count { it > 0 }
+
+                // Calculate average weight per rep for RPE approximation
+                val averageWeight = if (totalReps > 0) totalVolume / totalReps else 0
+
+                Log.d(
+                    "PerformWorkoutViewModel", "Capturing current exercise on finish - " +
+                            "repsValues: $repsValues, " +
+                            "kilosValues: $kilosValues, " +
+                            "totalReps: $totalReps, " +
+                            "totalVolume: $totalVolume, " +
+                            "setsPerformed: $setsPerformed, " +
+                            "averageWeight: $averageWeight"
+                )
+
+                val completed = CompletedExercise(
+                    id = null,
+                    workoutSessionId = null,
+                    exerciseId = exercise.id,
+                    sets = setsPerformed, // Number of sets actually performed
+                    reps = totalReps, // Total reps across all sets
+                    rpe = averageWeight.toInt(), // Average weight as RPE approximation
+                    weightKg = totalVolume.toInt() // Total volume (reps * weight across all sets)
+                )
+                completedExercises.add(completed)
+                lastCompletedExerciseIndex = currentExerciseIndex
+                
+                Log.d("PerformWorkoutViewModel", "Ejercicio actual capturado en finishWorkout: ${exercise.title}")
+            } else {
+                Log.d("PerformWorkoutViewModel", "Ejercicio actual no tiene datos válidos, no se captura")
+            }
+        }
+    }
+
+    fun hasCurrentExerciseData(): Boolean {
+        return if (currentExerciseIndex < exercises.size) {
+            val repsValues = _workoutState.currentExercise.repsValues
+            repsValues.any { it > 0 }
+        } else false
     }
 }
