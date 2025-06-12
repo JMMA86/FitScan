@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -87,7 +88,7 @@ fun WorkoutDetailScreen(
             TopAppBar(
                 title = { Text("Detalle de entrenamiento", color = primaryTextColor) },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = onNavigateBack ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
@@ -231,7 +232,9 @@ fun WorkoutDetailScreen(
                             painter = painterResource(id = R.drawable.ic_fitness), // Your dumbbell icon
                             contentDescription = null, // Decorative
                             tint = MaterialTheme.colorScheme.onPrimary, // Icon color on button
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier
+                                .size(20.dp)
+                                .graphicsLayer(rotationZ = 180f)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
@@ -332,7 +335,7 @@ private fun ExerciseRow(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Ver detalle",
                 tint = accentColor,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(28.dp).graphicsLayer(rotationZ = 180f)
             )
         }
     }

@@ -167,7 +167,8 @@ fun NavigationHost(
                 },
                 onStartWorkout = {
                     workoutId?.let { navController.navigate("perform_workout/$it") }
-                }
+                },
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 

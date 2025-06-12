@@ -49,6 +49,7 @@ fun ProgressPhotoScreen(navController: NavController = rememberNavController()) 
     val viewModel: ProgressPhotoViewModel = viewModel(factory = ProgressPhotoViewModelFactory())
     val context = LocalContext.current
     val progressPhotos by viewModel.progressPhotos.collectAsState()
+    val isUploading by viewModel.isUploading.collectAsState()
     var title by remember { mutableStateOf("Inserta un título") }
     var isEditingTitle by remember { mutableStateOf(false) }
     var viewMode by remember { mutableStateOf("grid") }
@@ -219,8 +220,7 @@ fun ProgressPhotoScreen(navController: NavController = rememberNavController()) 
                                                 )
                                             }
                                         }
-                                    }
-                                )
+                                    }                                )
                             } else {
                                 Text(
                                     text = title,
@@ -247,6 +247,7 @@ fun ProgressPhotoScreen(navController: NavController = rememberNavController()) 
                         ) {
                             Button(
                                 onClick = { pickImageLauncher.launch("image/*") },
+                                enabled = !isUploading,
                                 colors =
                                     ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -267,6 +268,7 @@ fun ProgressPhotoScreen(navController: NavController = rememberNavController()) 
                             }
                             Button(
                                 onClick = { takePictureLauncher.launch(null) },
+                                enabled = !isUploading,
                                 colors =
                                     ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -294,12 +296,12 @@ fun ProgressPhotoScreen(navController: NavController = rememberNavController()) 
                         text = "Anímate a subir tu primera foto",
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.primary,
-                        textAlign = TextAlign.Start
-                    )
+                        textAlign = TextAlign.Start                    )
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Button(
                             onClick = { pickImageLauncher.launch("image/*") },
+                            enabled = !isUploading,
                             colors =
                                 ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -317,6 +319,7 @@ fun ProgressPhotoScreen(navController: NavController = rememberNavController()) 
                         }
                         Button(
                             onClick = { takePictureLauncher.launch(null) },
+                            enabled = !isUploading,
                             colors =
                                 ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -741,7 +744,46 @@ fun ProgressPhotoScreen(navController: NavController = rememberNavController()) 
                         Text("Eliminar foto")
                     }
                 }
-            }
+            }        }
+    }
+
+    // Show upload loading overlay
+    if (isUploading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.8f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Card(
+                modifier = Modifier.padding(32.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(48.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        strokeWidth = 4.dp
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Subiendo foto...",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = "Por favor espera",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
+                    )
+                }            }
         }
     }
 
