@@ -1,4 +1,4 @@
-package icesi.edu.co.fitscan.features.mealplan.ui.screens
+package icesi.edu.co.fitscan.features.mealPlan.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,10 +38,13 @@ import icesi.edu.co.fitscan.features.mealPlan.data.dto.DietaryRestrictionDto
 import icesi.edu.co.fitscan.features.mealPlan.data.dto.DietaryPreferenceDto
 import icesi.edu.co.fitscan.features.mealPlan.data.dto.MealDto
 import icesi.edu.co.fitscan.features.common.ui.viewmodel.AppState
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CreateMealPlanScreen(
+    navController: NavController,
     customerId: String = AppState.customerId ?: ""
 ) {
     // ViewModel setup (in real app, use DI or pass from NavGraph)
@@ -280,8 +283,6 @@ fun CreateMealPlanScreen(
         }
     }
 
-    val navController = androidx.navigation.compose.rememberNavController()
-
     // Feedback dialog for success/error
     if (uiState is icesi.edu.co.fitscan.features.mealPlan.ui.viewmodel.CreateMealPlanUiState.Success || uiState is icesi.edu.co.fitscan.features.mealPlan.ui.viewmodel.CreateMealPlanUiState.Error) {
         val isSuccess = uiState is icesi.edu.co.fitscan.features.mealPlan.ui.viewmodel.CreateMealPlanUiState.Success
@@ -290,7 +291,7 @@ fun CreateMealPlanScreen(
             viewModel.loadData() // Optionally reload data
             viewModel.resetUiState()
             if (isSuccess) {
-                navController.navigate("nutrition_plan_list") {
+                navController.navigate("meal") {
                     popUpTo("meal") { inclusive = true }
                     launchSingleTop = true
                 }
@@ -306,7 +307,7 @@ fun CreateMealPlanScreen(
                         viewModel.loadData()
                         viewModel.resetUiState()
                         if (isSuccess) {
-                            navController.navigate("nutrition_plan_list") {
+                            navController.navigate("meal") {
                                 popUpTo("meal") { inclusive = true }
                                 launchSingleTop = true
                             }
@@ -404,7 +405,8 @@ fun SelectableChips(options: List<String>) {
 @Preview(showBackground = true)
 @Composable
 fun CreateMealPlanPreview() {
+    val navController = rememberNavController()
     FitScanTheme {
-        CreateMealPlanScreen()
+        CreateMealPlanScreen(navController = navController)
     }
 }

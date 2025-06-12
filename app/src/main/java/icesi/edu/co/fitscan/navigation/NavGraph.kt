@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -13,6 +14,8 @@ import icesi.edu.co.fitscan.features.auth.ui.screens.LoginScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.PersonalDataScreen
 import icesi.edu.co.fitscan.features.auth.ui.screens.RegisterScreen
 import icesi.edu.co.fitscan.features.home.ui.screens.DashboardScreen
+import icesi.edu.co.fitscan.features.mealPlan.ui.screens.MealPlanListScreen
+import icesi.edu.co.fitscan.features.mealPlan.ui.screens.CreateMealPlanScreen
 import icesi.edu.co.fitscan.features.notifications.ui.screens.NotificationsScreen
 import icesi.edu.co.fitscan.features.nutrition.ui.screens.NutritionPlanListScreen
 import icesi.edu.co.fitscan.features.profile.ui.screens.ProfileScreen
@@ -27,7 +30,9 @@ import icesi.edu.co.fitscan.features.workout.ui.screens.ExerciseDetailScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.PerformWorkoutScreen
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.ExerciseDetailViewModelFactory
 import icesi.edu.co.fitscan.features.workoutlist.ui.screens.WorkoutListScreen
-import icesi.edu.co.fitscan.features.mealplan.ui.screens.CreateMealPlanScreen
+//import icesi.edu.co.fitscan.features.mealplan.ui.screens.CreateMealPlanScreen
+import icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutDetailScreen
+
 
 @Composable
 fun NavigationHost(
@@ -87,7 +92,11 @@ fun NavigationHost(
         }
 
         composable(Screen.Meal.route) {
-            CreateMealPlanScreen()
+            MealPlanListScreen(navController = navController)
+        }
+
+        composable("create_meal_plan") {
+            CreateMealPlanScreen(navController = navController)
         }
 
         composable(Screen.Statistics.route) {
@@ -177,7 +186,7 @@ fun NavigationHost(
         ) { backStackEntry ->
             val workoutId = backStackEntry.arguments?.getString("workoutId")
             Log.d("NavGraph", "Navegando a workout_detail con workoutId: $workoutId")
-            icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutDetailScreen(
+            WorkoutDetailScreen(
                 workoutId = workoutId,
                 onExerciseClick = { workoutId, workoutExerciseId ->
                     navController.navigate("exercise_detail/$workoutId/$workoutExerciseId")
@@ -201,7 +210,7 @@ fun NavigationHost(
                 workoutExerciseId = workoutExerciseId,
                 workoutId = workoutId,
                 onNavigateBack = { navController.popBackStack() },
-                viewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = ExerciseDetailViewModelFactory())            )
+                viewModel = viewModel(factory = ExerciseDetailViewModelFactory())            )
         }
           composable(Screen.DetailedCharts.route) {
             DetailedChartsScreen(navController = navController)
@@ -216,14 +225,7 @@ fun NavigationHost(
         }
 
         composable("nutrition_plan_list") {
-            NutritionPlanListScreen(
-                myPlans = emptyList(),
-                popularPlans = emptyList(),
-                onEdit = {},
-                onDetail = {},
-                onAdd = {},
-                navController = navController
-            )
+            NutritionPlanListScreen()
         }
     }
 }

@@ -16,6 +16,9 @@ class MealPlanRepository(private val dataSource: IMealPlanDataSource) {
     suspend fun getMeals(): List<MealDto> {
         return dataSource.getMeals().body()?.data ?: emptyList()
     }
+    suspend fun getMealPlans(): List<MealPlanDto> {
+        return dataSource.getMealPlans().body()?.data ?: emptyList()
+    }
     suspend fun createMealPlan(mealPlan: MealPlanDto): MealPlanDto? {
         val response = dataSource.createMealPlan(mealPlan)
         // Considera éxito si el status HTTP es exitoso, aunque el body sea null

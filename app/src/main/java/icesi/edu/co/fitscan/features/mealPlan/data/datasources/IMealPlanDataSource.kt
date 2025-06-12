@@ -17,6 +17,9 @@ interface IMealPlanDataSource {
     @GET("items/meal")
     suspend fun getMeals(): Response<MealsResponse>
 
+    @GET("items/meal_plan")
+    suspend fun getMealPlans(): Response<MealPlansResponse>
+
     @POST("items/meal_plan")
     suspend fun createMealPlan(@Body mealPlan: MealPlanDto): Response<MealPlanDto>
 
@@ -34,3 +37,4 @@ data class GoalsResponse(val data: List<FitnessGoalDto>)
 data class DietaryRestrictionsResponse(val data: List<DietaryRestrictionDto>)
 data class DietaryPreferencesResponse(val data: List<DietaryPreferenceDto>)
 data class MealsResponse(val data: List<MealDto>)
+data class MealPlansResponse(val data: List<MealPlanDto>)
