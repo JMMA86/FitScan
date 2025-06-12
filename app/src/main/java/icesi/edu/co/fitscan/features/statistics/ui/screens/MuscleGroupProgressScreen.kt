@@ -221,17 +221,15 @@ private fun PolygonChartCard(progressData: List<MuscleGroupProgress>) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            
-            PolygonChart(
+              PolygonChart(
                 muscleGroupProgress = progressData,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp)
+                    .height(350.dp) // Increased height to accommodate labels
             )
-            
-            // Legend
+              // Legend
             Text(
-                text = "Cada punto representa el progreso de un grupo muscular",
+                text = "Toca un punto para ver detalles del grupo muscular",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
