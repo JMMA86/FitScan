@@ -67,3 +67,31 @@ La aplicación maneja **dos roles principales**:
 - **Directus** (gestionado con **Docker**) como backend para:
   - Autenticación de usuarios.
   - Gestión y almacenamiento de datos relacionados con usuarios, entrenamientos, métricas y progresos.
+
+## Configuración del Entorno
+
+### 🔑 Variables de Entorno
+
+FitScan utiliza APIs externas que requieren configuración de keys:
+
+1. **Copia el archivo de configuración:**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Configura tu API Key de Unsplash:**
+   - Ve a [Unsplash Developers](https://unsplash.com/developers)
+   - Crea una cuenta gratuita
+   - Crea una nueva aplicación
+   - Copia tu "Access Key"
+   - Pégala en `.env` reemplazando `tu_access_key_aqui`
+
+3. **El archivo `.env` debería verse así:**
+
+   ```env
+   UNSPLASH_ACCESS_KEY=tu_access_key_real_aqui
+   UNSPLASH_BASE_URL=https://api.unsplash.com/
+   ```
+
+⚠️ **Importante:** Nunca subas el archivo `.env` a git. Ya está incluido en `.gitignore`.

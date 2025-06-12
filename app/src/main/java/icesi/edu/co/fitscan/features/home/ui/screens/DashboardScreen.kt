@@ -8,14 +8,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,48 +58,13 @@ fun DashboardScreen(
                 .verticalScroll(scrollState)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            // CABECERA CON ICONOS
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {                IconButton(onClick = { navController.navigate("profile") }) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Usuario",
-                        tint = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { navController.navigate("notifications") }) {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = "Notificaciones",
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(16.dp))
-                    IconButton(onClick = { navController.navigate("settings") }) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Configuración",
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
-            }
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp),
                 contentAlignment = Alignment.Center
-            ) {                Text(
+            ) {
+                Text(
                     text = "FitScanAI",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onBackground,
@@ -184,15 +147,15 @@ fun DashboardScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Box(
                         modifier = Modifier
-                            .height(250.dp)
+                            .heightIn(max = 320.dp)
                             .padding(horizontal = 16.dp)
                     ) {
                         LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxSize()
                         ) {
                             items(recentActivities) { activity ->
@@ -210,7 +173,7 @@ fun DashboardScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
 
                 Text(

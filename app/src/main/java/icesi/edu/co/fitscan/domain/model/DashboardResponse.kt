@@ -53,7 +53,10 @@ data class DashboardResponse(
             Activity(
                 id = workout.id.toString(),
                 title = workout.name,
-                time = "${workout.durationMinutes ?: 0} min",
+                time = if (workout.durationMinutes != null && workout.durationMinutes > 0) 
+                    "${workout.durationMinutes} min" 
+                else 
+                    "Sin duración",
                 level = workout.difficulty ?: "Unknown",
                 exercises = "Workout",
                 type = workout.type.toString()

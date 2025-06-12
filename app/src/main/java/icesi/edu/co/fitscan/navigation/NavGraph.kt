@@ -18,8 +18,6 @@ import icesi.edu.co.fitscan.features.mealPlan.ui.screens.MealPlanListScreen
 import icesi.edu.co.fitscan.features.mealPlan.ui.screens.CreateMealPlanScreen
 import icesi.edu.co.fitscan.features.notifications.ui.screens.NotificationsScreen
 import icesi.edu.co.fitscan.features.nutrition.ui.screens.NutritionPlanListScreen
-import icesi.edu.co.fitscan.features.profile.ui.screens.ProfileScreen
-import icesi.edu.co.fitscan.features.settings.ui.screens.SettingsScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.DetailedChartsScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.ExerciseProgressScreen
 import icesi.edu.co.fitscan.features.statistics.ui.screens.MuscleGroupProgressScreen
@@ -71,18 +69,6 @@ fun NavigationHost(
             DashboardScreen(navController = navController)
         }
 
-        composable(Screen.Profile.route) {
-            ProfileScreen(navController = navController)
-        }
-
-        composable(Screen.Settings.route) {
-            SettingsScreen(navController = navController)
-        }
-
-        composable(Screen.Notifications.route) {
-            NotificationsScreen(navController = navController)
-        }
-
         composable(Screen.Workouts.route) {
             WorkoutListScreen(
                 onNavigateToCreate = { navController.navigate(Screen.CreateWorkout.route) },
@@ -112,8 +98,7 @@ fun NavigationHost(
                     defaultValue = ""
                     nullable = true
                 }
-            )        ) { backStackEntry ->
-            val message = backStackEntry.arguments?.getString("message")
+            )        ) {
             LoginScreen(
                 onLoginSuccess = {
                     // Navigate to Home (Dashboard) and clear the history up to Login
@@ -124,9 +109,6 @@ fun NavigationHost(
                 },
                 onNavigateToRegister = {
                     navController.navigate(Screen.Registration.route)
-                },
-                onNavigateToForgotPassword = {
-                    // Navigation to password recovery screen
                 }
             )
         }
@@ -158,9 +140,9 @@ fun NavigationHost(
         composable(Screen.ExerciseProgress.route) {
             ExerciseProgressScreen(navController = navController)
         }
-
+        
         composable(Screen.CreateWorkout.route) {
-            CreateWorkoutScreen()
+            CreateWorkoutScreen(navController = navController)
         }
 
         composable(
@@ -173,6 +155,12 @@ fun NavigationHost(
                 onFinishWorkout = {
                     navController.navigate("home") {
                         popUpTo("home") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToExerciseDetail = { workoutId, workoutExerciseId ->
+                    navController.navigate("exercise_detail/$workoutId/$workoutExerciseId") {
+                        // No usar popUpTo para mantener el PerformWorkoutScreen en el stack
                         launchSingleTop = true
                     }
                 }

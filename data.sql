@@ -412,18 +412,118 @@ BEGIN
     END LOOP;
     RAISE NOTICE 'Inserted meal plan-meal relationships';
 
-    -- Insert exercises
-    FOR i IN 1..num_exercises LOOP
-        INSERT INTO exercise (id, name, description, muscle_groups, primary_muscle_group_id)
-        VALUES (
-            uuid_generate_v4(),
-            'Exercise ' || i,
-            'Description for Exercise ' || i,
-            'Muscle Group ' || i,
-            (SELECT id FROM muscle_group OFFSET (RANDOM() * (10 - 1))::INTEGER LIMIT 1) -- Assuming 10 muscle groups
-        );
-    END LOOP;
-    RAISE NOTICE 'Inserted % exercises', num_exercises;
+    -- Insert exercises with real names
+    DECLARE
+        exercise_names TEXT[] := ARRAY[
+            'Flexiones', 'Sentadillas', 'Abdominales', 'Dominadas', 'Press de banca',
+            'Peso muerto', 'Curl de biceps', 'Extensiones de triceps', 'Plancha', 'Burpees',
+            'Fondos', 'Remo', 'Prensa de piernas', 'Elevaciones laterales', 'Press inclinado',
+            'Aperturas', 'Cruces', 'Jalones', 'Remo con barra', 'Remo con mancuerna',
+            'Encogimientos', 'Extensiones de cuadriceps', 'Curl de femoral', 'Pantorrillas', 'Estocadas',
+            'Zancadas', 'Hip thrust', 'Press militar', 'Elevaciones frontales', 'Elevaciones posteriores',
+            'Vuelos posteriores', 'Martillo', 'Curl concentrado', 'Extensiones por encima', 'Patadas de triceps',
+            'Correr', 'Trotar', 'Caminar', 'Bicicleta', 'Saltar cuerda',
+            'Eliptica', 'Thrusters', 'Wall balls', 'Box jumps', 'Mountain climbers',
+            'Pull-ups', 'Push-ups', 'Squats', 'Deadlift', 'Bench press'
+        ];
+        exercise_descriptions TEXT[] := ARRAY[
+            'Ejercicio básico para pecho, tríceps y hombros', 'Ejercicio fundamental para piernas y glúteos',
+            'Fortalecimiento del core y músculos abdominales', 'Ejercicio de tracción para espalda y bíceps',
+            'Ejercicio principal para desarrollo del pecho', 'Ejercicio compuesto para espalda baja y piernas',
+            'Aislamiento de bíceps con mancuernas', 'Extensión de tríceps por encima de la cabeza',
+            'Ejercicio isométrico para core y estabilidad', 'Ejercicio funcional de cuerpo completo',
+            'Ejercicio para tríceps y pecho en paralelas', 'Ejercicio de tracción para espalda media',
+            'Ejercicio de piernas en máquina', 'Aislamiento de deltoides laterales',
+            'Press de banca en banco inclinado', 'Aislamiento de pectorales con mancuernas',
+            'Ejercicio de pecho en polea cruzada', 'Ejercicio de espalda en polea alta',
+            'Remo horizontal con barra', 'Remo unilateral con mancuerna',
+            'Ejercicio para trapecio superior', 'Extensión de cuádriceps en máquina',
+            'Curl de femorales en máquina', 'Elevación de pantorrillas de pie',
+            'Ejercicio unilateral de piernas', 'Paso largo para piernas y glúteos',
+            'Extensión de cadera con peso', 'Press de hombros de pie',
+            'Elevación frontal de deltoides', 'Elevación posterior de deltoides',
+            'Vuelos posteriores para deltoides trasero', 'Curl de bíceps tipo martillo',
+            'Curl de bíceps concentrado', 'Extensión de tríceps vertical',
+            'Patada de tríceps con mancuerna', 'Ejercicio cardiovascular de carrera',
+            'Trote suave cardiovascular', 'Caminata activa', 'Ejercicio en bicicleta estática',
+            'Salto de cuerda cardiovascular', 'Máquina elíptica cardiovascular',
+            'Ejercicio funcional con mancuernas', 'Lanzamiento de balón medicinal',
+            'Saltos sobre cajón', 'Escaladores dinámicos', 'Dominadas en inglés',
+            'Flexiones en inglés', 'Sentadillas en inglés', 'Peso muerto en inglés',
+            'Press de banca en inglés'
+        ];
+        muscle_groups_text TEXT[] := ARRAY[
+            'Pecho, Tríceps, Hombros', 'Piernas, Glúteos', 'Abdomen, Core', 'Espalda, Bíceps',
+            'Pecho, Tríceps, Hombros', 'Espalda, Piernas, Glúteos', 'Bíceps', 'Tríceps',
+            'Core, Abdomen', 'Cuerpo completo', 'Tríceps, Pecho', 'Espalda, Bíceps',
+            'Piernas, Glúteos', 'Hombros', 'Pecho, Tríceps', 'Pecho', 'Pecho',
+            'Espalda, Bíceps', 'Espalda, Bíceps', 'Espalda, Bíceps', 'Traps, Hombros',
+            'Cuádriceps', 'Femorales', 'Pantorrillas', 'Piernas, Glúteos', 'Piernas, Glúteos',
+            'Glúteos', 'Hombros', 'Hombros', 'Hombros', 'Hombros',
+            'Bíceps', 'Bíceps', 'Tríceps', 'Tríceps', 'Cardio', 'Cardio',
+            'Cardio', 'Cardio', 'Cardio', 'Cardio', 'Cuerpo completo',
+            'Cuerpo completo', 'Piernas', 'Core, Cardio', 'Espalda, Bíceps',
+            'Pecho, Tríceps', 'Piernas, Glúteos', 'Espalda, Piernas', 'Pecho, Tríceps'
+        ];
+        chest_muscle_id UUID;
+        back_muscle_id UUID;
+        shoulders_muscle_id UUID;
+        biceps_muscle_id UUID;
+        triceps_muscle_id UUID;
+        legs_muscle_id UUID;
+        calves_muscle_id UUID;
+        abs_muscle_id UUID;
+        current_muscle_id UUID;
+    BEGIN
+        -- Get muscle group IDs
+        SELECT id INTO chest_muscle_id FROM muscle_group WHERE name = 'Chest';
+        SELECT id INTO back_muscle_id FROM muscle_group WHERE name = 'Back';
+        SELECT id INTO shoulders_muscle_id FROM muscle_group WHERE name = 'Shoulders';
+        SELECT id INTO biceps_muscle_id FROM muscle_group WHERE name = 'Biceps';
+        SELECT id INTO triceps_muscle_id FROM muscle_group WHERE name = 'Triceps';
+        SELECT id INTO legs_muscle_id FROM muscle_group WHERE name = 'Legs';
+        SELECT id INTO calves_muscle_id FROM muscle_group WHERE name = 'Calves';
+        SELECT id INTO abs_muscle_id FROM muscle_group WHERE name = 'Abs';
+
+        FOR i IN 1..LEAST(num_exercises, array_length(exercise_names, 1)) LOOP
+            -- Assign primary muscle group based on exercise type
+            current_muscle_id := CASE 
+                WHEN exercise_names[i] ILIKE '%flexiones%' OR exercise_names[i] ILIKE '%press%' OR exercise_names[i] ILIKE '%aperturas%' OR exercise_names[i] ILIKE '%cruces%' OR exercise_names[i] ILIKE '%bench%' THEN chest_muscle_id
+                WHEN exercise_names[i] ILIKE '%dominadas%' OR exercise_names[i] ILIKE '%remo%' OR exercise_names[i] ILIKE '%jalones%' OR exercise_names[i] ILIKE '%pull%' OR exercise_names[i] ILIKE '%peso muerto%' OR exercise_names[i] ILIKE '%deadlift%' THEN back_muscle_id
+                WHEN exercise_names[i] ILIKE '%elevaciones%' OR exercise_names[i] ILIKE '%press militar%' OR exercise_names[i] ILIKE '%vuelos%' THEN shoulders_muscle_id
+                WHEN exercise_names[i] ILIKE '%curl%' OR exercise_names[i] ILIKE '%martillo%' THEN biceps_muscle_id
+                WHEN exercise_names[i] ILIKE '%triceps%' OR exercise_names[i] ILIKE '%extensiones%' OR exercise_names[i] ILIKE '%fondos%' OR exercise_names[i] ILIKE '%patadas%' THEN triceps_muscle_id
+                WHEN exercise_names[i] ILIKE '%sentadillas%' OR exercise_names[i] ILIKE '%piernas%' OR exercise_names[i] ILIKE '%cuadriceps%' OR exercise_names[i] ILIKE '%femoral%' OR exercise_names[i] ILIKE '%estocadas%' OR exercise_names[i] ILIKE '%zancadas%' OR exercise_names[i] ILIKE '%hip thrust%' OR exercise_names[i] ILIKE '%squats%' THEN legs_muscle_id
+                WHEN exercise_names[i] ILIKE '%pantorrillas%' THEN calves_muscle_id
+                WHEN exercise_names[i] ILIKE '%abdominales%' OR exercise_names[i] ILIKE '%plancha%' OR exercise_names[i] ILIKE '%mountain%' THEN abs_muscle_id
+                ELSE (SELECT id FROM muscle_group OFFSET (RANDOM() * (10 - 1))::INTEGER LIMIT 1)
+            END;
+
+            INSERT INTO exercise (id, name, description, muscle_groups, primary_muscle_group_id)
+            VALUES (
+                uuid_generate_v4(),
+                exercise_names[i],
+                exercise_descriptions[i],
+                muscle_groups_text[i],
+                current_muscle_id
+            );
+        END LOOP;
+        
+        -- If we need more exercises than predefined names, generate the rest
+        IF num_exercises > array_length(exercise_names, 1) THEN
+            FOR i IN (array_length(exercise_names, 1) + 1)..num_exercises LOOP
+                INSERT INTO exercise (id, name, description, muscle_groups, primary_muscle_group_id)
+                VALUES (
+                    uuid_generate_v4(),
+                    'Ejercicio adicional ' || i,
+                    'Ejercicio de entrenamiento adicional ' || i,
+                    'Músculos varios',
+                    (SELECT id FROM muscle_group OFFSET (RANDOM() * (10 - 1))::INTEGER LIMIT 1)
+                );
+            END LOOP;
+        END IF;
+    END;
+    RAISE NOTICE 'Inserted % exercises with real names', num_exercises;
 
     -- Insert secondary muscle groups for exercises
     DECLARE
