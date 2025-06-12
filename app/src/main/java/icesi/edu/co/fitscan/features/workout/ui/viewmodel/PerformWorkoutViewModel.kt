@@ -419,4 +419,43 @@ class PerformWorkoutViewModel(
         )
         _uiState.value = PerformWorkoutUiState.Success(_workoutState)
     }
+
+    fun updateSetsCount(newSetsCount: Int) {
+        Log.d("PerformWorkoutViewModel", "updateSetsCount llamado con nuevo valor: $newSetsCount")
+        
+        if (currentExerciseIndex < exercises.size) {
+            val currentExercise = exercises[currentExerciseIndex]
+            
+            // Actualizar el número de series en el ejercicio
+            exercises[currentExerciseIndex] = currentExercise.copy(
+                sets = newSetsCount.toString(),
+                repsValues = adjustListSize(currentExercise.repsValues, newSetsCount, currentExercise.reps.toIntOrNull() ?: 1),
+                kilosValues = adjustListSize(currentExercise.kilosValues, newSetsCount, 0f)
+            )
+            
+            // Actualizar también el estado actual de la UI
+            val updatedRepsList = (1..newSetsCount).map { "Set $it" }
+            _workoutState = _workoutState.copy(
+                currentExercise = _workoutState.currentExercise.copy(
+                    series = newSetsCount.toString(),
+                    repetitions = updatedRepsList
+                )
+            )
+            
+            Log.d("PerformWorkoutViewModel", 
+                "Después de updateSetsCount, exercise.sets: ${exercises[currentExerciseIndex].sets}, " +
+                "repsValues.size: ${exercises[currentExerciseIndex].repsValues.size}, " +
+                "kilosValues.size: ${exercises[currentExerciseIndex].kilosValues.size}")
+                
+            _uiState.value = PerformWorkoutUiState.Success(_workoutState)
+        }
+    }
+    
+    private fun <T> adjustListSize(currentList: List<T>, targetSize: Int, defaultValue: T): List<T> {
+        return when {
+            currentList.size == targetSize -> currentList
+            currentList.size < targetSize -> currentList + List(targetSize - currentList.size) { defaultValue }
+            else -> currentList.take(targetSize)
+        }
+    }
 }

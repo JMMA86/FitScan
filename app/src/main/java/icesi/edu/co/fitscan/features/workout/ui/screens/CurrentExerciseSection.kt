@@ -88,7 +88,8 @@ fun CurrentExerciseSection(
     initialRepsValues: List<Int> = emptyList(),
     initialKilosValues: List<Float> = emptyList(),
     onRepsChanged: (List<Int>) -> Unit = {},
-    onKilosChanged: (List<Float>) -> Unit = {}
+    onKilosChanged: (List<Float>) -> Unit = {},
+    onSetsCountChanged: (Int) -> Unit = {}
 ) {
     // State for repetitions
     val repState = remember { mutableStateListOf(*repetitions.toTypedArray()) }
@@ -216,6 +217,9 @@ fun CurrentExerciseSection(
         if (!isInitializing.value) {
             onRepsChanged(repsValues.map { it.toIntOrNull() ?: 1 })
             onKilosChanged(kilosValues.map { it.toFloatOrNull() ?: 1f })
+            // Notificar el cambio en el número de series
+            onSetsCountChanged(repState.size)
+            Log.d("CurrentExerciseSection", "Notificando cambio de sets count a: ${repState.size}")
         }
     }
 
@@ -442,6 +446,7 @@ fun CurrentExerciseSectionPreview() {
         time = "30s",
         series = "1/3",
         remainingTime = "Tiempo restante: 15s",
-        repetitions = listOf("Rep 1", "Rep 2", "Rep 3")
+        repetitions = listOf("Rep 1", "Rep 2", "Rep 3"),
+        onSetsCountChanged = {}
     )
 }

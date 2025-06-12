@@ -207,7 +207,8 @@ fun PerformWorkoutScreenContent(
                         initialRepsValues = data.currentExercise.repsValues,
                         initialKilosValues = data.currentExercise.kilosValues,
                         onRepsChanged = { viewModel.updateRepsValues(it) },
-                        onKilosChanged = { viewModel.updateKilosValues(it) }
+                        onKilosChanged = { viewModel.updateKilosValues(it) },
+                        onSetsCountChanged = { viewModel.updateSetsCount(it) }
                     )
 
                     // Next exercise
