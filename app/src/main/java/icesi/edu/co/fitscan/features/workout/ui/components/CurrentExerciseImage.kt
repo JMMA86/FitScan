@@ -1,5 +1,6 @@
 package icesi.edu.co.fitscan.features.workout.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -48,7 +49,8 @@ fun CurrentExerciseImage(
     // Intentar obtener imagen de la API real
     LaunchedEffect(exerciseName, muscleGroups) {
         try {
-            val url = ExerciseImageProvider.getSmartExerciseImageUrl(exerciseName, muscleGroups, 300, 120)
+            val url =
+                ExerciseImageProvider.getSmartExerciseImageUrl(exerciseName, muscleGroups, 300, 120)
             apiImageUrl = url
         } catch (e: Exception) {
             apiImageUrl = null
@@ -72,6 +74,27 @@ fun CurrentExerciseImage(
             .height(120.dp)
             .clip(RoundedCornerShape(16.dp))
     ) {
+        // Siempre mostrar la imagen si tenemos una URL
+        if (finalImageUrl.isNotEmpty()) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(finalImageUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Imagen del ejercicio $exerciseName",
+                contentScale = ContentScale.Crop,
+                onState = { newState ->
+                    Log.d(
+                        "CurrentExerciseImage",
+                        "📡 Image state for '$exerciseName': ${newState::class.simpleName}"
+                    )
+                    imageState = newState
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
+        // Superponer indicadores de estado solo si estamos cargando
         when (imageState) {
             null, is AsyncImagePainter.State.Loading -> {
                 Box(
@@ -96,18 +119,8 @@ fun CurrentExerciseImage(
             }
 
             is AsyncImagePainter.State.Error -> {
-                if (finalImageUrl != fallbackUrl) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(fallbackUrl)
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = "Imagen del ejercicio $exerciseName",
-                        contentScale = ContentScale.Crop,
-                        onState = { imageState = it },
-                        modifier = Modifier.fillMaxSize()
-                    )
-                } else {
+                // Solo mostrar overlay de error si falló completamente
+                if (finalImageUrl == fallbackUrl) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -124,16 +137,7 @@ fun CurrentExerciseImage(
             }
 
             else -> {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(finalImageUrl)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = "Imagen del ejercicio $exerciseName",
-                    contentScale = ContentScale.Crop,
-                    onState = { imageState = it },
-                    modifier = Modifier.fillMaxSize()
-                )
+                // Imagen cargada exitosamente, no mostrar overlay
             }
         }
 

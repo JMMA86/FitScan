@@ -77,52 +77,90 @@ object UnsplashClient {
                 .replace(Regex("[^a-z0-9\\s]"), "")
                 .trim()
             
-            // Traducir ejercicios comunes
+            // Traducir ejercicios comunes (prioridad principal)
             val translatedName = translateExerciseName(cleanName)
             
-            // Combinar con grupo muscular si está disponible
-            val muscleTranslation = muscleGroup?.let { translateMuscleGroup(it) }
+            // Construir query enfocado en el ejercicio específico
+            val query = "$translatedName exercise gym fitness"
             
-            return when {
-                muscleTranslation != null -> "$translatedName $muscleTranslation exercise fitness"
-                else -> "$translatedName exercise fitness workout"
-            }
+            Log.d("UnsplashRepository", "🎯 Built exercise-focused query: '$query' (from '$exerciseName')")
+            return query
         }
         
         private fun translateExerciseName(exerciseName: String): String {
             val translations = mapOf(
+                // Ejercicios básicos de pecho
                 "flexiones" to "pushups",
-                "sentadillas" to "squats",
-                "abdominales" to "crunches",
-                "dominadas" to "pullups",
                 "press de banca" to "bench press",
-                "peso muerto" to "deadlift",
-                "curl de biceps" to "bicep curl",
-                "extensiones de triceps" to "tricep extension",
-                "plancha" to "plank",
-                "burpees" to "burpees",
+                "press inclinado" to "incline bench press",
+                "aperturas" to "chest fly",
+                "cruces" to "cable crossover",
                 "fondos" to "dips",
-                "remo" to "rowing",
+                
+                // Ejercicios de piernas
+                "sentadillas" to "squats",
                 "prensa de piernas" to "leg press",
-                "elevaciones laterales" to "lateral raise"
+                "peso muerto" to "deadlift",
+                "estocadas" to "lunges",
+                "zancadas" to "walking lunges",
+                "extensiones de cuadriceps" to "leg extension",
+                "curl de femoral" to "leg curl",
+                "pantorrillas" to "calf raise",
+                "hip thrust" to "hip thrust",
+                
+                // Ejercicios de espalda
+                "dominadas" to "pullups",
+                "jalones" to "lat pulldown",
+                "remo" to "rowing",
+                "remo con barra" to "barbell row",
+                "remo con mancuerna" to "dumbbell row",
+                "encogimientos" to "shrugs",
+                
+                // Ejercicios de hombros
+                "press militar" to "military press",
+                "elevaciones laterales" to "lateral raise",
+                "elevaciones frontales" to "front raise",
+                "elevaciones posteriores" to "rear delt fly",
+                "vuelos posteriores" to "reverse fly",
+                
+                // Ejercicios de brazos
+                "curl de biceps" to "bicep curl",
+                "martillo" to "hammer curl",
+                "curl concentrado" to "concentration curl",
+                "extensiones de triceps" to "tricep extension",
+                "extensiones por encima" to "overhead tricep extension",
+                "patadas de triceps" to "tricep kickback",
+                
+                // Ejercicios de core
+                "abdominales" to "crunches",
+                "plancha" to "plank",
+                
+                // Ejercicios funcionales
+                "burpees" to "burpees",
+                "thrusters" to "thrusters",
+                "wall balls" to "wall ball",
+                "box jumps" to "box jump",
+                "mountain climbers" to "mountain climber",
+                
+                // Ejercicios cardiovasculares
+                "correr" to "running",
+                "trotar" to "jogging",
+                "caminar" to "walking",
+                "bicicleta" to "cycling",
+                "saltar cuerda" to "jump rope",
+                "eliptica" to "elliptical",
+                
+                // Ejercicios en inglés (por si acaso)
+                "pushups" to "pushups",
+                "push ups" to "pushups",
+                "pull ups" to "pullups",
+                "bench press" to "bench press",
+                "deadlift" to "deadlift"
             )
             
-            return translations[exerciseName] ?: exerciseName
-        }
-        
-        private fun translateMuscleGroup(muscleGroup: String): String {
-            val muscleTranslations = mapOf(
-                "pecho" to "chest",
-                "espalda" to "back",
-                "piernas" to "legs",
-                "brazos" to "arms",
-                "hombros" to "shoulders",
-                "abdomen" to "core",
-                "biceps" to "biceps",
-                "triceps" to "triceps"
-            )
-            
-            return muscleTranslations[muscleGroup.lowercase()] ?: muscleGroup
+            val result = translations[exerciseName] ?: exerciseName
+            Log.d("UnsplashRepository", "🔄 Translated '$exerciseName' -> '$result'")
+            return result
         }
     }
 }

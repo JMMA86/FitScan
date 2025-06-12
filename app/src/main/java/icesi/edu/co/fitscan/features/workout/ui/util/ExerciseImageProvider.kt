@@ -9,8 +9,40 @@ object ExerciseImageProvider {
     
     private val unsplashRepository = UnsplashClient.UnsplashRepository()
     
-    // Cache para evitar llamadas repetidas
-    private val imageCache = mutableMapOf<String, String>()
+    // Cache en memoria más robusto
+    private val memoryCache = mutableMapOf<String, String>()
+    private val failedRequests = mutableSetOf<String>() // Cache de requests fallidos
+    
+    // Counter para limitar requests de API
+    private var apiRequestCount = 0
+    private const val MAX_API_REQUESTS = 40 // Dejar 10 de margen
+    
+    // Cache de imágenes precargadas (las más comunes) - URLs reales de Unsplash
+    private val preloadedImages = mapOf(
+        // Ejercicios más populares con URLs reales
+        "flexiones" to "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+        "sentadillas" to "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop",
+        "dominadas" to "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=400&h=300&fit=crop",
+        "press de banca" to "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop",
+        "peso muerto" to "https://images.unsplash.com/photo-1605296867424-35fc25c9212a?w=400&h=300&fit=crop",
+        "curl de biceps" to "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop",
+        "plancha" to "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=300&fit=crop",
+        "abdominales" to "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop",
+        "burpees" to "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop",
+        "remo" to "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=300&fit=crop",
+        "fondos" to "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop",
+        "elevaciones laterales" to "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+        "press militar" to "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop",
+        "jalones" to "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=400&h=300&fit=crop",
+        "prensa de piernas" to "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=300&fit=crop",
+        "mountain climbers" to "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop",
+        "thrusters" to "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=300&fit=crop"
+    )
+    
+    init {
+        Log.d("ExerciseImageProvider", "🎯 Initialized with ${preloadedImages.size} preloaded images")
+        Log.d("ExerciseImageProvider", "📊 API Request limit: $MAX_API_REQUESTS")
+    }
     
     /**
      * Obtiene una URL de imagen usando la API oficial de Unsplash
@@ -18,30 +50,58 @@ object ExerciseImageProvider {
     suspend fun getExerciseImageUrl(exerciseName: String, muscleGroups: String? = null): String? {
         val cacheKey = "${exerciseName}_${muscleGroups ?: "none"}"
         
-        // Verificar cache primero
-        imageCache[cacheKey]?.let { cachedUrl ->
+        // 1. Verificar cache de imágenes precargadas primero
+        preloadedImages[exerciseName.lowercase()]?.let { preloadedUrl ->
+            Log.d("ExerciseImageProvider", "🎯 Using preloaded image for '$exerciseName': $preloadedUrl")
+            return preloadedUrl
+        }
+        
+        // 2. Verificar cache en memoria
+        memoryCache[cacheKey]?.let { cachedUrl ->
             Log.d("ExerciseImageProvider", "🗂️ Using cached image for '$exerciseName': $cachedUrl")
             return cachedUrl
         }
         
+        // 3. Verificar si ya falló antes
+        if (failedRequests.contains(cacheKey)) {
+            Log.d("ExerciseImageProvider", "❌ Skipping known failed request for '$exerciseName'")
+            return null
+        }
+        
+        // 4. Verificar límite de API
+        if (apiRequestCount >= MAX_API_REQUESTS) {
+            Log.w("ExerciseImageProvider", "🚫 API request limit reached ($apiRequestCount/$MAX_API_REQUESTS). Skipping API call for '$exerciseName'")
+            return null
+        }
+        
         return withContext(Dispatchers.IO) {
             try {
-                Log.d("ExerciseImageProvider", "🌐 Fetching image for '$exerciseName' with muscles: $muscleGroups")
+                Log.d("ExerciseImageProvider", "🌐 Fetching image for '$exerciseName' (API calls: $apiRequestCount/$MAX_API_REQUESTS)")
                 
-                val imageUrl = unsplashRepository.searchExercisePhotos(exerciseName, muscleGroups)
+                apiRequestCount++
+                
+                // Log estadísticas cada 10 requests
+                if (apiRequestCount % 10 == 0) {
+                    logApiStats()
+                }
+                
+                val imageUrl = unsplashRepository.searchExercisePhotos(exerciseName, null)
                 
                 if (imageUrl != null) {
                     // Guardar en cache
-                    imageCache[cacheKey] = imageUrl
-                    Log.i("ExerciseImageProvider", "✅ Successfully got image for '$exerciseName': $imageUrl")
+                    memoryCache[cacheKey] = imageUrl
+                    Log.i("ExerciseImageProvider", "✅ Successfully got image for '$exerciseName': $imageUrl (API calls: $apiRequestCount/$MAX_API_REQUESTS)")
                     imageUrl
                 } else {
-                    Log.w("ExerciseImageProvider", "⚠️ No image found for '$exerciseName', trying fallback")
-                    getFallbackImageUrl(exerciseName, muscleGroups)
+                    // Marcar como fallido para evitar intentos futuros
+                    failedRequests.add(cacheKey)
+                    Log.w("ExerciseImageProvider", "⚠️ No image found for '$exerciseName', marked as failed")
+                    null
                 }
             } catch (e: Exception) {
+                failedRequests.add(cacheKey)
                 Log.e("ExerciseImageProvider", "🚨 Error getting image for '$exerciseName': ${e.message}", e)
-                getFallbackImageUrl(exerciseName, muscleGroups)
+                null
             }
         }
     }
@@ -52,25 +112,63 @@ object ExerciseImageProvider {
     private suspend fun getFallbackImageUrl(exerciseName: String, muscleGroups: String?): String? {
         return withContext(Dispatchers.IO) {
             try {
-                // Intentar solo con el grupo muscular
-                val primaryMuscle = muscleGroups?.split(",")?.firstOrNull()?.trim()
-                if (!primaryMuscle.isNullOrBlank()) {
-                    Log.d("ExerciseImageProvider", "🔄 Trying fallback with muscle group: '$primaryMuscle'")
-                    val fallbackUrl = unsplashRepository.searchExercisePhotos("workout", primaryMuscle)
+                // Intentar con variaciones del nombre del ejercicio
+                Log.d("ExerciseImageProvider", "🔄 Trying fallback variations for '$exerciseName'")
+                
+                // Intentar con términos más genéricos del ejercicio
+                val genericTerms = getGenericExerciseTerms(exerciseName)
+                for (term in genericTerms) {
+                    Log.d("ExerciseImageProvider", "🎯 Trying generic term: '$term'")
+                    val fallbackUrl = unsplashRepository.searchExercisePhotos(term, null)
                     if (fallbackUrl != null) {
-                        Log.i("ExerciseImageProvider", "✅ Fallback successful for '$exerciseName': $fallbackUrl")
+                        Log.i("ExerciseImageProvider", "✅ Generic term successful for '$exerciseName': $fallbackUrl")
                         return@withContext fallbackUrl
                     }
                 }
                 
                 // Fallback final: búsqueda genérica de fitness
                 Log.d("ExerciseImageProvider", "🏃 Using generic fitness fallback for '$exerciseName'")
-                unsplashRepository.searchExercisePhotos("fitness workout", null)
+                unsplashRepository.searchExercisePhotos("gym workout", null)
                 
             } catch (e: Exception) {
                 Log.e("ExerciseImageProvider", "🚨 Fallback failed for '$exerciseName': ${e.message}", e)
                 null
             }
+        }
+    }
+    
+    /**
+     * Obtiene términos genéricos relacionados con el ejercicio
+     */
+    private fun getGenericExerciseTerms(exerciseName: String): List<String> {
+        val name = exerciseName.lowercase()
+        
+        return when {
+            // Ejercicios de empuje
+            name.contains("press") || name.contains("flexiones") || name.contains("fondos") -> 
+                listOf("push exercise", "chest workout", "pushing")
+            
+            // Ejercicios de tracción
+            name.contains("dominadas") || name.contains("remo") || name.contains("jalones") -> 
+                listOf("pull exercise", "back workout", "pulling")
+            
+            // Ejercicios de piernas
+            name.contains("sentadillas") || name.contains("piernas") || name.contains("peso muerto") -> 
+                listOf("leg exercise", "squat", "lower body")
+            
+            // Ejercicios de brazos
+            name.contains("curl") || name.contains("biceps") || name.contains("triceps") -> 
+                listOf("arm exercise", "bicep", "tricep")
+            
+            // Ejercicios de core
+            name.contains("abdominales") || name.contains("plancha") || name.contains("core") -> 
+                listOf("core exercise", "abs workout", "plank")
+            
+            // Ejercicios cardiovasculares
+            name.contains("correr") || name.contains("cardio") || name.contains("bicicleta") -> 
+                listOf("cardio exercise", "fitness", "training")
+            
+            else -> listOf("strength training", "fitness exercise", "gym workout")
         }
     }
     
@@ -85,8 +183,10 @@ object ExerciseImageProvider {
      * Limpia el cache de imágenes
      */
     fun clearCache() {
-        imageCache.clear()
-        Log.d("ExerciseImageProvider", "🗑️ Image cache cleared")
+        memoryCache.clear()
+        failedRequests.clear()
+        apiRequestCount = 0
+        Log.d("ExerciseImageProvider", "🗑️ Image cache cleared, API counter reset")
     }
     
     /**
@@ -274,5 +374,30 @@ object ExerciseImageProvider {
         } else {
             translatedUrl
         }
+    }
+    
+    /**
+     * Obtiene estadísticas de uso de la API para monitoreo
+     */
+    fun getApiUsageStats(): String {
+        val cacheHits = memoryCache.size
+        val preloadedHits = preloadedImages.size
+        val failedAttempts = failedRequests.size
+        
+        return """
+            📊 API Usage Statistics:
+            🌐 API Requests: $apiRequestCount/$MAX_API_REQUESTS
+            💾 Cache Hits: $cacheHits
+            🎯 Preloaded Images: $preloadedHits 
+            ❌ Failed Requests: $failedAttempts
+            📈 API Remaining: ${MAX_API_REQUESTS - apiRequestCount}
+        """.trimIndent()
+    }
+    
+    /**
+     * Log de estadísticas de uso de API
+     */
+    fun logApiStats() {
+        Log.i("ExerciseImageProvider", getApiUsageStats())
     }
 }
