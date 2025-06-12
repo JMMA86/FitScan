@@ -5,7 +5,11 @@ data class CurrentExercise(
     val name: String = "Pull up",
     val time: String = "10:32",
     val series: String = "2 de 4",
-    val remainingTime: String = "Quedan 55 segundos"
+    val remainingTime: String = "Quedan 55 segundos",
+    val repetitions: List<String> = emptyList(),
+    val repsValues: List<Int> = emptyList(),
+    val kilosValues: List<Float> = emptyList(),
+    val isTimeExceeded: Boolean = false
 )
 
 // represents the next exercise
@@ -17,11 +21,12 @@ data class NextExercise(
 
 // Represents the remaining exercises
 data class RemainingExercise(
-    //TODO: add id to the other exercises types
     val id: String,
     val title: String,
     val sets: String,
-    val reps: String
+    val reps: String,
+    val repsValues: List<Int> = emptyList(),
+    val kilosValues: List<Float> = emptyList()
 )
 
 // Global state of the workout screen
