@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.ExerciseDetailState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.ExerciseDetailViewModel
+import icesi.edu.co.fitscan.features.workout.ui.components.ExerciseImageHeader
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 import androidx.compose.ui.graphics.Brush
 import java.util.*
@@ -98,13 +99,12 @@ fun ExerciseDetailScreen(
                         .verticalScroll(rememberScrollState())
                         .background(screenBackgroundColor)
                 ) {
-                    // Gradiente horizontal en vez de imagen, mientras vemos lo de las imagenes
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(180.dp)
-                            .background(gradientBrush, shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
-                    ) {}
+                    // Header con imagen dinámica basada en el nombre del ejercicio
+                    ExerciseImageHeader(
+                        exerciseName = exerciseName,
+                        muscleGroups = musclesWorkedRaw,
+                        height = 180
+                    )
                     // Sección Músculos trabajados
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         Text(

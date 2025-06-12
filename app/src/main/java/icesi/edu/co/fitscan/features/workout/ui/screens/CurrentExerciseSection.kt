@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.FormatListNumbered
 import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import icesi.edu.co.fitscan.features.workout.ui.components.CurrentExerciseImage
 import icesi.edu.co.fitscan.ui.theme.Dimensions
 
 @Composable
@@ -86,11 +88,12 @@ fun CurrentExerciseSection(
     remainingTime: String,
     repetitions: List<String>,
     initialRepsValues: List<Int> = emptyList(),
-    initialKilosValues: List<Float> = emptyList(),
+    initialKilosValues: List<Int> = emptyList(),
     onRepsChanged: (List<Int>) -> Unit = {},
-    onKilosChanged: (List<Float>) -> Unit = {},
+    onKilosChanged: (List<Int>) -> Unit = {},
     onSetsCountChanged: (Int) -> Unit = {},
-    isTimeExceeded: Boolean = false
+    isTimeExceeded: Boolean = false,
+    onExerciseDetailClick: () -> Unit = {}
 ) {
     // State for repetitions
     val repState = remember { mutableStateListOf(*repetitions.toTypedArray()) }
@@ -217,7 +220,7 @@ fun CurrentExerciseSection(
         // Solo enviamos los valores al ViewModel si ya terminamos la inicialización
         if (!isInitializing.value) {
             onRepsChanged(repsValues.map { it.toIntOrNull() ?: 1 })
-            onKilosChanged(kilosValues.map { it.toFloatOrNull() ?: 1f })
+            onKilosChanged(kilosValues.map { it.toIntOrNull() ?: 1 })
             // Notificar el cambio en el número de series
             onSetsCountChanged(repState.size)
             Log.d("CurrentExerciseSection", "Notificando cambio de sets count a: ${repState.size}")
@@ -241,7 +244,7 @@ fun CurrentExerciseSection(
                 "CurrentExerciseSection",
                 "Usuario modificó pesos para ejercicio $name: $kilosValues"
             )
-            onKilosChanged(kilosValues.map { it.toFloatOrNull() ?: 1f })
+            onKilosChanged(kilosValues.map { it.toIntOrNull() ?: 1 })
         }
     }
 
@@ -255,6 +258,16 @@ fun CurrentExerciseSection(
             fontSize = Dimensions.SmallTextSize,
         )
         Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
+        
+        // Imagen del ejercicio actual
+        CurrentExerciseImage(
+            exerciseName = name,
+            onDetailsClick = onExerciseDetailClick,
+            modifier = Modifier.fillMaxWidth()
+        )
+        
+        Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
+        
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -266,12 +279,14 @@ fun CurrentExerciseSection(
                 Row(
                     modifier = Modifier
                         .wrapContentSize()
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = name,
+                        text = series,
                         fontSize = Dimensions.LargeTextSize,
                         color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(

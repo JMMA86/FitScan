@@ -8,6 +8,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,25 +53,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.workout.ui.model.PerformWorkoutUiState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.PerformWorkoutViewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.PerformWorkoutViewModelFactory
+import icesi.edu.co.fitscan.features.workout.ui.components.ExerciseImageThumbnail
 import icesi.edu.co.fitscan.ui.theme.Dimensions
 
 @Composable
 fun PerformWorkoutScreen(
     modifier: Modifier = Modifier,
     workoutId: String = "b48b68ba-1863-4ca7-87f7-5b32a5f4414e",
-    onFinishWorkout: () -> Unit
+    onFinishWorkout: () -> Unit,
+    onNavigateToExerciseDetail: (workoutId: String, workoutExerciseId: String) -> Unit = { _, _ -> }
 ) {
+    // Usar viewModel con key para preservar la instancia específica del workout
     val viewModel: PerformWorkoutViewModel = viewModel(
+        key = "workout_$workoutId",
         factory = PerformWorkoutViewModelFactory(workoutId)
     )
 
-    // Call startWorkout only once when the screen is shown
+    // Solo inicializar el workout si no ha sido iniciado previamente
     LaunchedEffect(workoutId) {
-        viewModel.startWorkout()
+        if (!viewModel.isWorkoutStarted()) {
+            viewModel.startWorkout()
+        }
     }
 
     val uiState by viewModel.uiState.collectAsState()
@@ -95,10 +104,12 @@ fun PerformWorkoutScreen(
 
     PerformWorkoutScreenContent(
         modifier = modifier,
+        workoutId = workoutId,
         viewModel = viewModel,
         uiState = uiState,
         onEndSet = { viewModel.endSet() },
         onSkipToNextExercise = { viewModel.skipToNextExercise() },
+        onNavigateToExerciseDetail = onNavigateToExerciseDetail,
         onFinishWorkout = {
             if (viewModel.hasUnfinishedExercises()) {
                 showFinishDialog.value = true
@@ -126,9 +137,19 @@ fun PerformWorkoutListComponent(
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(Dimensions.MediumCornerRadius)
             )
+            .clickable { onClick() }
             .padding(Dimensions.MediumPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Exercise thumbnail
+        ExerciseImageThumbnail(
+            exerciseName = title,
+            size = 40,
+            isCircular = true
+        )
+        
+        Spacer(modifier = Modifier.width(12.dp))
+        
         Column(
             modifier = Modifier,
             verticalArrangement = Arrangement.Center
@@ -171,10 +192,12 @@ fun PerformWorkoutListComponent(
 @Composable
 fun PerformWorkoutScreenContent(
     modifier: Modifier,
+    workoutId: String,
     viewModel: PerformWorkoutViewModel,
     uiState: PerformWorkoutUiState,
     onEndSet: () -> Unit = {},
     onSkipToNextExercise: () -> Unit = {},
+    onNavigateToExerciseDetail: (workoutId: String, workoutExerciseId: String) -> Unit = { _, _ -> },
     onFinishWorkout: () -> Unit = {}
 ) {
     when (uiState) {
@@ -221,14 +244,24 @@ fun PerformWorkoutScreenContent(
                         onRepsChanged = { viewModel.updateRepsValues(it) },
                         onKilosChanged = { viewModel.updateKilosValues(it) },
                         onSetsCountChanged = { viewModel.updateSetsCount(it) },
-                        isTimeExceeded = data.currentExercise.isTimeExceeded
+                        isTimeExceeded = data.currentExercise.isTimeExceeded,
+                        onExerciseDetailClick = {
+                            if (data.currentExercise.workoutExerciseId.isNotEmpty()) {
+                                onNavigateToExerciseDetail(workoutId, data.currentExercise.workoutExerciseId)
+                            }
+                        }
                     )
 
                     // Next exercise
                     NextExerciseSection(
                         name = data.nextExercise.name,
                         sets = data.nextExercise.sets.toString(),
-                        reps = data.nextExercise.reps.toString()
+                        reps = data.nextExercise.reps.toString(),
+                        onClick = {
+                            if (data.nextExercise.workoutExerciseId.isNotEmpty()) {
+                                onNavigateToExerciseDetail(workoutId, data.nextExercise.workoutExerciseId)
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.height(Dimensions.smallestPadding))
 
@@ -253,7 +286,11 @@ fun PerformWorkoutScreenContent(
                             title = exercise.title,
                             sets = exercise.sets,
                             reps = exercise.reps,
-                            onClick = { /* TODO: Show exercise details or navigate */ }
+                            onClick = {
+                                if (exercise.workoutExerciseId.isNotEmpty()) {
+                                    onNavigateToExerciseDetail(workoutId, exercise.workoutExerciseId)
+                                }
+                            }
                         )
                     }
                     Spacer(modifier = Modifier.height(Dimensions.SmallPadding))

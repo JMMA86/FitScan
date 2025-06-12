@@ -52,6 +52,7 @@ import icesi.edu.co.fitscan.R
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.WorkoutDetailState
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.WorkoutDetailViewModel
 import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.WorkoutDetailViewModelFactory
+import icesi.edu.co.fitscan.features.workout.ui.components.ExerciseImageThumbnail
 import icesi.edu.co.fitscan.ui.theme.FitScanTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -304,6 +305,15 @@ private fun ExerciseRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            // Exercise thumbnail
+            ExerciseImageThumbnail(
+                exerciseName = name,
+                size = 48,
+                isCircular = true
+            )
+            
+            Spacer(modifier = Modifier.width(12.dp))
+            
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = name,

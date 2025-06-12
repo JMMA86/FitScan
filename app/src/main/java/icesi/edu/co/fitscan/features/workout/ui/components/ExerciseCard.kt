@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import icesi.edu.co.fitscan.R
+import icesi.edu.co.fitscan.features.workout.ui.components.ExerciseImageThumbnail
 
 @Composable
 fun ExerciseCard(
@@ -50,6 +51,15 @@ fun ExerciseCard(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        // Exercise thumbnail
+        ExerciseImageThumbnail(
+            exerciseName = name,
+            size = 40,
+            isCircular = true
+        )
+        
+        Spacer(modifier = Modifier.width(8.dp))
+        
         Text(
             text = name,
             color = MaterialTheme.colorScheme.onSurface,
