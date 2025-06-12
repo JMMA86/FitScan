@@ -32,6 +32,7 @@ import icesi.edu.co.fitscan.features.workout.ui.viewmodel.factory.ExerciseDetail
 import icesi.edu.co.fitscan.features.workoutlist.ui.screens.WorkoutListScreen
 //import icesi.edu.co.fitscan.features.mealplan.ui.screens.CreateMealPlanScreen
 import icesi.edu.co.fitscan.features.workout.ui.screens.WorkoutDetailScreen
+import icesi.edu.co.fitscan.features.mealPlan.ui.screens.MealPlanDetailScreen
 
 
 @Composable
@@ -226,6 +227,11 @@ fun NavigationHost(
 
         composable("nutrition_plan_list") {
             NutritionPlanListScreen()
+        }
+
+        composable("meal_plan_detail/{mealPlanId}") { backStackEntry ->
+            val mealPlanId = backStackEntry.arguments?.getString("mealPlanId") ?: ""
+            MealPlanDetailScreen(mealPlanId = mealPlanId)
         }
     }
 }

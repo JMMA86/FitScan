@@ -43,4 +43,7 @@ class MealPlanRepository(private val dataSource: IMealPlanDataSource) {
             MealPlanPreferenceDto(meal_plan_id = mealPlanId, preference_id = preferenceId)
         )
     }
+    suspend fun getMealPlanById(id: String): MealPlanDto? {
+        return dataSource.getMealPlanById(id).body()?.data
+    }
 }

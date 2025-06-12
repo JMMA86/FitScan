@@ -6,7 +6,8 @@ data class MealPlanDto(
     val name: String,
     val description: String?,
     val goal: String?,
-    val date_created: String? = null
+    val date_created: String? = null,
+    val meals: List<MealDto>? = null
 )
 
 data class MealDto(

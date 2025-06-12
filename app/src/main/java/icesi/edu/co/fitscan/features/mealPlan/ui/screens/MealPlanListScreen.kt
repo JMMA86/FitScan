@@ -99,8 +99,9 @@ fun MealPlanListScreen(navController: androidx.navigation.NavController) {
                 }
             }
             items(myPlans) { plan ->
-                MealPlanCard(plan, onDetail = { /* TODO: Detail */ }, cardColor, accentColor, textColor, secondaryTextColor)
-                    //onEdit = { /* TODO: Edit */ }, onDetail = { /* TODO: Detail */ }, cardColor, accentColor, textColor, secondaryTextColor)
+                MealPlanCard(plan, onDetail = {
+                    plan.id?.let { navController.navigate("meal_plan_detail/$it") }
+                }, cardColor, accentColor, textColor, secondaryTextColor)
             }
         }
     }
