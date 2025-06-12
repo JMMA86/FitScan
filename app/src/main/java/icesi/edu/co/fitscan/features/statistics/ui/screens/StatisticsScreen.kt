@@ -84,7 +84,6 @@ fun StatisticsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { navController.navigate(Screen.DetailedCharts.route) }
                     .padding(vertical = 8.dp)
             ) {
                 Text(
