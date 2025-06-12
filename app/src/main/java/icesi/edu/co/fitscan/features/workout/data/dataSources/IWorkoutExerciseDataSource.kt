@@ -1,7 +1,7 @@
 package icesi.edu.co.fitscan.features.workout.data.dataSources
 
 import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutExerciseDto
-import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutExerciseListResponseDto
+import icesi.edu.co.fitscan.features.workout.data.dto.WorkoutExerciseResponseDTO
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -22,7 +22,7 @@ interface IWorkoutExerciseDataSource {
     @GET("$BASE_PATH/workout_exercise")
     suspend fun getExercisesByWorkoutId(
         @Query("filter[workout_id][_eq]") workout_id: String
-    ): Response<WorkoutExerciseListResponseDto>
+    ): Response<WorkoutExerciseResponseDTO>
 
     @GET("$BASE_PATH/workout_exercise/{workout_id}/exercise/{exercise_id}")
     suspend fun getWorkoutExercisesById(
