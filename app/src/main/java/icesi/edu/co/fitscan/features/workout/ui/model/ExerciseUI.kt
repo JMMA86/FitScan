@@ -8,7 +8,8 @@ data class CurrentExercise(
     val remainingTime: String = "Quedan 55 segundos",
     val repetitions: List<String> = emptyList(),
     val repsValues: List<Int> = emptyList(),
-    val kilosValues: List<Float> = emptyList()
+    val kilosValues: List<Float> = emptyList(),
+    val isTimeExceeded: Boolean = false
 )
 
 // represents the next exercise

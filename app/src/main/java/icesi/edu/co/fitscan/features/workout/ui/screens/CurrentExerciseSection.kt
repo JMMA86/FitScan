@@ -89,7 +89,8 @@ fun CurrentExerciseSection(
     initialKilosValues: List<Float> = emptyList(),
     onRepsChanged: (List<Int>) -> Unit = {},
     onKilosChanged: (List<Float>) -> Unit = {},
-    onSetsCountChanged: (Int) -> Unit = {}
+    onSetsCountChanged: (Int) -> Unit = {},
+    isTimeExceeded: Boolean = false
 ) {
     // State for repetitions
     val repState = remember { mutableStateListOf(*repetitions.toTypedArray()) }
@@ -283,7 +284,8 @@ fun CurrentExerciseSection(
                 Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
                 Text(
                     text = remainingTime,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = if (isTimeExceeded) Color.Red else MaterialTheme.colorScheme.onSurface,
+                    fontWeight = if (isTimeExceeded) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Normal
                 )
                 Spacer(modifier = Modifier.height(Dimensions.SmallPadding))
                 // --- Repetitions List ---
@@ -447,6 +449,7 @@ fun CurrentExerciseSectionPreview() {
         series = "1/3",
         remainingTime = "Tiempo restante: 15s",
         repetitions = listOf("Rep 1", "Rep 2", "Rep 3"),
-        onSetsCountChanged = {}
+        onSetsCountChanged = {},
+        isTimeExceeded = false
     )
 }

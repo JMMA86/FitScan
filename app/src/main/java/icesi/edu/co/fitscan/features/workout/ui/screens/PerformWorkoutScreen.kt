@@ -208,7 +208,8 @@ fun PerformWorkoutScreenContent(
                         initialKilosValues = data.currentExercise.kilosValues,
                         onRepsChanged = { viewModel.updateRepsValues(it) },
                         onKilosChanged = { viewModel.updateKilosValues(it) },
-                        onSetsCountChanged = { viewModel.updateSetsCount(it) }
+                        onSetsCountChanged = { viewModel.updateSetsCount(it) },
+                        isTimeExceeded = data.currentExercise.isTimeExceeded
                     )
 
                     // Next exercise

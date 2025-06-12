@@ -53,6 +53,10 @@ class PerformWorkoutViewModel(
     private var sessionStartTime: String = ""
     private var sessionEndTime: String = ""
     private var lastCompletedExerciseIndex = -1
+    
+    // Timer and workout duration management
+    private var workoutDurationMinutes: Int = 60 // Default, will be updated from actual workout
+    private var expectedSecondsPerExercise: Int = 0
 
     fun startWorkout() {
         _uiState.value = PerformWorkoutUiState.Loading
@@ -60,6 +64,14 @@ class PerformWorkoutViewModel(
             sessionStartTime = getCurrentTimeFormatted()
             exercises = loadExercises()
             val actualWorkout = loadWorkout()
+
+            // Configurar duración esperada del workout y tiempo por ejercicio
+            workoutDurationMinutes = actualWorkout?.durationMinutes ?: 60
+            expectedSecondsPerExercise = if (exercises.isNotEmpty()) {
+                (workoutDurationMinutes * 60) / exercises.size
+            } else {
+                300 // 5 minutos por defecto
+            }
 
             val currentTime = java.time.LocalDateTime.now()
             val formatter = DateTimeFormatter.ofPattern("HH:mm")
@@ -89,6 +101,36 @@ class PerformWorkoutViewModel(
             )
 
             _uiState.value = PerformWorkoutUiState.Success(_workoutState)
+            
+            // Inicializar la actualización continua del timer
+            startTimerUpdates()
+        }
+    }
+
+    private fun startTimerUpdates() {
+        viewModelScope.launch {
+            exerciseSeconds.collect { seconds ->
+                // Solo actualizar si estamos en un ejercicio válido y el estado actual necesita cambios
+                if (currentExerciseIndex < exercises.size && _uiState.value is PerformWorkoutUiState.Success) {
+                    val updatedCurrentExercise = createCurrentExercise(
+                        exercises,
+                        currentExerciseIndex,
+                        currentExerciseStartTime,
+                        seconds
+                    )
+                    
+                    // Solo actualizar si el estado del tiempo ha cambiado (para evitar actualizaciones innecesarias)
+                    val currentState = _workoutState.currentExercise
+                    if (currentState.remainingTime != updatedCurrentExercise.remainingTime || 
+                        currentState.isTimeExceeded != updatedCurrentExercise.isTimeExceeded) {
+                        
+                        _workoutState = _workoutState.copy(
+                            currentExercise = updatedCurrentExercise
+                        )
+                        _uiState.value = PerformWorkoutUiState.Success(_workoutState)
+                    }
+                }
+            }
         }
     }
 
@@ -284,19 +326,35 @@ class PerformWorkoutViewModel(
             
             val repsList = (1..expectedSetsCount).map { repNum -> "Set $repNum" }
             
+            // Calcular si se ha excedido el tiempo esperado
+            val isTimeExceeded = seconds > expectedSecondsPerExercise
+            val remainingTimeText = if (isTimeExceeded) {
+                val exceededSeconds = seconds - expectedSecondsPerExercise
+                val exceededFormatted = formatSeconds(exceededSeconds)
+                "Tiempo excedido: +$exceededFormatted"
+            } else {
+                val remainingSeconds = expectedSecondsPerExercise - seconds
+                val remainingFormatted = formatSeconds(remainingSeconds)
+                "Tiempo restante: $remainingFormatted"
+            }
+            
             Log.d("PerformWorkoutViewModel", "createCurrentExercise - ejercicio: ${it.title}, " +
                     "expectedSetsCount: $expectedSetsCount, " +
                     "repsValues: $repsValues, " +
-                    "kilosValues: $kilosValues")
+                    "kilosValues: $kilosValues, " +
+                    "seconds: $seconds, " +
+                    "expectedSecondsPerExercise: $expectedSecondsPerExercise, " +
+                    "isTimeExceeded: $isTimeExceeded")
             
             CurrentExercise(
                 name = it.title,
                 time = formattedTime,
                 series = it.sets,
-                remainingTime = "Tiempo transcurrido: $elapsed",
+                remainingTime = remainingTimeText,
                 repetitions = repsList,
                 repsValues = repsValues,
-                kilosValues = kilosValues
+                kilosValues = kilosValues,
+                isTimeExceeded = isTimeExceeded
             )
         } ?: CurrentExercise()
     }
