@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.FormatListNumbered
 import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -90,7 +91,8 @@ fun CurrentExerciseSection(
     onRepsChanged: (List<Int>) -> Unit = {},
     onKilosChanged: (List<Float>) -> Unit = {},
     onSetsCountChanged: (Int) -> Unit = {},
-    isTimeExceeded: Boolean = false
+    isTimeExceeded: Boolean = false,
+    onExerciseDetailClick: () -> Unit = {}
 ) {
     // State for repetitions
     val repState = remember { mutableStateListOf(*repetitions.toTypedArray()) }
@@ -266,13 +268,26 @@ fun CurrentExerciseSection(
                 Row(
                     modifier = Modifier
                         .wrapContentSize()
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = name,
                         fontSize = Dimensions.LargeTextSize,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    IconButton(
+                        onClick = onExerciseDetailClick,
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Visibility,
+                            contentDescription = "Ver detalles del ejercicio",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         text = time,

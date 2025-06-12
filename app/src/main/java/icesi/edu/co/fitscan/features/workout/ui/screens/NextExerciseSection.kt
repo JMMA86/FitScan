@@ -1,6 +1,7 @@
 package icesi.edu.co.fitscan.features.workout.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +18,8 @@ import icesi.edu.co.fitscan.ui.theme.Dimensions
 fun NextExerciseSection(
     name: String,
     sets: String,
-    reps: String
+    reps: String,
+    onClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -25,6 +27,8 @@ fun NextExerciseSection(
             .padding(Dimensions.MediumPadding) // Separate from screen borders
             .clip(RoundedCornerShape(Dimensions.MediumCornerRadius))
             .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clickable { onClick() }
+            .padding(Dimensions.SmallPadding)
     ) {
         Text(
             text = "Siguiente ejercicio",

@@ -142,6 +142,12 @@ fun NavigationHost(
                         popUpTo("home") { inclusive = true }
                         launchSingleTop = true
                     }
+                },
+                onNavigateToExerciseDetail = { workoutId, workoutExerciseId ->
+                    navController.navigate("exercise_detail/$workoutId/$workoutExerciseId") {
+                        // No usar popUpTo para mantener el PerformWorkoutScreen en el stack
+                        launchSingleTop = true
+                    }
                 }
             )
         }
