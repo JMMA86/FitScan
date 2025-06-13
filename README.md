@@ -74,20 +74,14 @@ La aplicación maneja **dos roles principales**:
 
 FitScan utiliza APIs externas que requieren configuración de keys:
 
-1. **Copia el archivo de configuración:**
-
-   ```bash
-   cp .env.example .env
-   ```
-
-2. **Configura tu API Key de Unsplash:**
+1. **Configura tu API Key de Unsplash:**
    - Ve a [Unsplash Developers](https://unsplash.com/developers)
    - Crea una cuenta gratuita
    - Crea una nueva aplicación
    - Copia tu "Access Key"
    - Pégala en `.env` reemplazando `tu_access_key_aqui`
 
-3. **El archivo `.env` debería verse así:**
+2. **El archivo `.env` debería verse así:**
 
    ```env
    UNSPLASH_ACCESS_KEY=tu_access_key_real_aqui
