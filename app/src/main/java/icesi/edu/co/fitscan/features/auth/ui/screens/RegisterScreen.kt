@@ -130,7 +130,7 @@ fun RegisterScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_fitscan),
+                        painter = painterResource(id = R.drawable.logo),
                         contentDescription = "Logo",
                         modifier = Modifier.size(64.dp)
                     )

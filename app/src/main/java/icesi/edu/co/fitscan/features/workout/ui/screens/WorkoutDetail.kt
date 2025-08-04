@@ -152,6 +152,7 @@ fun WorkoutDetailScreen(
                                 .weight(1f)
                                 .padding(end = 8.dp) // Give title space
                         )
+                        /*
                         IconButton(
                             onClick = onEditWorkout,
                             modifier = Modifier
@@ -164,7 +165,8 @@ fun WorkoutDetailScreen(
                                 contentDescription = "Editar entrenamiento",
                                 tint = accentColor // Icon itself is the accent color
                             )
-                        }
+                        }}
+                        */
                     }
 
                     // Workout Info (Duration, Difficulty)
